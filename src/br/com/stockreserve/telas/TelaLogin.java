@@ -8,6 +8,7 @@ import java.sql.*;
 import br.com.stockreserve.dal.ModuloConexao;
 import java.awt.Color;
 import javax.swing.JOptionPane;
+import br.com.stockreserve.dal.Criptografia;
 
 /**
  *
@@ -24,7 +25,9 @@ public class TelaLogin extends javax.swing.JFrame {
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtLogin.getText());
+            //As linha abaixo pega o texto do jpasswordfield e criptografa a senha
             String captura = new String(txtSenha.getPassword());
+            captura = Criptografia.criptografar(captura);
             pst.setString(2, captura);
 
             rs = pst.executeQuery();

@@ -4,6 +4,7 @@
  */
 package br.com.stockreserve.telas;
 
+import br.com.stockreserve.dal.Criptografia;
 import br.com.stockreserve.dal.ModuloConexao;
 import java.sql.*;
 import javax.swing.JOptionPane;
@@ -35,7 +36,11 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtUsuNome.getText());
             pst.setString(2, txtUsuLogin.getText());
-            pst.setString(3, txtUsuSenha.getText());
+            //As linhas abaixo pega o texto do jpasswordfield e criptografa a senha
+            String captura = txtUsuSenha.getText();
+            captura = Criptografia.criptografar(captura);
+            pst.setString(3, captura);
+            
             pst.setString(4, cboUsuSetor.getSelectedItem().toString());
             pst.setString(5, txtUsuFone.getText());
 
@@ -66,7 +71,11 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtUsuNome.getText());
             pst.setString(2, txtUsuLogin.getText());
-            pst.setString(3, txtUsuSenha.getText());
+            //As linhas abaixo pega o texto do jpasswordfield e criptografa a senha
+            String captura = txtUsuSenha.getText();
+            captura = Criptografia.criptografar(captura);
+            pst.setString(3, captura);
+            
             pst.setString(4, cboUsuSetor.getSelectedItem().toString());
             pst.setString(5, txtUsuFone.getText());
             pst.setString(6, txtUsuId.getText());
