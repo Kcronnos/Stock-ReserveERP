@@ -102,6 +102,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         menGerUsu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menGerUsu.setText("Usuários");
+        menGerUsu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menGerUsuActionPerformed(evt);
+            }
+        });
         menGer.add(menGerUsu);
 
         menGerRel.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
@@ -175,6 +180,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
         DateFormat formatador = DateFormat.getDateInstance(DateFormat.SHORT);
         lblData.setText(formatador.format(data));
     }//GEN-LAST:event_formWindowActivated
+
+    private void menGerUsuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menGerUsuActionPerformed
+        //Inicializando a tela de gestão de usuários
+        TelaUsuario usuario = new TelaUsuario();
+        usuario.setVisible(true);
+        desktop.add(usuario);
+    }//GEN-LAST:event_menGerUsuActionPerformed
 
     /**
      * @param args the command line arguments
