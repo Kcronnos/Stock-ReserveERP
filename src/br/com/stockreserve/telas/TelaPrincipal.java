@@ -3,11 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package br.com.stockreserve.telas;
-
 import java.text.DateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
-
 /**
  *
  * @author Felipe
@@ -31,7 +29,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         desktop = new javax.swing.JDesktopPane();
-        jLabel2 = new javax.swing.JLabel();
         lblUsuario = new javax.swing.JLabel();
         lblData = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
@@ -55,45 +52,24 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
 
-        desktop.setBackground(new java.awt.Color(67, 106, 137));
-
-        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/logo_stockreserve.png"))); // NOI18N
-
-        desktop.setLayer(jLabel2, javax.swing.JLayeredPane.DEFAULT_LAYER);
-
         javax.swing.GroupLayout desktopLayout = new javax.swing.GroupLayout(desktop);
         desktop.setLayout(desktopLayout);
         desktopLayout.setHorizontalGroup(
             desktopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, desktopLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 410, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(302, 302, 302))
+            .addGap(0, 1000, Short.MAX_VALUE)
         );
         desktopLayout.setVerticalGroup(
             desktopLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(desktopLayout.createSequentialGroup()
-                .addGap(181, 181, 181)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(166, Short.MAX_VALUE))
+            .addGap(0, 631, Short.MAX_VALUE)
         );
 
-        lblUsuario.setBackground(new java.awt.Color(70, 115, 121));
         lblUsuario.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblUsuario.setForeground(new java.awt.Color(70, 115, 121));
-        lblUsuario.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblUsuario.setText("Usuário");
 
         lblData.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblData.setForeground(new java.awt.Color(70, 115, 121));
-        lblData.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblData.setText("Data");
 
-        menVen.setBackground(new java.awt.Color(70, 115, 121));
-        menVen.setForeground(new java.awt.Color(70, 115, 121));
         menVen.setText("Vendas");
-        menVen.setToolTipText("");
         menVen.setEnabled(false);
 
         menVenVender.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.ALT_DOWN_MASK));
@@ -102,7 +78,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(menVen);
 
-        menEsto.setForeground(new java.awt.Color(70, 115, 121));
         menEsto.setText("Estoque");
         menEsto.setEnabled(false);
 
@@ -117,7 +92,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(menEsto);
 
-        menGer.setForeground(new java.awt.Color(70, 115, 121));
         menGer.setText("Gerência");
         menGer.setEnabled(false);
 
@@ -136,7 +110,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(menGer);
 
-        menAju.setForeground(new java.awt.Color(70, 115, 121));
         menAju.setText("Ajuda");
 
         menAjuSob.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK));
@@ -150,7 +123,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(menAju);
 
-        menOpc.setForeground(new java.awt.Color(70, 115, 121));
         menOpc.setText("Opções");
 
         menOpcSai.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
@@ -170,7 +142,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
                 .addComponent(lblUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblData, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 482, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -251,7 +223,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane desktop;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenuBar jMenuBar1;
     public static javax.swing.JLabel lblData;
     public static javax.swing.JLabel lblUsuario;
