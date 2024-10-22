@@ -27,8 +27,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         initComponents();
         conexao = ModuloConexao.conector();
     }
-    
-    
+
     //Método para adicionar usuários
     private void adicionarUsuarios() {
         String sql = "insert into tbusuarios(nome, login,senha,setor,fone) values(?,?,?,?,?)";
@@ -40,7 +39,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             String captura = txtUsuSenha.getText();
             captura = Criptografia.criptografar(captura);
             pst.setString(3, captura);
-            
+
             pst.setString(4, cboUsuSetor.getSelectedItem().toString());
             pst.setString(5, txtUsuFone.getText());
 
@@ -62,8 +61,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-    
-    
+
     //Método para alterar informações do usuário
     private void alterar() {
         String sql = "update tbusuarios set nome =?, login=?, senha=?, setor=?, fone=? where iduser=?";
@@ -75,19 +73,19 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             String captura = txtUsuSenha.getText();
             captura = Criptografia.criptografar(captura);
             pst.setString(3, captura);
-            
+
             pst.setString(4, cboUsuSetor.getSelectedItem().toString());
             pst.setString(5, txtUsuFone.getText());
             pst.setString(6, txtUsuId.getText());
-            
+
             if (txtUsuId.getText().isEmpty() || txtUsuNome.getText().isEmpty() || txtUsuLogin.getText().isEmpty()
-                    || txtUsuSenha.getText().isEmpty() || txtUsuFone.getText().isEmpty() || cboUsuSetor.getSelectedItem().toString().isEmpty() ) {
+                    || txtUsuSenha.getText().isEmpty() || txtUsuFone.getText().isEmpty() || cboUsuSetor.getSelectedItem().toString().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!");
             } else {
                 //a linha abaixo atualiza a tabela usuarios com os dados do formularios
                 //a estrutura abaixo é usada para confirma a inserção dos dados na tabela
                 int alterado = pst.executeUpdate();
-                if(alterado > 0) {
+                if (alterado > 0) {
                     JOptionPane.showMessageDialog(null, "Dados do usuário alterados com sucesso!");
                     limpar();
                 }
@@ -96,7 +94,26 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-    
+
+    //Método para remover usuários do banco de dados
+    private void remover() {
+        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o usuário?", "Atenção", JOptionPane.YES_NO_OPTION);
+        if (confirma == JOptionPane.YES_OPTION) {
+            String sql = "delete from tbusuarios where iduser=?";
+            try {
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, txtUsuId.getText());
+                int removido = pst.executeUpdate();
+                if (removido > 0) {
+                    JOptionPane.showMessageDialog(null, "Uusuário removido com sucesso!");
+                    limpar();
+                }
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+        }
+    }
+
     
     //Método para pesquisar os usuários no banco de dados e adicionar a tabela enquanto você digita o nome
     private void pesquisarUsuarios() {
@@ -114,38 +131,19 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-    
-    //Método para remover usuários do banco de dados
-     private void remover() {
-        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o usuário?","Atenção",JOptionPane.YES_NO_OPTION);
-        if(confirma == JOptionPane.YES_OPTION) {
-            String sql = "delete from tbusuarios where iduser=?";
-            try {
-                pst = conexao.prepareStatement(sql);
-                pst.setString(1, txtUsuId.getText());
-                int removido = pst.executeUpdate();
-                if(removido > 0){
-                    JOptionPane.showMessageDialog(null, "Uusuário removido com sucesso!");
-                    limpar();
-                }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
-            }
-        }
-    }
-    
+
     //Método para setar os campos do formulario com o conteudo da tabela
     public void setarCampos() {
         int setar = tblUsuarios.getSelectedRow();
         txtUsuId.setText(tblUsuarios.getModel().getValueAt(setar, 0).toString());
         txtUsuNome.setText(tblUsuarios.getModel().getValueAt(setar, 1).toString());
         txtUsuLogin.setText(tblUsuarios.getModel().getValueAt(setar, 2).toString());
-        txtUsuSenha.setText(tblUsuarios.getModel().getValueAt(setar,3).toString());
+        txtUsuSenha.setText(tblUsuarios.getModel().getValueAt(setar, 3).toString());
         cboUsuSetor.setSelectedItem(tblUsuarios.getModel().getValueAt(setar, 4).toString());
         txtUsuFone.setText(tblUsuarios.getModel().getValueAt(setar, 5).toString());
     }
-    
-    private void limpar () {
+
+    private void limpar() {
         txtUsuId.setText(null);
         txtUsuNome.setText(null);
         txtUsuFone.setText(null);
@@ -192,13 +190,13 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
         tblUsuarios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "ID", "Nome", "Login", "Senha", "Setor", "Fone"
             }
         ));
         tblUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
