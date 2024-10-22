@@ -129,7 +129,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         txtProduPeso.setText(tblProdutos.getModel().getValueAt(setar, 4).toString());
         //a linha abaixo era pra preencher oss campo de vencimento
         //só preenche dps q vc seleciona alguma data por algum motivo que não sei ainda
-        dcVencimento.setDateFormatString(tblProdutos.getModel().getValueAt(setar, 5).toString());
+        //dcVencimento.setDateFormatString(tblProdutos.getModel().getValueAt(setar, 5).toString());
     }
     
     private void limpar() {
@@ -241,7 +241,8 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
 
         dcVencimento.setDateFormatString("yyyy-MM-dd");
 
-        btnAdicionar.setToolTipText("Adicionar Usuário");
+        btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_adicionar.png"))); // NOI18N
+        btnAdicionar.setToolTipText("Adicionar Produto");
         btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAdicionar.setPreferredSize(new java.awt.Dimension(80, 80));
         btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
@@ -250,6 +251,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             }
         });
 
+        btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_editar.png"))); // NOI18N
         btnAlterar.setToolTipText("Alterar Dados");
         btnAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterar.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -259,7 +261,8 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             }
         });
 
-        btnRemover.setToolTipText("Remover Usuário");
+        btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_remover.png"))); // NOI18N
+        btnRemover.setToolTipText("Remover Produto");
         btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRemover.setPreferredSize(new java.awt.Dimension(80, 80));
         btnRemover.addActionListener(new java.awt.event.ActionListener() {

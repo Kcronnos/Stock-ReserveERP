@@ -243,7 +243,10 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnAdicionar">
       <Properties>
-        <Property name="toolTipText" type="java.lang.String" value="Adicionar Usu&#xe1;rio"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/br.com.stockreserve.icones/produto_adicionar.png"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Adicionar Produto"/>
         <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
           <Color id="Hand Cursor"/>
         </Property>
@@ -257,6 +260,9 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnAlterar">
       <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/br.com.stockreserve.icones/produto_editar.png"/>
+        </Property>
         <Property name="toolTipText" type="java.lang.String" value="Alterar Dados"/>
         <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
           <Color id="Hand Cursor"/>
@@ -271,7 +277,10 @@
     </Component>
     <Component class="javax.swing.JButton" name="btnRemover">
       <Properties>
-        <Property name="toolTipText" type="java.lang.String" value="Remover Usu&#xe1;rio"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/br.com.stockreserve.icones/produto_remover.png"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Remover Produto"/>
         <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
           <Color id="Hand Cursor"/>
         </Property>
