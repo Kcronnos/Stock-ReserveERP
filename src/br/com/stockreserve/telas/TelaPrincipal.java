@@ -35,8 +35,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menVen = new javax.swing.JMenu();
         menVenVender = new javax.swing.JMenuItem();
         menEsto = new javax.swing.JMenu();
-        menEstAddPro = new javax.swing.JMenuItem();
-        menEstRemPro = new javax.swing.JMenuItem();
+        menEstPro = new javax.swing.JMenuItem();
         menGer = new javax.swing.JMenu();
         menGerUsu = new javax.swing.JMenuItem();
         menGerRel = new javax.swing.JMenuItem();
@@ -82,18 +81,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menEsto.setText("Estoque");
         menEsto.setEnabled(false);
 
-        menEstAddPro.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menEstAddPro.setText("Adicionar Produto");
-        menEstAddPro.addActionListener(new java.awt.event.ActionListener() {
+        menEstPro.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menEstPro.setText("Estoque de Produtos");
+        menEstPro.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menEstAddProActionPerformed(evt);
+                menEstProActionPerformed(evt);
             }
         });
-        menEsto.add(menEstAddPro);
-
-        menEstRemPro.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menEstRemPro.setText("Remover Produto");
-        menEsto.add(menEstRemPro);
+        menEsto.add(menEstPro);
 
         jMenuBar1.add(menEsto);
 
@@ -170,9 +165,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_menAjuSobActionPerformed
 
-    private void menEstAddProActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menEstAddProActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_menEstAddProActionPerformed
+    private void menEstProActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menEstProActionPerformed
+        //Inicializando a tela de estoque de produtos
+        TelaProdutos produtos = new TelaProdutos();
+        produtos.setVisible(true);
+        desktop.add(produtos);
+    }//GEN-LAST:event_menEstProActionPerformed
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         //Fazendo aparecer a data atual
@@ -230,8 +228,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     public static javax.swing.JLabel lblUsuario;
     private javax.swing.JMenu menAju;
     private javax.swing.JMenuItem menAjuSob;
-    private javax.swing.JMenuItem menEstAddPro;
-    private javax.swing.JMenuItem menEstRemPro;
+    private javax.swing.JMenuItem menEstPro;
     public static javax.swing.JMenu menEsto;
     public static javax.swing.JMenu menGer;
     private javax.swing.JMenuItem menGerRel;
