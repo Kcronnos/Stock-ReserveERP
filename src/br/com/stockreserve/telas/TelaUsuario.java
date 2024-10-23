@@ -142,6 +142,19 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         cboUsuSetor.setSelectedItem(tblUsuarios.getModel().getValueAt(setar, 4).toString());
         txtUsuFone.setText(tblUsuarios.getModel().getValueAt(setar, 5).toString());
     }
+    
+    //método para preencher a tabela dos usuários ao abrir a janela
+    private void preencherTabelaUsuarios() {
+        String sql = "select iduser as ID, nome as Nome, login as Login,senha as Senha,setor as Setor, fone as Fone from tbusuarios";
+        try {
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tblUsuarios.setModel(DbUtils.resultSetToTableModel(rs));
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
 
     private void limpar() {
         txtUsuId.setText(null);
@@ -188,7 +201,29 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         setMaximizable(true);
         setName(""); // NOI18N
         setPreferredSize(new java.awt.Dimension(1000, 631));
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameOpened(evt);
+            }
+        });
 
+        tblUsuarios = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int ColIndex){
+                return false;
+            }
+        };
         tblUsuarios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
@@ -397,6 +432,11 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         //Chamando o método para remover usuários
         remover();
     }//GEN-LAST:event_btnRemoverActionPerformed
+
+    private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
+        //Chamando o método de preencher a tabela dos usuários 
+        preencherTabelaUsuarios();
+    }//GEN-LAST:event_formInternalFrameOpened
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

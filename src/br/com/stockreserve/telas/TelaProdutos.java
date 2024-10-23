@@ -35,7 +35,13 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             pst.setString(3, txtProduPreco.getText());          
             pst.setString(4, txtProduQuanti.getText());
             pst.setString(5, txtProduPeso.getText());
-            pst.setString(6,((JTextField)dcVencimento.getDateEditor().getUiComponent()).getText());
+            
+            //Checa pra ver se a data é nula ou não
+            if(dcVencimento.getDate() == null) {
+                pst.setString(6,null);
+            } else {
+                pst.setString(6,((JTextField)dcVencimento.getDateEditor().getUiComponent()).getText());
+            }
 
             //Validação dos campos obrigatórios
             if (txtProduId.getText().isEmpty() || txtProduNome.getText().isEmpty() || txtProduPreco.getText().isEmpty() || txtProduQuanti.getText().isEmpty()) {
@@ -70,7 +76,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             if (txtProduId.getText().isEmpty() || txtProduNome.getText().isEmpty() || txtProduPreco.getText().isEmpty() || txtProduQuanti.getText().isEmpty() || txtProduPeso.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!");
             } else {
-                //a linha abaixo atualiza a tabela usuarios com os dados do formularios
+                //a linha abaixo atualiza a tabela produtos com os dados do formularios
                 //a estrutura abaixo é usada para confirma a inserção dos dados na tabela
                 int alterado = pst.executeUpdate();
                 if (alterado > 0) {
@@ -132,13 +138,26 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         //dcVencimento.setDateFormatString(tblProdutos.getModel().getValueAt(setar, 5).toString());
     }
     
+    //Método para preencher a tabela dos produtos ao abrir a tela de produtos
+    private void preencherTabelaProduto() {
+        String sql = "select idproduto as ID, nomeproduto as Nome, preco as Preço,quantidade as Quantidade,peso as Peso, vencimento as Vencimento from tbprodutos";
+        try {
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            tblProdutos.setModel(DbUtils.resultSetToTableModel(rs));
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
     private void limpar() {
         txtProduId.setText(null);
         txtProduNome.setText(null);
         txtProduPreco.setText(null);
         txtProduQuanti.setText(null);
         txtProduPeso.setText(null);
-        dcVencimento.setDateFormatString(" ");
+        dcVencimento.setDateFormatString(null);
     }
 
     /**
@@ -182,6 +201,23 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         setIconifiable(true);
         setMaximizable(true);
         setPreferredSize(new java.awt.Dimension(1000, 631));
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameOpened(evt);
+            }
+        });
 
         txtProduPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -189,6 +225,11 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             }
         });
 
+        tblProdutos = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int ColIndex){
+                return false;
+            }
+        };
         tblProdutos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null},
@@ -401,6 +442,11 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         //Chamando o método para remover produtos
         removerProduto();
     }//GEN-LAST:event_btnRemoverActionPerformed
+
+    private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
+        //Chamando o método de preencher a tabel
+        preencherTabelaProduto();
+    }//GEN-LAST:event_formInternalFrameOpened
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
