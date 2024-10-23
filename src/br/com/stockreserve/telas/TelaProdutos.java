@@ -200,6 +200,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
+        setTitle("Cadastro/Alteração/Remoção de Produtos");
         setPreferredSize(new java.awt.Dimension(1000, 631));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -399,7 +400,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 .addContainerGap(102, Short.MAX_VALUE))
         );
 
-        pack();
+        setBounds(0, 0, 1000, 631);
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtProduPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtProduPesquisarKeyReleased

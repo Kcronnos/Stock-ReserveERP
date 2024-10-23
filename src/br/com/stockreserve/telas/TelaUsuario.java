@@ -145,7 +145,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     
     //método para preencher a tabela dos usuários ao abrir a janela
     private void preencherTabelaUsuarios() {
-        String sql = "select iduser as ID, nome as Nome, login as Login,senha as Senha,setor as Setor, fone as Fone from tbusuarios";
+        String sql = "select iduser as ID, nome as Nome, login as Login,senha as Senha,setor as Setor, fone as Telefone from tbusuarios";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -199,6 +199,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
+        setTitle("Cadastro/Alteração/Remoção de Usuários");
         setName(""); // NOI18N
         setPreferredSize(new java.awt.Dimension(1000, 631));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
@@ -232,7 +233,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nome", "Login", "Senha", "Setor", "Fone"
+                "ID", "Nome", "Login", "Senha", "Setor", "Telefone"
             }
         ));
         tblUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -401,7 +402,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
                 .addContainerGap(31, Short.MAX_VALUE))
         );
 
-        pack();
+        setBounds(0, 0, 1000, 631);
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtUsuPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUsuPesquisarKeyReleased
