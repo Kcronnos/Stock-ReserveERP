@@ -39,6 +39,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menGer = new javax.swing.JMenu();
         menGerUsu = new javax.swing.JMenuItem();
         menGerRel = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         menAju = new javax.swing.JMenu();
         menAjuSob = new javax.swing.JMenuItem();
         menOpc = new javax.swing.JMenu();
@@ -105,13 +106,22 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menGer.add(menGerUsu);
 
         menGerRel.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
-        menGerRel.setText("Relatórios");
+        menGerRel.setText("Relatório de Produtos");
         menGerRel.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menGerRelActionPerformed(evt);
             }
         });
         menGer.add(menGerRel);
+
+        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        jMenuItem1.setText("Relatorio de Vendas");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        menGer.add(jMenuItem1);
 
         jMenuBar1.add(menGer);
 
@@ -132,6 +142,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         menOpcSai.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menOpcSai.setText("Sair");
+        menOpcSai.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menOpcSaiActionPerformed(evt);
+            }
+        });
         menOpc.add(menOpcSai);
 
         jMenuBar1.add(menOpc);
@@ -167,7 +182,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void menAjuSobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menAjuSobActionPerformed
-        // TODO add your handling code here:
+        //Inicializando a tela Sobre
+        TelaSobre sobre = new TelaSobre();
+        sobre.setVisible(true);
     }//GEN-LAST:event_menAjuSobActionPerformed
 
     private void menEstProActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menEstProActionPerformed
@@ -192,11 +209,26 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_menGerUsuActionPerformed
 
     private void menGerRelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menGerRelActionPerformed
-        //Inicializando a tella de relatorios
-        TelaRelatorios relatorios = new TelaRelatorios();
-        relatorios.setVisible(true);
-        desktop.add(relatorios);
+        //Inicializando a tela de relatorio de produtos
+        TelaRelatorioProdutos relatorioProdu = new TelaRelatorioProdutos();
+        relatorioProdu.setVisible(true);
+        desktop.add(relatorioProdu);
     }//GEN-LAST:event_menGerRelActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        //Inicializando a tela de relatorio de vendas
+        TelaRelatorioVendas  relatorioVend = new TelaRelatorioVendas();
+        relatorioVend.setVisible(true);
+        desktop.add(relatorioVend);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void menOpcSaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menOpcSaiActionPerformed
+        //Exibe uma caixa de dialogo
+        int sair = JOptionPane.showConfirmDialog(null,"Tem certeza que deseja sair?", "Atenção", JOptionPane.YES_NO_OPTION);
+        if(sair == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        } 
+    }//GEN-LAST:event_menOpcSaiActionPerformed
 
     /**
      * @param args the command line arguments
@@ -236,6 +268,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane desktop;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     public static javax.swing.JLabel lblData;
     public static javax.swing.JLabel lblUsuario;
     private javax.swing.JMenu menAju;
