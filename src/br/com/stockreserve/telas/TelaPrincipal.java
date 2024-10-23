@@ -106,6 +106,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         menGerRel.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
         menGerRel.setText("Relatórios");
+        menGerRel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menGerRelActionPerformed(evt);
+            }
+        });
         menGer.add(menGerRel);
 
         jMenuBar1.add(menGer);
@@ -185,6 +190,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
         usuario.setVisible(true);
         desktop.add(usuario);
     }//GEN-LAST:event_menGerUsuActionPerformed
+
+    private void menGerRelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menGerRelActionPerformed
+        //Inicializando a tella de relatorios
+        TelaRelatorios relatorios = new TelaRelatorios();
+        relatorios.setVisible(true);
+        desktop.add(relatorios);
+    }//GEN-LAST:event_menGerRelActionPerformed
 
     /**
      * @param args the command line arguments
