@@ -61,9 +61,9 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         
     }
    
-    
+    //Método para preencher a tabela ao abrir a aba de relatório de produtos
     private void preencherTabelaProduto() {
-        String sql = "select idproduto as ID, nomeproduto as Nome, preco as Preço,quantidade as Quantidade,peso as Peso, vencimento as Vencimento from tbprodutos";
+        String sql = "select idproduto as ID,nomeproduto as Nome, preco as Preço, quantidade as Quantidade,peso as Peso, vencimento as Vencimento from tbprodutos";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -111,6 +111,12 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         setIconifiable(true);
         setMaximizable(true);
         setTitle("Relatório de Produtos");
+        setDoubleBuffered(true);
+        try {
+            setSelected(true);
+        } catch (java.beans.PropertyVetoException e1) {
+            e1.printStackTrace();
+        }
         setVisible(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -178,11 +184,14 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tblProdutosMouseClicked
 
     private void formInternalFrameActivated(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameActivated
-      
+        //Era pra a tabela está sendo ativada com a chamada do método abaixo ahhhhhh
+        //Fuciona normal nas outras telas, mas aqui parou de funcionar não sei o porquê
+        //Agora só ativa quando clica em qualquer lugar dentro da aba
+        preencherTabelaProduto();
     }//GEN-LAST:event_formInternalFrameActivated
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
-        // TODO add your handling code here:
+        //Chamando o método pra preencher a tabela ao abrir a aba
         preencherTabelaProduto();
     }//GEN-LAST:event_formInternalFrameOpened
 

@@ -143,7 +143,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         txtUsuFone.setText(tblUsuarios.getModel().getValueAt(setar, 5).toString());
     }
     
-    //método para preencher a tabela dos usuários ao abrir a janela
+    //método para preencher a tabela dos usuários ao abrir a aba
     private void preencherTabelaUsuarios() {
         String sql = "select iduser as ID, nome as Nome, login as Login,senha as Senha,setor as Setor, fone as Telefone from tbusuarios";
         try {
