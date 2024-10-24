@@ -75,6 +75,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         menVenVender.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menVenVender.setText("Vender");
+        menVenVender.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menVenVenderActionPerformed(evt);
+            }
+        });
         menVen.add(menVenVender);
 
         jMenuBar1.add(menVen);
@@ -229,6 +234,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
             System.exit(0);
         } 
     }//GEN-LAST:event_menOpcSaiActionPerformed
+
+    private void menVenVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menVenVenderActionPerformed
+        //Inicializando a tela de venda
+        TelaVender vender = new TelaVender();
+        vender.setVisible(true);
+        desktop.add(vender);
+    }//GEN-LAST:event_menVenVenderActionPerformed
 
     /**
      * @param args the command line arguments
