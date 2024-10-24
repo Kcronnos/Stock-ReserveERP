@@ -112,11 +112,6 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         setMaximizable(true);
         setTitle("Relatório de Produtos");
         setDoubleBuffered(true);
-        try {
-            setSelected(true);
-        } catch (java.beans.PropertyVetoException e1) {
-            e1.printStackTrace();
-        }
         setVisible(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {

@@ -15,6 +15,7 @@
     <SyntheticProperty name="generateSize" type="boolean" value="true"/>
   </SyntheticProperties>
   <Events>
+    <EventHandler event="internalFrameClosed" listener="javax.swing.event.InternalFrameListener" parameters="javax.swing.event.InternalFrameEvent" handler="formInternalFrameClosed"/>
     <EventHandler event="internalFrameOpened" listener="javax.swing.event.InternalFrameListener" parameters="javax.swing.event.InternalFrameEvent" handler="formInternalFrameOpened"/>
   </Events>
   <AuxValues>
@@ -40,24 +41,26 @@
                   <Component id="jLabel4" min="-2" pref="250" max="-2" attributes="0"/>
                   <Component id="txtProduQuanti" min="-2" pref="250" max="-2" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="btAdicionar" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnAdicionar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="47" pref="47" max="-2" attributes="0"/>
-                      <Component id="btRemover" min="-2" pref="110" max="-2" attributes="0"/>
+                      <Component id="btnRemover" min="-2" pref="110" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace min="-2" pref="91" max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="102" alignment="1" attributes="0">
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="txtProduPesquisar" min="-2" pref="300" max="-2" attributes="0"/>
                           <Component id="jLabel3" alignment="0" min="-2" pref="300" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Component id="btPagar" min="-2" pref="100" max="-2" attributes="0"/>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="btnLimpar" max="32767" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="btnPagar" min="-2" pref="94" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="jScrollPane3" min="-2" pref="100" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" alignment="1" attributes="0">
+                  <Group type="102" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="jLabel2" min="-2" pref="300" max="-2" attributes="0"/>
@@ -103,21 +106,22 @@
                       <Component id="txtProduQuanti" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="28" pref="28" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="btAdicionar" min="-2" max="-2" attributes="0"/>
-                          <Component id="btRemover" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnAdicionar" min="-2" max="-2" attributes="0"/>
+                          <Component id="btnRemover" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="jScrollPane3" alignment="1" min="-2" pref="60" max="-2" attributes="0"/>
-                  <Component id="btPagar" alignment="1" min="-2" pref="60" max="-2" attributes="0"/>
+                  <Component id="btnPagar" alignment="1" min="-2" pref="60" max="-2" attributes="0"/>
                   <Group type="102" alignment="1" attributes="0">
                       <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
                       <Component id="txtProduPesquisar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
                   </Group>
+                  <Component id="btnLimpar" min="-2" pref="60" max="-2" attributes="0"/>
               </Group>
           </Group>
       </Group>
@@ -145,12 +149,12 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="btPagar">
+    <Component class="javax.swing.JButton" name="btnPagar">
       <Properties>
         <Property name="text" type="java.lang.String" value="PAGAR"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btPagarActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnPagarActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
@@ -218,6 +222,9 @@
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="tblCarrinhoMouseClicked"/>
+          </Events>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="tblCarrinho = new javax.swing.JTable(){&#xa;    public boolean isCellEditable(int rowIndex, int ColIndex){&#xa;        return false;&#xa;    } &#xa;};"/>
           </AuxValues>
@@ -239,7 +246,7 @@
     <Component class="javax.swing.JLabel" name="jLabel5">
       <Properties>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="COLOQUE O ID DO PRODUTO"/>
+        <Property name="text" type="java.lang.String" value="ID DO PRODUTO SELECIONADO"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="txtProduId">
@@ -255,22 +262,28 @@
     </Component>
     <Component class="javax.swing.JTextField" name="txtProduQuanti">
     </Component>
-    <Component class="javax.swing.JButton" name="btAdicionar">
+    <Component class="javax.swing.JButton" name="btnAdicionar">
       <Properties>
         <Property name="text" type="java.lang.String" value="ADICIONAR"/>
       </Properties>
       <Events>
-        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btAdicionarMouseClicked"/>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btAdicionarActionPerformed"/>
+        <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="btnAdicionarMouseClicked"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAdicionarActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JButton" name="btRemover">
+    <Component class="javax.swing.JButton" name="btnRemover">
       <Properties>
         <Property name="text" type="java.lang.String" value="REMOVER"/>
+        <Property name="enabled" type="boolean" value="false"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btRemoverActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRemoverActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnLimpar">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="LIMPAR"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

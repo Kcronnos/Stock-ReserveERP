@@ -20,6 +20,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
     PreparedStatement pst = null;
     ResultSet rs = null;
     private int quantidadeEsto;
+    private double totalCarrinho;
 
     /**
      * Creates new form TelaVender
@@ -67,6 +68,8 @@ public class TelaVender extends javax.swing.JInternalFrame {
             //coerção de string para double para fazer o valor total
             double preco = Double.parseDouble(precoProduto);
             double total = preco * quantidade;
+            
+            //leo vai criar o método para fazer o total
 
             DefaultTableModel modelo = (DefaultTableModel) tblCarrinho.getModel();
             modelo.addRow(new Object[]{idProduto, nomeProduto, preco, quantidade, total});
@@ -106,7 +109,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
                 pst.setString(2, idNoCarrinho);
                 pst.executeUpdate();
                 
-                //chamando m método para atualizar a quantidade na tabela de produtos
+                //chamando m método para dar um "f5" e atualizar a quantidade na tabela de produtos
                 preencherTabelaProduto();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
@@ -124,6 +127,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
         preencherTabelaProduto();
         
     }
+    
 
     //Método para setar o id ao clicar tabela
     public void setarCampos() {
@@ -170,7 +174,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
         jScrollPane3 = new javax.swing.JScrollPane();
         tblTotal = new javax.swing.JTable();
-        btPagar = new javax.swing.JButton();
+        btnPagar = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         txtProduPesquisar = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -183,8 +187,9 @@ public class TelaVender extends javax.swing.JInternalFrame {
         txtProduId = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         txtProduQuanti = new javax.swing.JTextField();
-        btAdicionar = new javax.swing.JButton();
-        btRemover = new javax.swing.JButton();
+        btnAdicionar = new javax.swing.JButton();
+        btnRemover = new javax.swing.JButton();
+        btnLimpar = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -194,6 +199,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
             }
             public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameClosed(evt);
             }
             public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
             }
@@ -218,10 +224,10 @@ public class TelaVender extends javax.swing.JInternalFrame {
         ));
         jScrollPane3.setViewportView(tblTotal);
 
-        btPagar.setText("PAGAR");
-        btPagar.addActionListener(new java.awt.event.ActionListener() {
+        btnPagar.setText("PAGAR");
+        btnPagar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btPagarActionPerformed(evt);
+                btnPagarActionPerformed(evt);
             }
         });
 
@@ -276,6 +282,11 @@ public class TelaVender extends javax.swing.JInternalFrame {
             }
         ));
         tblCarrinho.setToolTipText("");
+        tblCarrinho.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblCarrinhoMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblCarrinho);
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -285,31 +296,34 @@ public class TelaVender extends javax.swing.JInternalFrame {
         jLabel1.setText("CARRINHO");
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("COLOQUE O ID DO PRODUTO");
+        jLabel5.setText("ID DO PRODUTO SELECIONADO");
 
         txtProduId.setEnabled(false);
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setText("COLOQUE A QUANTIDADE DO PRODUTO");
 
-        btAdicionar.setText("ADICIONAR");
-        btAdicionar.addMouseListener(new java.awt.event.MouseAdapter() {
+        btnAdicionar.setText("ADICIONAR");
+        btnAdicionar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                btAdicionarMouseClicked(evt);
+                btnAdicionarMouseClicked(evt);
             }
         });
-        btAdicionar.addActionListener(new java.awt.event.ActionListener() {
+        btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btAdicionarActionPerformed(evt);
+                btnAdicionarActionPerformed(evt);
             }
         });
 
-        btRemover.setText("REMOVER");
-        btRemover.addActionListener(new java.awt.event.ActionListener() {
+        btnRemover.setText("REMOVER");
+        btnRemover.setEnabled(false);
+        btnRemover.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btRemoverActionPerformed(evt);
+                btnRemoverActionPerformed(evt);
             }
         });
+
+        btnLimpar.setText("LIMPAR");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -323,20 +337,22 @@ public class TelaVender extends javax.swing.JInternalFrame {
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtProduQuanti, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btAdicionar)
+                        .addComponent(btnAdicionar)
                         .addGap(47, 47, 47)
-                        .addComponent(btRemover, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btnRemover, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(91, 91, 91)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtProduPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnLimpar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -372,29 +388,30 @@ public class TelaVender extends javax.swing.JInternalFrame {
                         .addComponent(txtProduQuanti, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btAdicionar)
-                            .addComponent(btRemover))))
+                            .addComponent(btnAdicionar)
+                            .addComponent(btnRemover))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btPagar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(13, 13, 13)
                         .addComponent(txtProduPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(4, 4, 4))))
+                        .addGap(4, 4, 4))
+                    .addComponent(btnLimpar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         setBounds(0, 0, 1000, 631);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btPagarActionPerformed
+    private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_btPagarActionPerformed
+    }//GEN-LAST:event_btnPagarActionPerformed
 
-    private void btAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAdicionarActionPerformed
-
-    }//GEN-LAST:event_btAdicionarActionPerformed
+    private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
+        
+    }//GEN-LAST:event_btnAdicionarActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         //chamando o método para preencher a tabela de produtos
@@ -408,28 +425,40 @@ public class TelaVender extends javax.swing.JInternalFrame {
     private void tblProdutosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblProdutosMouseClicked
         // Chamando o metodo setar campo
         setarCampos();
+        //Desativando o botão de remover
+        btnRemover.setEnabled(false);
     }//GEN-LAST:event_tblProdutosMouseClicked
 
-    private void btAdicionarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btAdicionarMouseClicked
+    private void btnAdicionarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAdicionarMouseClicked
         // TODO add your handling code here:
         adicionarCarrinho();
-    }//GEN-LAST:event_btAdicionarMouseClicked
+    }//GEN-LAST:event_btnAdicionarMouseClicked
 
     private void txtProduPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtProduPesquisarKeyReleased
         //Chamando o método para pesquisar produtos
         pesquisarProduto();
     }//GEN-LAST:event_txtProduPesquisarKeyReleased
 
-    private void btRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRemoverActionPerformed
+    private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
         //Chamando o método para remover do carrinho
         removerDoCarrinho();
-    }//GEN-LAST:event_btRemoverActionPerformed
+    }//GEN-LAST:event_btnRemoverActionPerformed
+
+    private void tblCarrinhoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCarrinhoMouseClicked
+        //Ativando o botão de remover
+        btnRemover.setEnabled(true);
+    }//GEN-LAST:event_tblCarrinhoMouseClicked
+
+    private void formInternalFrameClosed(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosed
+        //Retonarnando os produtos ao banco de dados ao fechar a tela
+    }//GEN-LAST:event_formInternalFrameClosed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btAdicionar;
-    private javax.swing.JButton btPagar;
-    private javax.swing.JButton btRemover;
+    private javax.swing.JButton btnAdicionar;
+    private javax.swing.JButton btnLimpar;
+    private javax.swing.JButton btnPagar;
+    private javax.swing.JButton btnRemover;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
