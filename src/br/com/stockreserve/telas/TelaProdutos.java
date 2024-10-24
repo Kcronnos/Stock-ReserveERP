@@ -59,6 +59,9 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
+        
+        //Atualizando a tabela de produtos após a adição de um novo produto
+        preencherTabelaProduto();
     }
     
     //Método para alterar informações do produto
@@ -87,6 +90,9 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
+        
+        //Atualizando a tabela de produtos após a alteração de dados de um produto
+        preencherTabelaProduto();
     }
     
     //Método para remover produtos do banco de dados
@@ -106,6 +112,9 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(null, e);
             }
         }
+        
+        //Atualizando a tabela de produtos após a remoção de um produto
+        preencherTabelaProduto();
     }
     
     //Método para pesquisar os produtos no banco de dados e adicionar a tabela enquanto você digita o nome

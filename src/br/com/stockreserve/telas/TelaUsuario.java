@@ -60,10 +60,13 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
+        
+        //Atualizando a tabela de usuários após adicionar um novo usuário
+        preencherTabelaUsuarios();
     }
 
     //Método para alterar informações do usuário
-    private void alterar() {
+    private void alterarUsuarios() {
         String sql = "update tbusuarios set nome =?, login=?, senha=?, setor=?, fone=? where iduser=?";
         try {
             pst = conexao.prepareStatement(sql);
@@ -93,10 +96,13 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
+        
+        //Atualizando a tabela de usuários após a alteração de dados de um usuário
+        preencherTabelaUsuarios();
     }
 
     //Método para remover usuários do banco de dados
-    private void remover() {
+    private void removerUsuarios() {
         int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o usuário?", "Atenção", JOptionPane.YES_NO_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             String sql = "delete from tbusuarios where iduser=?";
@@ -112,6 +118,9 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(null, e);
             }
         }
+        
+        //Atualizando a tabela de usuários após a remoção de um usuário
+        preencherTabelaUsuarios();
     }
 
     
@@ -426,12 +435,12 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
         //Chamando o método para alterar os dados do usuário
-        alterar();
+        alterarUsuarios();
     }//GEN-LAST:event_btnAlterarActionPerformed
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
         //Chamando o método para remover usuários
-        remover();
+        removerUsuarios();
     }//GEN-LAST:event_btnRemoverActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
