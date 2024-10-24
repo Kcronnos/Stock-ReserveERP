@@ -3,9 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package br.com.stockreserve.telas;
+
+import java.awt.Desktop;
+import java.net.URI;
 import java.text.DateFormat;
 import java.util.Date;
 import javax.swing.JOptionPane;
+
 /**
  *
  * @author Felipe
@@ -42,6 +46,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
         menAju = new javax.swing.JMenu();
         menAjuSob = new javax.swing.JMenuItem();
+        menAjuSup = new javax.swing.JMenuItem();
         menOpc = new javax.swing.JMenu();
         menOpcSai = new javax.swing.JMenuItem();
 
@@ -141,6 +146,15 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         menAju.add(menAjuSob);
 
+        menAjuSup.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        menAjuSup.setText("Suporte");
+        menAjuSup.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menAjuSupActionPerformed(evt);
+            }
+        });
+        menAju.add(menAjuSup);
+
         jMenuBar1.add(menAju);
 
         menOpc.setText("Opções");
@@ -222,17 +236,17 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         //Inicializando a tela de relatorio de vendas
-        TelaRelatorioVendas  relatorioVend = new TelaRelatorioVendas();
+        TelaRelatorioVendas relatorioVend = new TelaRelatorioVendas();
         relatorioVend.setVisible(true);
         desktop.add(relatorioVend);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void menOpcSaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menOpcSaiActionPerformed
         //Exibe uma caixa de dialogo
-        int sair = JOptionPane.showConfirmDialog(null,"Tem certeza que deseja sair?", "Atenção", JOptionPane.YES_NO_OPTION);
-        if(sair == JOptionPane.YES_OPTION) {
+        int sair = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja sair?", "Atenção", JOptionPane.YES_NO_OPTION);
+        if (sair == JOptionPane.YES_OPTION) {
             System.exit(0);
-        } 
+        }
     }//GEN-LAST:event_menOpcSaiActionPerformed
 
     private void menVenVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menVenVenderActionPerformed
@@ -241,6 +255,15 @@ public class TelaPrincipal extends javax.swing.JFrame {
         vender.setVisible(true);
         desktop.add(vender);
     }//GEN-LAST:event_menVenVenderActionPerformed
+
+    private void menAjuSupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menAjuSupActionPerformed
+        //Adicionando o comando que irá abrir o suporte noo dicord
+        try {
+            Desktop.getDesktop().browse(new URI("https://discord.gg/f8kfVFfDSk"));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_menAjuSupActionPerformed
 
     /**
      * @param args the command line arguments
@@ -285,6 +308,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     public static javax.swing.JLabel lblUsuario;
     private javax.swing.JMenu menAju;
     private javax.swing.JMenuItem menAjuSob;
+    private javax.swing.JMenuItem menAjuSup;
     private javax.swing.JMenuItem menEstPro;
     public static javax.swing.JMenu menEsto;
     public static javax.swing.JMenu menGer;
