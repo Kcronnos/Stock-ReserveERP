@@ -63,12 +63,13 @@ public class TelaVender extends javax.swing.JInternalFrame {
             String idProduto = tblProdutos.getModel().getValueAt(setar, 0).toString();
             String nomeProduto = tblProdutos.getModel().getValueAt(setar, 1).toString();
             String precoProduto = tblProdutos.getModel().getValueAt(setar, 2).toString();
-
+            
+            //coerção de string para double para fazer o valor total
             double preco = Double.parseDouble(precoProduto);
             double total = preco * quantidade;
 
             DefaultTableModel modelo = (DefaultTableModel) tblCarrinho.getModel();
-            modelo.addRow(new Object[]{idProduto, nomeProduto, quantidade, preco, total});
+            modelo.addRow(new Object[]{idProduto, nomeProduto, preco, quantidade, total});
             
             //limpando o campo de texto da quantidade
             txtProduQuanti.setText(null);
@@ -80,8 +81,10 @@ public class TelaVender extends javax.swing.JInternalFrame {
                 pst.setString(1, Integer.toString(quantidade));
                 pst.setString(2, txtProduId.getText());
                 pst.executeUpdate();
+                //chamando m método para atualizar a tabela 
+                preencherTabelaProduto();
             } catch (Exception e) {
-                
+                JOptionPane.showMessageDialog(null, e);
             }
         }
     }
@@ -92,13 +95,34 @@ public class TelaVender extends javax.swing.JInternalFrame {
         int linhaSelecionada = tblCarrinho.getSelectedRow();
 
         if (linhaSelecionada != -1) { // Se uma linha está selecionada
-            // Remove a linha selecionada
+
+            //atualizando a quantidade no banco de dados
+            String sql = "update tbprodutos set quantidade = quantidade + ? where idproduto =?";
+            String quantidadeCarrinho = tblCarrinho.getValueAt(linhaSelecionada, 3).toString();
+            String idNoCarrinho = tblCarrinho.getValueAt(linhaSelecionada, 0).toString();
+            try {
+                pst = conexao.prepareStatement(sql);
+                pst.setString(1, quantidadeCarrinho);
+                pst.setString(2, idNoCarrinho);
+                pst.executeUpdate();
+                
+                //chamando m método para atualizar a quantidade na tabela de produtos
+                preencherTabelaProduto();
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, e);
+            }
+            
+            
+            //Removendo a linha selecionada
             DefaultTableModel modelo = (DefaultTableModel) tblCarrinho.getModel();
             modelo.removeRow(linhaSelecionada);
             JOptionPane.showMessageDialog(null, "Produto removido do carrinho!");
         } else {
             JOptionPane.showMessageDialog(null, "Selecione um produto para remover!");
         }
+        
+        preencherTabelaProduto();
+        
     }
 
     //Método para setar o id ao clicar tabela
