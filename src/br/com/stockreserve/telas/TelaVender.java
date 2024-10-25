@@ -21,6 +21,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
     ResultSet rs = null;
     private int quantidadeEsto;
     private double totalCarrinho;
+    private double valorTotal = 0.0;
 
     /**
      * Creates new form TelaVender
@@ -29,24 +30,23 @@ public class TelaVender extends javax.swing.JInternalFrame {
         initComponents();
         conexao = ModuloConexao.conector();
     }
-    
-    
+
     //Método para adicionar produtos ao carrinho
     private void adicionarCarrinho() {
-        
+
         //pegando a quantidade em estoque do banco de dados e armazenando para comparar com a quantidade a ser comprada
         String sql = "select quantidade from tbprodutos where idproduto=?";
         try {
-                pst = conexao.prepareStatement(sql);
-                pst.setString(1, txtProduId.getText());
-                rs = pst.executeQuery();
-                if(rs.next()){
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtProduId.getText());
+            rs = pst.executeQuery();
+            if (rs.next()) {
                 quantidadeEsto = rs.getInt(1);
-                }
+            }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
-        
+
         //Tratamento para garantir que a quantidade a ser comprada não seja zero ou negativo
         int quantidade;
         if (txtProduQuanti.getText().isEmpty()) {
@@ -56,38 +56,44 @@ public class TelaVender extends javax.swing.JInternalFrame {
         }
         
         //Condições para que um produto possa ser adicionada ao carrinho
-        if (quantidade <= 0 || quantidadeEsto < quantidade) {
-            JOptionPane.showMessageDialog(null, "Digite uma quantidade válida");
-        } else {//Pegando as informações da tabela de produtos e passando para a do carrinho
+        if (txtProduId.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Selecione um Produto", "Atenção", HEIGHT);
+        } else {
+            if (quantidade <= 0 || quantidadeEsto < quantidade) {
+                JOptionPane.showMessageDialog(null, "Digite uma quantidade válida");
+            } else {//Pegando as informações da tabela de produtos e passando para a do carrinho
                 //Junto com a quantidade e o total
-            int setar = tblProdutos.getSelectedRow();
-            String idProduto = tblProdutos.getModel().getValueAt(setar, 0).toString();
-            String nomeProduto = tblProdutos.getModel().getValueAt(setar, 1).toString();
-            String precoProduto = tblProdutos.getModel().getValueAt(setar, 2).toString();
-            
-            //coerção de string para double para fazer o valor total
-            double preco = Double.parseDouble(precoProduto);
-            double total = preco * quantidade;
-            
-            //leo vai criar o método para fazer o total
+                int setar = tblProdutos.getSelectedRow();
+                String idProduto = tblProdutos.getModel().getValueAt(setar, 0).toString();
+                String nomeProduto = tblProdutos.getModel().getValueAt(setar, 1).toString();
+                String precoProduto = tblProdutos.getModel().getValueAt(setar, 2).toString();
 
-            DefaultTableModel modelo = (DefaultTableModel) tblCarrinho.getModel();
-            modelo.addRow(new Object[]{idProduto, nomeProduto, preco, quantidade, total});
-            
-            //limpando o campo de texto da quantidade
-            txtProduQuanti.setText(null);
-            
-            //atualizando a quantidade no banco de dados
-            sql = "update tbprodutos set quantidade = quantidade - ? where idproduto =?";
-            try {
-                pst = conexao.prepareStatement(sql);
-                pst.setString(1, Integer.toString(quantidade));
-                pst.setString(2, txtProduId.getText());
-                pst.executeUpdate();
-                //chamando m método para atualizar a tabela 
-                preencherTabelaProduto();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
+                //coerção de string para double para fazer o valor da compra do produto
+                double preco = Double.parseDouble(precoProduto);
+                double total = preco * quantidade;
+
+                DefaultTableModel modelo = (DefaultTableModel) tblCarrinho.getModel();
+                modelo.addRow(new Object[]{idProduto, nomeProduto, preco, quantidade, total});
+
+                //atualizando a quantidade no banco de dados
+                sql = "update tbprodutos set quantidade = quantidade - ? where idproduto =?";
+                try {
+                    pst = conexao.prepareStatement(sql);
+                    pst.setString(1, Integer.toString(quantidade));
+                    pst.setString(2, txtProduId.getText());
+                    pst.executeUpdate();
+                    //chamando m método para atualizar a tabela 
+                    preencherTabelaProduto();
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, e);
+                }
+
+                //limpando o campo de texto da quantidade
+                txtProduId.setText(null);
+                txtProduQuanti.setText(null);
+
+                //Chamando a função para calcular o valor total de todos os itens
+                calcularValorTotal();
             }
         }
     }
@@ -108,26 +114,43 @@ public class TelaVender extends javax.swing.JInternalFrame {
                 pst.setString(1, quantidadeCarrinho);
                 pst.setString(2, idNoCarrinho);
                 pst.executeUpdate();
-                
+
                 //chamando m método para dar um "f5" e atualizar a quantidade na tabela de produtos
                 preencherTabelaProduto();
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null, e);
             }
-            
-            
+
             //Removendo a linha selecionada
             DefaultTableModel modelo = (DefaultTableModel) tblCarrinho.getModel();
             modelo.removeRow(linhaSelecionada);
+
+            //recalculando o valor total
+            calcularValorTotal();
             JOptionPane.showMessageDialog(null, "Produto removido do carrinho!");
         } else {
             JOptionPane.showMessageDialog(null, "Selecione um produto para remover!");
         }
-        
+
         preencherTabelaProduto();
-        
+
     }
-    
+
+    private void calcularValorTotal() {
+        DefaultTableModel modelo = (DefaultTableModel) tblCarrinho.getModel();
+        valorTotal = 0.0; // Zera o valor total para recalcular caso algo seja removido ou adicionado
+
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            double precoUnitario = Double.parseDouble(modelo.getValueAt(i, 2).toString());
+            int quantidade = Integer.parseInt(modelo.getValueAt(i, 3).toString());
+
+            double subtotal = quantidade * precoUnitario;
+            valorTotal += subtotal;
+        }
+
+        // Atualiza o label com o valor total formatado
+        lblTotal.setText(String.format("R$ %.2f", valorTotal));
+    }
 
     //Método para setar o id ao clicar tabela
     public void setarCampos() {
@@ -172,8 +195,6 @@ public class TelaVender extends javax.swing.JInternalFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane3 = new javax.swing.JScrollPane();
-        tblTotal = new javax.swing.JTable();
         btnPagar = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         txtProduPesquisar = new javax.swing.JTextField();
@@ -190,6 +211,8 @@ public class TelaVender extends javax.swing.JInternalFrame {
         btnAdicionar = new javax.swing.JButton();
         btnRemover = new javax.swing.JButton();
         btnLimpar = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        lblTotal = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
@@ -213,16 +236,6 @@ public class TelaVender extends javax.swing.JInternalFrame {
                 formInternalFrameOpened(evt);
             }
         });
-
-        tblTotal.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null}
-            },
-            new String [] {
-                "TOTAL"
-            }
-        ));
-        jScrollPane3.setViewportView(tblTotal);
 
         btnPagar.setText("PAGAR");
         btnPagar.addActionListener(new java.awt.event.ActionListener() {
@@ -325,6 +338,8 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
         btnLimpar.setText("LIMPAR");
 
+        jLabel6.setText("TOTAL");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -346,12 +361,18 @@ public class TelaVender extends javax.swing.JInternalFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtProduPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnLimpar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnLimpar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(4, 4, 4)
+                                .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(37, 37, 37)
+                                .addComponent(jLabel6)))
+                        .addGap(213, 213, 213))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -390,16 +411,23 @@ public class TelaVender extends javax.swing.JInternalFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnAdicionar)
                             .addComponent(btnRemover))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(13, 13, 13)
-                        .addComponent(txtProduPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(4, 4, 4))
-                    .addComponent(btnLimpar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(6, 6, 6)
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnLimpar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(13, 13, 13)
+                                .addComponent(txtProduPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(4, 4, 4))))))
         );
 
         setBounds(0, 0, 1000, 631);
@@ -410,7 +438,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnPagarActionPerformed
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
-        
+
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
@@ -464,12 +492,12 @@ public class TelaVender extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel lblTotal;
     private javax.swing.JTable tblCarrinho;
     private javax.swing.JTable tblProdutos;
-    private javax.swing.JTable tblTotal;
     private javax.swing.JTextField txtProduId;
     private javax.swing.JTextField txtProduPesquisar;
     private javax.swing.JTextField txtProduQuanti;
