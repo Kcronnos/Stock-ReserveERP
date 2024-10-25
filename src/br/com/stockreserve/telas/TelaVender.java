@@ -54,7 +54,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
         } else {
             quantidade = Integer.parseInt(txtProduQuanti.getText());
         }
-        
+
         //Condições para que um produto possa ser adicionada ao carrinho
         if (txtProduId.getText().isEmpty()) {
             JOptionPane.showMessageDialog(null, "Selecione um Produto", "Atenção", HEIGHT);
@@ -125,13 +125,12 @@ public class TelaVender extends javax.swing.JInternalFrame {
             DefaultTableModel modelo = (DefaultTableModel) tblCarrinho.getModel();
             modelo.removeRow(linhaSelecionada);
 
-            //recalculando o valor total
-            calcularValorTotal();
             JOptionPane.showMessageDialog(null, "Produto removido do carrinho!");
         } else {
             JOptionPane.showMessageDialog(null, "Selecione um produto para remover!");
         }
-
+        //recalculando o valor total
+        calcularValorTotal();
         preencherTabelaProduto();
 
     }
@@ -337,6 +336,11 @@ public class TelaVender extends javax.swing.JInternalFrame {
         });
 
         btnLimpar.setText("LIMPAR");
+        btnLimpar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLimparActionPerformed(evt);
+            }
+        });
 
         jLabel6.setText("TOTAL");
 
@@ -480,6 +484,10 @@ public class TelaVender extends javax.swing.JInternalFrame {
     private void formInternalFrameClosed(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosed
         //Retonarnando os produtos ao banco de dados ao fechar a tela
     }//GEN-LAST:event_formInternalFrameClosed
+
+    private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnLimparActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
