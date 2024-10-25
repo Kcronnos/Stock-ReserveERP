@@ -23,7 +23,7 @@ public class IALimiteDeEstoque {
             
             ResultSet rs = stmt.executeQuery();
             boolean alertaEmitido = false;
-
+            //Quando ele entrar nesse while ele vai entrar apenas com as linhas de produtos que estão abaixo do permitido, depois disso ele emite o alerta de cada produto.
             while (rs.next()) {
                 int idProduto = rs.getInt("idproduto");
                 String nomeProduto = rs.getString("nomeproduto");
@@ -38,7 +38,7 @@ public class IALimiteDeEstoque {
                 System.out.println("⚠️ Alerta: O estoque do produto '" + nomeProduto + "' (ID: " + idProduto + ") está abaixo do limite permitido.");
                 System.out.println("Preço: R$" + preco + " | Quantidade atual: " + quantidade + " | Limite mínimo: " + limiteMinimo);
                 System.out.println("Peso unitário: " + peso + "kg | Peso total em estoque: " + pesoTotalEstoque + "kg");
-                
+                //Aqui é só pra verificar se a data ta no formato certo de ser impresso.
                 if (vencimento != null) {
                     System.out.println("Data de vencimento: " + vencimento);
                 } else {
@@ -47,7 +47,7 @@ public class IALimiteDeEstoque {
                 
                 alertaEmitido = true;
             }
-
+            //Se tiver tudo ok, ele printa essa mensagem
             if (!alertaEmitido) {
                 System.out.println("✅ Todos os produtos estão dentro do limite permitido.");
             }
