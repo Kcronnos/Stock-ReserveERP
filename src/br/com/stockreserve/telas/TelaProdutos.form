@@ -80,13 +80,14 @@
                                   <Group type="102" attributes="0">
                                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="txtProduPeso" min="-2" pref="241" max="-2" attributes="0"/>
+                                          <Component id="txtProduLimi" min="-2" pref="241" max="-2" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
+                                              <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
                                               <Component id="txtProduQuanti" min="-2" pref="241" max="-2" attributes="0"/>
-                                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                               <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                                              <Component id="dcVencimento" min="-2" pref="135" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
+                                              <Component id="dcVencimento" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                   </Group>
@@ -107,7 +108,7 @@
                       <Component id="jScrollPane1" min="-2" pref="928" max="-2" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace pref="41" max="32767" attributes="0"/>
+              <EmptySpace min="-2" pref="33" max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -141,7 +142,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="txtProduPreco" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="txtProduPeso" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="txtProduLimi" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
@@ -150,7 +151,7 @@
                   <Component id="btnAlterar" min="-2" max="-2" attributes="0"/>
                   <Component id="btnRemover" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="102" max="32767" attributes="0"/>
+              <EmptySpace pref="42" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -176,7 +177,7 @@
                 <Column editable="true" title="Nome" type="java.lang.Object"/>
                 <Column editable="true" title="Pre&#xe7;o" type="java.lang.Object"/>
                 <Column editable="true" title="Quantidade" type="java.lang.Object"/>
-                <Column editable="true" title="Peso" type="java.lang.Object"/>
+                <Column editable="true" title="Limite M&#xed;nimo" type="java.lang.Object"/>
                 <Column editable="true" title="Vencimento" type="java.lang.Object"/>
               </Table>
             </Property>
@@ -207,9 +208,9 @@
     </Component>
     <Component class="javax.swing.JTextField" name="txtProduNome">
     </Component>
-    <Component class="javax.swing.JTextField" name="txtProduPeso">
+    <Component class="javax.swing.JTextField" name="txtProduLimi">
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtProduPesoActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="txtProduLimiActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="txtProduQuanti">
@@ -231,7 +232,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel5">
       <Properties>
-        <Property name="text" type="java.lang.String" value="*Peso Produto"/>
+        <Property name="text" type="java.lang.String" value="*Limite M&#xed;nimo"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel12">
@@ -243,14 +244,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Vencimento"/>
       </Properties>
-    </Component>
-    <Component class="com.toedter.calendar.JDateChooser" name="dcVencimento">
-      <Properties>
-        <Property name="dateFormatString" type="java.lang.String" value="yyyy-MM-dd"/>
-      </Properties>
-      <AuxValues>
-        <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="TelaProdutos_dcVencimento"/>
-      </AuxValues>
     </Component>
     <Component class="javax.swing.JButton" name="btnAdicionar">
       <Properties>
@@ -302,6 +295,11 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRemoverActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="com.toedter.calendar.JDateChooser" name="dcVencimento">
+      <Properties>
+        <Property name="dateFormatString" type="java.lang.String" value="yyyy-MM-dd"/>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

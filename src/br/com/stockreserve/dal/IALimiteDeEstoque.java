@@ -17,7 +17,7 @@ public class IALimiteDeEstoque {
 
     // Método para verificar o estoque e emitir alertas quando necessário
     public void verificarEstoque() {
-        String query = "SELECT idproduto, nomeproduto, preco, quantidade, peso, pesototalestoque, vencimento, limite_minimo "
+        String query = "SELECT idproduto, nomeproduto, preco, quantidade, vencimento, limite_minimo "
                      + "FROM produtos WHERE quantidade < limite_minimo";
         try (PreparedStatement stmt = conector.prepareStatement(query)) {
             

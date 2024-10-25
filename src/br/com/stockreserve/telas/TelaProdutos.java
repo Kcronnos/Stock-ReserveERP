@@ -27,14 +27,14 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     }
     
     private void adicionarProdutos() {
-        String sql = "insert into tbprodutos(idproduto, nomeproduto,preco,quantidade,peso,vencimento) values(?,?,?,?,?,?)";
+        String sql = "insert into tbprodutos(idproduto, nomeproduto,preco,quantidade,limite_minimo,vencimento) values(?,?,?,?,?,?)";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtProduId.getText());
             pst.setString(2, txtProduNome.getText());
             pst.setString(3, txtProduPreco.getText());          
             pst.setString(4, txtProduQuanti.getText());
-            pst.setString(5, txtProduPeso.getText());
+            pst.setString(5, txtProduLimi.getText());
             
             //Checa pra ver se a data é nula ou não
             if(dcVencimento.getDate() == null) {
@@ -66,17 +66,22 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     
     //Método para alterar informações do produto
     private void alterarProduto() {
-        String sql = "update tbprodutos set nomeproduto =?, preco=?, quantidade=?, peso=?, vencimento=? where idproduto=?";
+        String sql = "update tbprodutos set nomeproduto =?, preco=?, quantidade=?, limite_minimo=?, vencimento=? where idproduto=?";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtProduNome.getText());
-            pst.setString(2, txtProduPreco.getText());
+            pst.setString(2, txtProduPreco.getText().replace(",","."));
             pst.setString(3, txtProduQuanti.getText());
-            pst.setString(4, txtProduPeso.getText());
-            pst.setString(5,((JTextField)dcVencimento.getDateEditor().getUiComponent()).getText() );
+            pst.setString(4, txtProduLimi.getText());
+            //Checa pra ver se a data é nula ou não
+            if(dcVencimento.getDate() == null) {
+                pst.setString(5,null);
+            } else {
+                pst.setString(5,((JTextField)dcVencimento.getDateEditor().getUiComponent()).getText());
+            }
             pst.setString(6, txtProduId.getText());
 
-            if (txtProduId.getText().isEmpty() || txtProduNome.getText().isEmpty() || txtProduPreco.getText().isEmpty() || txtProduQuanti.getText().isEmpty() || txtProduPeso.getText().isEmpty()) {
+            if (txtProduId.getText().isEmpty() || txtProduNome.getText().isEmpty() || txtProduPreco.getText().isEmpty() || txtProduQuanti.getText().isEmpty() || txtProduLimi.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!");
             } else {
                 //a linha abaixo atualiza a tabela produtos com os dados do formularios
@@ -105,7 +110,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 pst.setString(1, txtProduId.getText());
                 int removido = pst.executeUpdate();
                 if (removido > 0) {
-                    JOptionPane.showMessageDialog(null, "Uusuário removido com sucesso!");
+                    JOptionPane.showMessageDialog(null, "Produto removido com sucesso!");
                     limpar();
                 }
             } catch (Exception e) {
@@ -119,7 +124,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     
     //Método para pesquisar os produtos no banco de dados e adicionar a tabela enquanto você digita o nome
     private void pesquisarProdutos() {
-        String sql = "select idproduto as ID, nomeproduto as Nome, preco as Preço,quantidade as Quantidade,peso as Peso, vencimento as Vencimento from tbprodutos where nomeproduto like ?";
+        String sql = "select idproduto as ID, nomeproduto as Nome, preco as Preço,quantidade as Quantidade, limite_minimo as Limite_Mínimo, vencimento as Vencimento from tbprodutos where nomeproduto like ?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -141,7 +146,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         txtProduNome.setText(tblProdutos.getModel().getValueAt(setar, 1).toString());
         txtProduPreco.setText(tblProdutos.getModel().getValueAt(setar, 2).toString());
         txtProduQuanti.setText(tblProdutos.getModel().getValueAt(setar, 3).toString());
-        txtProduPeso.setText(tblProdutos.getModel().getValueAt(setar, 4).toString());
+        txtProduLimi.setText(tblProdutos.getModel().getValueAt(setar, 4).toString());
         //a linha abaixo era pra preencher oss campo de vencimento
         //só preenche dps q vc seleciona alguma data por algum motivo que não sei ainda
         //dcVencimento.setDateFormatString(tblProdutos.getModel().getValueAt(setar, 5).toString());
@@ -149,7 +154,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     
     //Método para preencher a tabela dos produtos ao abrir a tela de produtos
     private void preencherTabelaProduto() {
-        String sql = "select idproduto as ID, nomeproduto as Nome, preco as Preço,quantidade as Quantidade,peso as Peso, vencimento as Vencimento from tbprodutos";
+        String sql = "select idproduto as ID, nomeproduto as Nome, preco as Preço,quantidade as Quantidade, limite_minimo as Limite_Minimo, vencimento as Vencimento from tbprodutos";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -165,8 +170,8 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         txtProduNome.setText(null);
         txtProduPreco.setText(null);
         txtProduQuanti.setText(null);
-        txtProduPeso.setText(null);
-        dcVencimento.setDateFormatString(null);
+        txtProduLimi.setText(null);
+        dcVencimento.setDate(null);
     }
 
     /**
@@ -186,7 +191,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         jLabel1 = new javax.swing.JLabel();
         txtProduPreco = new javax.swing.JTextField();
         txtProduNome = new javax.swing.JTextField();
-        txtProduPeso = new javax.swing.JTextField();
+        txtProduLimi = new javax.swing.JTextField();
         txtProduQuanti = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -194,10 +199,10 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         jLabel5 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        dcVencimento = new com.toedter.calendar.JDateChooser();
         btnAdicionar = new javax.swing.JButton();
         btnAlterar = new javax.swing.JButton();
         btnRemover = new javax.swing.JButton();
+        dcVencimento = new com.toedter.calendar.JDateChooser();
 
         txtUsuId.setEnabled(false);
         txtUsuId.addActionListener(new java.awt.event.ActionListener() {
@@ -248,7 +253,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nome", "Preço", "Quantidade", "Peso", "Vencimento"
+                "ID", "Nome", "Preço", "Quantidade", "Limite Mínimo", "Vencimento"
             }
         ));
         tblProdutos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -272,9 +277,9 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             }
         });
 
-        txtProduPeso.addActionListener(new java.awt.event.ActionListener() {
+        txtProduLimi.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtProduPesoActionPerformed(evt);
+                txtProduLimiActionPerformed(evt);
             }
         });
 
@@ -284,13 +289,11 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
 
         jLabel4.setText("*Preço Produto");
 
-        jLabel5.setText("*Peso Produto");
+        jLabel5.setText("*Limite Mínimo");
 
         jLabel12.setText("*Campos Obrigatórios");
 
         jLabel6.setText("Vencimento");
-
-        dcVencimento.setDateFormatString("yyyy-MM-dd");
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_adicionar.png"))); // NOI18N
         btnAdicionar.setToolTipText("Adicionar Produto");
@@ -321,6 +324,8 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 btnRemoverActionPerformed(evt);
             }
         });
+
+        dcVencimento.setDateFormatString("yyyy-MM-dd");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -355,13 +360,14 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(18, 18, 18)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtProduPeso, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txtProduLimi, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGroup(layout.createSequentialGroup()
+                                                .addGap(6, 6, 6)
                                                 .addComponent(txtProduQuanti, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(18, 18, 18)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                                 .addComponent(jLabel6)
-                                                .addGap(18, 18, 18)
-                                                .addComponent(dcVencimento, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                .addComponent(dcVencimento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(165, 165, 165)
                                         .addComponent(btnRemover, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
@@ -371,7 +377,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel12))
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 928, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(41, Short.MAX_VALUE))
+                .addGap(33, 33, 33))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -399,14 +405,14 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtProduPreco, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4)
-                    .addComponent(txtProduPeso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtProduLimi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnAdicionar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnAlterar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnRemover, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(102, Short.MAX_VALUE))
+                .addContainerGap(42, Short.MAX_VALUE))
         );
 
         setBounds(0, 0, 1000, 631);
@@ -430,9 +436,9 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtProduIdActionPerformed
 
-    private void txtProduPesoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtProduPesoActionPerformed
+    private void txtProduLimiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtProduLimiActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtProduPesoActionPerformed
+    }//GEN-LAST:event_txtProduLimiActionPerformed
 
     private void txtProduPrecoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtProduPrecoActionPerformed
         // TODO add your handling code here:
@@ -474,8 +480,8 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblProdutos;
     private javax.swing.JTextField txtProduId;
+    private javax.swing.JTextField txtProduLimi;
     private javax.swing.JTextField txtProduNome;
-    private javax.swing.JTextField txtProduPeso;
     private javax.swing.JTextField txtProduPesquisar;
     private javax.swing.JTextField txtProduPreco;
     private javax.swing.JTextField txtProduQuanti;
