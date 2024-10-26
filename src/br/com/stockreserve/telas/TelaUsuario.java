@@ -281,7 +281,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
         jLabel6.setText("*Setor");
 
-        btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/stockreserve/telas/user_add.png"))); // NOI18N
+        btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/user_add.png"))); // NOI18N
         btnAdicionar.setToolTipText("Adicionar Usuário");
         btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAdicionar.setPreferredSize(new java.awt.Dimension(80, 80));
