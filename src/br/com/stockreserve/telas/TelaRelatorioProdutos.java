@@ -63,7 +63,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
    
     //Método para preencher a tabela ao abrir a aba de relatório de produtos
     private void preencherTabelaProduto() {
-        String sql = "select idproduto as ID,nomeproduto as Nome, preco as Preço, quantidade as Quantidade,peso as Peso, vencimento as Vencimento from tbprodutos";
+        String sql = "select idproduto as ID,nomeproduto as Nome, preco as Preço, quantidade as Quantidade,limite_minimo as Limite_Mínimo, vencimento as Vencimento from tbprodutos";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -76,7 +76,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
     
     //Método para pesquisar os produtos no banco de dados e adicionar a tabela enquanto você digita o nome
     private void pesquisarProdutos() {
-        String sql = "select idproduto as ID, nomeproduto as Nome, preco as Preço,quantidade as Quantidade,peso as Peso, vencimento as Vencimento from tbprodutos where nomeproduto like ?";
+        String sql = "select idproduto as ID, nomeproduto as Nome, preco as Preço,quantidade as Quantidade,limite_minimo as Limite_Mínimo, vencimento as Vencimento from tbprodutos where nomeproduto like ?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -112,7 +112,6 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         setMaximizable(true);
         setTitle("Relatório de Produtos");
         setDoubleBuffered(true);
-        setVisible(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
                 formInternalFrameActivated(evt);
@@ -149,7 +148,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nome", "Preço", "Quantidade", "Peso", "Vencimento"
+                "ID", "Nome", "Preço", "Quantidade", "Limite_Mínimo", "Vencimento"
             }
         ));
         tblProdutos.addMouseListener(new java.awt.event.MouseAdapter() {
