@@ -258,7 +258,7 @@
     <Component class="javax.swing.JButton" name="btnAdicionar">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/br/com/stockreserve/telas/user_add.png"/>
+          <Image iconType="3" name="/br.com.stockreserve.icones/user_add.png"/>
         </Property>
         <Property name="toolTipText" type="java.lang.String" value="Adicionar Usu&#xe1;rio"/>
         <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">

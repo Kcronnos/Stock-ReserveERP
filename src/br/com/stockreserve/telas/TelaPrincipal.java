@@ -32,6 +32,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPopupMenu1 = new javax.swing.JPopupMenu();
         desktop = new javax.swing.JDesktopPane();
         lblUsuario = new javax.swing.JLabel();
         lblData = new javax.swing.JLabel();
@@ -40,10 +41,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menVenVender = new javax.swing.JMenuItem();
         menEsto = new javax.swing.JMenu();
         menEstPro = new javax.swing.JMenuItem();
+        menEstStatus = new javax.swing.JMenuItem();
         menGer = new javax.swing.JMenu();
         menGerUsu = new javax.swing.JMenuItem();
-        menGerRel = new javax.swing.JMenuItem();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        menGerRelPro = new javax.swing.JMenuItem();
+        MenGerRelVen = new javax.swing.JMenuItem();
         menAju = new javax.swing.JMenu();
         menAjuSob = new javax.swing.JMenuItem();
         menAjuSup = new javax.swing.JMenuItem();
@@ -101,6 +103,15 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         menEsto.add(menEstPro);
 
+        menEstStatus.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menEstStatus.setText("Status do Estoque");
+        menEstStatus.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menEstStatusActionPerformed(evt);
+            }
+        });
+        menEsto.add(menEstStatus);
+
         jMenuBar1.add(menEsto);
 
         menGer.setText("Gerência");
@@ -115,29 +126,29 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         menGer.add(menGerUsu);
 
-        menGerRel.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
-        menGerRel.setText("Relatório de Produtos");
-        menGerRel.addActionListener(new java.awt.event.ActionListener() {
+        menGerRelPro.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        menGerRelPro.setText("Relatório de Produtos");
+        menGerRelPro.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menGerRelActionPerformed(evt);
+                menGerRelProActionPerformed(evt);
             }
         });
-        menGer.add(menGerRel);
+        menGer.add(menGerRelPro);
 
-        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
-        jMenuItem1.setText("Relatorio de Vendas");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        MenGerRelVen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        MenGerRelVen.setText("Relatorio de Vendas");
+        MenGerRelVen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                MenGerRelVenActionPerformed(evt);
             }
         });
-        menGer.add(jMenuItem1);
+        menGer.add(MenGerRelVen);
 
         jMenuBar1.add(menGer);
 
         menAju.setText("Ajuda");
 
-        menAjuSob.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        menAjuSob.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_DOWN_MASK));
         menAjuSob.setText("Sobre");
         menAjuSob.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -227,19 +238,19 @@ public class TelaPrincipal extends javax.swing.JFrame {
         desktop.add(usuario);
     }//GEN-LAST:event_menGerUsuActionPerformed
 
-    private void menGerRelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menGerRelActionPerformed
+    private void menGerRelProActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menGerRelProActionPerformed
         //Inicializando a tela de relatorio de produtos
         TelaRelatorioProdutos relatorioProdu = new TelaRelatorioProdutos();
         relatorioProdu.setVisible(true);
         desktop.add(relatorioProdu);
-    }//GEN-LAST:event_menGerRelActionPerformed
+    }//GEN-LAST:event_menGerRelProActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void MenGerRelVenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenGerRelVenActionPerformed
         //Inicializando a tela de relatorio de vendas
         TelaRelatorioVendas relatorioVend = new TelaRelatorioVendas();
         relatorioVend.setVisible(true);
         desktop.add(relatorioVend);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
+    }//GEN-LAST:event_MenGerRelVenActionPerformed
 
     private void menOpcSaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menOpcSaiActionPerformed
         //Exibe uma caixa de dialogo
@@ -264,6 +275,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
             ex.printStackTrace();
         }
     }//GEN-LAST:event_menAjuSupActionPerformed
+
+    private void menEstStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menEstStatusActionPerformed
+        //Inicializando a tela de status do estoque
+        TelaEstoqueStatus status = new TelaEstoqueStatus();
+        status.setVisible(true);
+        desktop.add(status);
+    }//GEN-LAST:event_menEstStatusActionPerformed
 
     /**
      * @param args the command line arguments
@@ -301,18 +319,20 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem MenGerRelVen;
     private javax.swing.JDesktopPane desktop;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JPopupMenu jPopupMenu1;
     public static javax.swing.JLabel lblData;
     public static javax.swing.JLabel lblUsuario;
     private javax.swing.JMenu menAju;
     private javax.swing.JMenuItem menAjuSob;
     private javax.swing.JMenuItem menAjuSup;
     private javax.swing.JMenuItem menEstPro;
+    private javax.swing.JMenuItem menEstStatus;
     public static javax.swing.JMenu menEsto;
     public static javax.swing.JMenu menGer;
-    private javax.swing.JMenuItem menGerRel;
+    private javax.swing.JMenuItem menGerRelPro;
     private javax.swing.JMenuItem menGerUsu;
     private javax.swing.JMenu menOpc;
     private javax.swing.JMenuItem menOpcSai;
