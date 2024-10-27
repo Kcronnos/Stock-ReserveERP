@@ -150,6 +150,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         txtUsuSenha.setText(tblUsuarios.getModel().getValueAt(setar, 3).toString());
         cboUsuSetor.setSelectedItem(tblUsuarios.getModel().getValueAt(setar, 4).toString());
         txtUsuFone.setText(tblUsuarios.getModel().getValueAt(setar, 5).toString());
+        btnAdicionar.setEnabled(false);
     }
     
     //método para preencher a tabela dos usuários ao abrir a aba
@@ -431,11 +432,13 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
         //Chamando o método para alterar os dados do usuário
         alterarUsuarios();
+        btnAdicionar.setEnabled(true);
     }//GEN-LAST:event_btnAlterarActionPerformed
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
         //Chamando o método para remover usuários
         removerUsuarios();
+        btnAdicionar.setEnabled(true);
     }//GEN-LAST:event_btnRemoverActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
