@@ -4,10 +4,27 @@
  */
 package br.com.stockreserve.telas;
 
+import br.com.stockreserve.dal.JsonUtil;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
 import java.sql.*;
 import br.com.stockreserve.dal.ModuloConexao;
+import br.com.stockreserve.dal.Produto;
+import br.com.stockreserve.dal.Titulo;
+import br.com.stockreserve.telas.TelaPrincipal;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTextField;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -19,9 +36,6 @@ public class TelaVender extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-    private int quantidadeEsto;
-    private double totalCarrinho;
-    private double valorTotal = 0.0;
 
     /**
      * Creates new form TelaVender
@@ -31,130 +45,374 @@ public class TelaVender extends javax.swing.JInternalFrame {
         conexao = ModuloConexao.conector();
     }
 
-    //Método para adicionar produtos ao carrinho
-    private void adicionarCarrinho() {
-
-        //pegando a quantidade em estoque do banco de dados e armazenando para comparar com a quantidade a ser comprada
-        String sql = "select quantidade from tbprodutos where idproduto=?";
+// Método para adicionar produtos ao carrinho
+    private void adicionarProdutos() throws SQLException {
         try {
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, txtProduId.getText());
-            rs = pst.executeQuery();
-            if (rs.next()) {
-                quantidadeEsto = rs.getInt(1);
+            // Verifica se os campos não estão vazios
+            if (txtProduQuanti.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(null,
+                        "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
-        }
 
-        //Tratamento para garantir que a quantidade a ser comprada não seja zero ou negativo
-        int quantidade;
-        if (txtProduQuanti.getText().isEmpty()) {
-            quantidade = 0;
-        } else {
-            quantidade = Integer.parseInt(txtProduQuanti.getText());
-        }
-
-        //Condições para que um produto possa ser adicionada ao carrinho
-        if (txtProduId.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Selecione um Produto", "Atenção", HEIGHT);
-        } else {
-            if (quantidade <= 0 || quantidadeEsto < quantidade) {
-                JOptionPane.showMessageDialog(null, "Digite uma quantidade válida");
-            } else {//Pegando as informações da tabela de produtos e passando para a do carrinho
-                //Junto com a quantidade e o total
-                int setar = tblProdutos.getSelectedRow();
-                String idProduto = tblProdutos.getModel().getValueAt(setar, 0).toString();
-                String nomeProduto = tblProdutos.getModel().getValueAt(setar, 1).toString();
-                String precoProduto = tblProdutos.getModel().getValueAt(setar, 2).toString();
-
-                //coerção de string para double para fazer o valor da compra do produto
-                double preco = Double.parseDouble(precoProduto);
-                double total = preco * quantidade;
-
-                DefaultTableModel modelo = (DefaultTableModel) tblCarrinho.getModel();
-                modelo.addRow(new Object[]{idProduto, nomeProduto, preco, quantidade, total});
-
-                //atualizando a quantidade no banco de dados
-                sql = "update tbprodutos set quantidade = quantidade - ? where idproduto =?";
-                try {
-                    pst = conexao.prepareStatement(sql);
-                    pst.setString(1, Integer.toString(quantidade));
-                    pst.setString(2, txtProduId.getText());
-                    pst.executeUpdate();
-                    //chamando m método para atualizar a tabela 
-                    preencherTabelaProduto();
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, e);
-                }
-
-                //limpando o campo de texto da quantidade
-                txtProduId.setText(null);
+            if (!aindaTemProduto(txtProduQuanti)) {
+                JOptionPane.showMessageDialog(null,
+                        "Quantidade em falta no estoque ou informações incorretas.",
+                        "Erro", JOptionPane.ERROR_MESSAGE);
                 txtProduQuanti.setText(null);
-
-                //Chamando a função para calcular o valor total de todos os itens
-                calcularValorTotal();
+                return;
             }
+
+            // Adiciona o produto ao título/carrinho
+            String mensagem = colocarProdutoCarrinho(txtProduQuanti);
+            JOptionPane.showMessageDialog(null, mensagem);
+
+            // Limpa os campos de texto e atualiza tabelas
+            txtProduQuanti.setText(null);
+            preencherTabelaCarrinho();
+            preencherTabelaProduto();
+            preencherTabelaTotal();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
         }
     }
 
-    // Método para remover produto do carrinho
-    private void removerDoCarrinho() {
+    // Coloca o produto no título/carrinho
+    public String colocarProdutoCarrinho(JTextField quantidadeProduto) throws SQLException, ParseException, org.json.simple.parser.ParseException {
+        int linhaSelecionada = tblProdutos.getSelectedRow();
+        if (linhaSelecionada == -1) {
+            return "Nenhuma linha selecionada";
+        }
+
+        String produtoId = tblProdutos.getValueAt(linhaSelecionada, 0).toString();
+        int idproduto = Integer.parseInt(produtoId);
+        int produtoQuant = Integer.parseInt(quantidadeProduto.getText().trim());
+
+        Produto produto = buscarProduto(idproduto);
+        if (produto == null) {
+            return "Produto não encontrado.";
+        }
+        if (produto.getQuantidade() < produtoQuant) {
+            return "Quantidade insuficiente.";
+        }
+
+        Titulo titulo = buscarTituloAberto();
+        if (titulo == null) {
+            titulo = criarNovoTitulo(produto, produtoQuant);
+        } else {
+            adicionarProdutoAoTitulo(titulo, produto, produtoQuant);
+        }
+
+        atualizarEstoque(produto, produtoQuant);
+        return "Produto adicionado ao carrinho.";
+    }
+
+    // Método para buscar o produto no banco de dados
+    private Produto buscarProduto(int id) throws SQLException {
+        String sql = "SELECT * FROM tbprodutos WHERE idproduto = ?";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Produto(
+                            rs.getInt("idproduto"), rs.getString("nomeproduto"),
+                            rs.getDouble("preco"), rs.getInt("quantidade"),
+                            rs.getDate("vencimento").toLocalDate()
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
+    //metódo para ver se tem um titulo em aberto
+    private Titulo buscarTituloAberto() throws SQLException, ParseException, org.json.simple.parser.ParseException {
+        String sql = "SELECT * FROM titulos WHERE pago = false LIMIT 1";
+        try (Statement stmt = conexao.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                String jsonProdutos = rs.getString("produtosCarrinho");
+                List<Produto> produtos = JsonUtil.jsonParaProdutos(jsonProdutos);
+                //se encontrar retorna o titulo
+                return new Titulo(rs.getString("idtitulo"), rs.getDouble("preco"), false, produtos);
+            }
+        }
+        //se não encontrar retorna nulo
+        return null;
+    }
+
+    // Método para criar um novo título e adicionar o produto
+    private Titulo criarNovoTitulo(Produto produto, int quantidade) throws SQLException {
+        List<Produto> produtosCarrinho = new ArrayList<>();
+        produtosCarrinho.add(new Produto(produto.getId(), produto.getNome(),
+                produto.getPreco(), quantidade, produto.getVencimento()));
+        String jsonProdutos = JsonUtil.produtosParaJson(produtosCarrinho);
+
+        String sql = "INSERT INTO titulos (idtitulo, preco, pago, produtosCarrinho) VALUES (?, ?, ?, ?)";
+        String idTitulo = UUID.randomUUID().toString();
+
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setString(1, idTitulo);
+            stmt.setDouble(2, 0.0);
+            stmt.setBoolean(3, false);
+            stmt.setString(4, jsonProdutos);
+            stmt.executeUpdate();
+        }
+
+        return new Titulo(idTitulo, produto.getPreco(), false, produtosCarrinho);
+    }
+
+    //metódo para adicionar um novo produto ao carrinho
+    private void adicionarProdutoAoTitulo(Titulo titulo, Produto produto, int quantidade) throws SQLException {
+        List<Produto> produtosCarrinho = titulo.getProdutosCarrinho();
+        boolean produtoExistente = false;
+
+        // Verifica se o produto já existe no carrinho
+        for (Produto prod : produtosCarrinho) {
+            if (prod.getId() == produto.getId()) {
+                // Atualiza a quantidade se o produto já existir
+                prod.setQuantidade(prod.getQuantidade() + quantidade);
+                produtoExistente = true;
+                break;
+            }
+        }
+
+        // Se o produto não existe, adiciona um novo
+        if (!produtoExistente) {
+            produtosCarrinho.add(new Produto(produto.getId(), produto.getNome(), produto.getPreco(), quantidade, produto.getVencimento()));
+        }
+
+        // Atualiza o JSON após a adição ou atualização
+        String jsonProdutos = JsonUtil.produtosParaJson(produtosCarrinho);
+
+        // Atualiza a tabela no banco de dados
+        String sql = "UPDATE titulos SET produtosCarrinho = ? WHERE idtitulo = ?";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setString(1, jsonProdutos);
+            stmt.setString(2, titulo.getId());
+            stmt.executeUpdate();
+        }
+    }
+
+    // Atualiza o estoque do produto
+    private void atualizarEstoque(Produto produto, int quantidade) throws SQLException {
+        String sql = "UPDATE tbprodutos SET quantidade = quantidade - ? WHERE idproduto = ?";
+        try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setInt(1, quantidade);
+            stmt.setInt(2, produto.getId());
+            stmt.executeUpdate();
+        }
+    }
+
+// Verifica se ainda há produto no estoque
+    public boolean aindaTemProduto(JTextField quantidadeProduto) {
+        int linhaSelecionada = tblProdutos.getSelectedRow();
+        if (linhaSelecionada == -1) {
+            return false;
+        }
+
+        String produtoId = tblProdutos.getValueAt(linhaSelecionada, 0).toString();
+        String sql = "SELECT quantidade FROM tbprodutos WHERE idproduto = ?";
+
+        try (PreparedStatement pst = conexao.prepareStatement(sql)) {
+            pst.setString(1, produtoId);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    int quantidadeEmEstoque = rs.getInt("quantidade");
+                    int quantidadeDesejada = Integer.parseInt(quantidadeProduto.getText().trim());
+                    return quantidadeEmEstoque >= quantidadeDesejada;
+                }
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Quantidade inválida: " + e.getMessage());
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Método para devolver produto ao estoque
+    private void devolverAoEstoque() {
         // Verifica se uma linha foi selecionada na tabela do carrinho
         int linhaSelecionada = tblCarrinho.getSelectedRow();
 
         if (linhaSelecionada != -1) { // Se uma linha está selecionada
+            // Pergunta ao usuário se deseja realmente remover o produto
+            int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente remover o produto do carrinho?", "Confirmação", JOptionPane.YES_NO_OPTION);
 
-            //atualizando a quantidade no banco de dados
-            String sql = "update tbprodutos set quantidade = quantidade + ? where idproduto =?";
-            String quantidadeCarrinho = tblCarrinho.getValueAt(linhaSelecionada, 3).toString();
-            String idNoCarrinho = tblCarrinho.getValueAt(linhaSelecionada, 0).toString();
-            try {
-                pst = conexao.prepareStatement(sql);
-                pst.setString(1, quantidadeCarrinho);
-                pst.setString(2, idNoCarrinho);
-                pst.executeUpdate();
+            if (resposta == JOptionPane.YES_OPTION) {
+                // Atualizando a quantidade no banco de dados
+                String sql = "UPDATE tbprodutos SET quantidade = quantidade + ? WHERE idproduto = ?";
+                int quantidadeCarrinho = Integer.parseInt(tblCarrinho.getValueAt(linhaSelecionada, 3).toString()); // Supondo que a coluna 3 é a quantidade no carrinho
+                int idNoCarrinho = Integer.parseInt(tblCarrinho.getValueAt(linhaSelecionada, 0).toString()); // Supondo que a coluna 0 é o ID do produto
 
-                //chamando m método para dar um "f5" e atualizar a quantidade na tabela de produtos
-                preencherTabelaProduto();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(null, e);
+                try {
+                    pst = conexao.prepareStatement(sql);
+                    pst.setInt(1, quantidadeCarrinho); // Adiciona a quantidade de volta ao estoque
+                    pst.setInt(2, idNoCarrinho); // Seleciona o produto pelo ID
+                    pst.executeUpdate();
+
+                    Titulo titulo = buscarTituloAberto();
+
+                    // Chame o método para remover o produto do carrinho
+                    removerProdutoDoCarrinho(titulo, idNoCarrinho, quantidadeCarrinho);
+
+                    // Chamando métodos para atualizar as tabelas de produtos e carrinho
+                    preencherTabelaCarrinho();
+                    preencherTabelaProduto();
+                    preencherTabelaTotal();
+
+                    JOptionPane.showMessageDialog(null, "Produto removido do carrinho!");
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Erro ao remover o produto: " + e.getMessage());
+                }
             }
-
-            //Removendo a linha selecionada
-            DefaultTableModel modelo = (DefaultTableModel) tblCarrinho.getModel();
-            modelo.removeRow(linhaSelecionada);
-
-            JOptionPane.showMessageDialog(null, "Produto removido do carrinho!");
         } else {
             JOptionPane.showMessageDialog(null, "Selecione um produto para remover!");
         }
-        //recalculando o valor total
-        calcularValorTotal();
+
         preencherTabelaProduto();
-
     }
+// Método para remover um produto do carrinho
 
-    private void calcularValorTotal() {
-        DefaultTableModel modelo = (DefaultTableModel) tblCarrinho.getModel();
-        valorTotal = 0.0; // Zera o valor total para recalcular caso algo seja removido ou adicionado
+    private void removerProdutoDoCarrinho(Titulo titulo, int idProduto, int quantidade) throws SQLException {
+        List<Produto> produtosCarrinho = titulo.getProdutosCarrinho();
+        Produto produtoEncontrado = null;
 
-        for (int i = 0; i < modelo.getRowCount(); i++) {
-            double precoUnitario = Double.parseDouble(modelo.getValueAt(i, 2).toString());
-            int quantidade = Integer.parseInt(modelo.getValueAt(i, 3).toString());
-
-            double subtotal = quantidade * precoUnitario;
-            valorTotal += subtotal;
+        // Iterando sobre a lista de produtos
+        for (Produto produto : produtosCarrinho) {
+            if (produto.getId() == idProduto) {
+                produtoEncontrado = produto; // Armazenando o produto encontrado
+                break; // Sai do loop assim que o produto for encontrado
+            }
         }
 
-        // Atualiza o label com o valor total formatado
-        lblTotal.setText(String.format("R$ %.2f", valorTotal));
+        // Verifica se o produto foi encontrado
+        if (produtoEncontrado != null) {
+            // Remove o produto do carrinho com base no ID
+            titulo.getProdutosCarrinho().removeIf(produto -> produto.getId() == idProduto);
+
+            // Atualiza o JSON após a remoção
+            String jsonProdutos = JsonUtil.produtosParaJson(titulo.getProdutosCarrinho());
+
+            // Atualiza a tabela no banco de dados
+            String sql = "UPDATE titulos SET produtosCarrinho = ?, preco = preco - ? WHERE idtitulo = ?";
+            try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
+                stmt.setString(1, jsonProdutos);
+                stmt.setDouble(2, produtoEncontrado.getPreco() * quantidade); // Subtrai o preço do produto removido
+                stmt.setString(3, titulo.getId());
+                stmt.executeUpdate();
+            }
+        } else {
+            // Mensagem de erro caso o produto não seja encontrado
+            JOptionPane.showMessageDialog(null, "Produto não encontrado no carrinho!");
+        }
+    }
+
+    //método para fazer o pagamento
+    private void fazerPagamento(String nomeCliente) throws SQLException, ParseException, org.json.simple.parser.ParseException {
+
+        String sql = "insert into tbnotasfiscais(idnotafiscal,nomevendedor,nomecliente,valor,datacompra,produtos) values(?,?,?,?,?,?)";
+        String sql2 = "DELETE FROM titulos WHERE idtitulo = ?";
+        try {
+            Titulo titulo = buscarTituloAberto();
+            double total = 0.0;
+
+            List<Produto> produtos = titulo.getProdutosCarrinho();
+            for (Produto produto : produtos) {
+                total = total + (produto.getPreco() * produto.getQuantidade());
+            }
+            titulo.setPreco(total);
+
+            String jasonCarrinho = JsonUtil.produtosParaJson(produtos);
+            Timestamp dataDaCompra = Timestamp.valueOf(LocalDateTime.now());
+            String idNotaFiscal = titulo.getId();
+            String nomeVendedor = TelaPrincipal.lblUsuario.getText();
+
+            // Inserir a nota fiscal no banco de dados
+            try (PreparedStatement pst1 = conexao.prepareStatement(sql); PreparedStatement pst2 = conexao.prepareStatement(sql2)) {
+
+                pst1.setString(1, idNotaFiscal);
+                pst1.setString(2, nomeVendedor);
+                pst1.setString(3, nomeCliente);
+                pst1.setDouble(4, total);
+                pst1.setTimestamp(5, dataDaCompra);
+                pst1.setString(6, jasonCarrinho);
+
+                pst1.executeUpdate();
+
+                // Deletar o título pago
+                pst2.setString(1, idNotaFiscal);
+                pst2.executeUpdate();
+
+                preencherTabelaCarrinho();
+                preencherTabelaProduto();
+                preencherTabelaTotal();
+
+                JOptionPane.showMessageDialog(null, "Pagamento realizado com sucesso!");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao realizar pagamento: " + e.getMessage());
+        }
+    }
+
+    // Método para habilitar ou desabilitar o botão btRemover
+    private void verificarSelecaoCarrinho() {
+        int linhaSelecionada = tblCarrinho.getSelectedRow();
+        btnRemover.setEnabled(linhaSelecionada != -1); // Habilita o botão se houver uma linha selecionada
     }
 
     //Método para setar o id ao clicar tabela
     public void setarCampos() {
         int setar = tblProdutos.getSelectedRow();
         txtProduId.setText(tblProdutos.getModel().getValueAt(setar, 0).toString());
+    }
+
+    // Método para preencher a tabela do carrinho
+    private void preencherTabelaCarrinho() throws ParseException, org.json.simple.parser.ParseException {
+        String sql = "SELECT produtosCarrinho FROM titulos WHERE pago = false LIMIT 1";
+        try (PreparedStatement pst = conexao.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
+
+            DefaultTableModel model = new DefaultTableModel(
+                    new String[]{"ID", "NOME", "PREÇO", "QUANTIDADE", "TOTAL"}, 0);
+
+            if (rs.next()) {
+                List<Produto> produtos = JsonUtil.jsonParaProdutos(rs.getString("produtosCarrinho"));
+                for (Produto produto : produtos) {
+                    model.addRow(new Object[]{
+                        produto.getId(), produto.getNome(), produto.getPreco(),
+                        produto.getQuantidade(), produto.getPreco() * produto.getQuantidade()
+                    });
+                }
+            }
+            tblCarrinho.setModel(model);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao carregar o carrinho: " + e.getMessage());
+        }
+    }
+
+// Método para preencher a tabela do carrinho
+    private void preencherTabelaTotal() throws ParseException, org.json.simple.parser.ParseException {
+        String sql = "SELECT produtosCarrinho FROM titulos WHERE pago = false LIMIT 1";
+        try (PreparedStatement pst = conexao.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
+
+            double total = 0.0;
+            DefaultTableModel model = new DefaultTableModel(
+                    new String[]{"TOTAL"}, 0);
+
+            if (rs.next()) {
+                List<Produto> produtos = JsonUtil.jsonParaProdutos(rs.getString("produtosCarrinho"));
+                for (Produto produto : produtos) {
+                    total = total + (produto.getPreco() * produto.getQuantidade());
+                }
+            }
+
+            DecimalFormat df = new DecimalFormat("#.##");
+            model.addRow(new Object[]{df.format(total)});
+            tblTotal.setModel(model);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao carregar o carrinho: " + e.getMessage());
+        }
     }
 
     //Método para preencher a tabela ao abrir a aba de relatório de produtos
@@ -210,8 +468,8 @@ public class TelaVender extends javax.swing.JInternalFrame {
         btnAdicionar = new javax.swing.JButton();
         btnRemover = new javax.swing.JButton();
         btnLimpar = new javax.swing.JButton();
-        jLabel6 = new javax.swing.JLabel();
-        lblTotal = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tblTotal = new javax.swing.JTable();
 
         setClosable(true);
         setIconifiable(true);
@@ -221,7 +479,6 @@ public class TelaVender extends javax.swing.JInternalFrame {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
             }
             public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
-                formInternalFrameClosed(evt);
             }
             public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
             }
@@ -342,14 +599,25 @@ public class TelaVender extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel6.setText("TOTAL");
+        tblTotal.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null},
+                {null},
+                {null},
+                {null}
+            },
+            new String [] {
+                "Total"
+            }
+        ));
+        jScrollPane3.setViewportView(tblTotal);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(37, 37, 37)
+                .addContainerGap(37, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtProduId, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -360,7 +628,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
                         .addGap(47, 47, 47)
                         .addComponent(btnRemover, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(91, 91, 91)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(txtProduPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -369,16 +637,11 @@ public class TelaVender extends javax.swing.JInternalFrame {
                         .addComponent(btnLimpar, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(4, 4, 4)
-                                .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(37, 37, 37)
-                                .addComponent(jLabel6)))
-                        .addGap(213, 213, 213))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -414,41 +677,58 @@ public class TelaVender extends javax.swing.JInternalFrame {
                         .addGap(28, 28, 28)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnAdicionar)
-                            .addComponent(btnRemover))))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lblTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnLimpar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addGap(13, 13, 13)
-                                .addComponent(txtProduPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(4, 4, 4))))))
+                            .addComponent(btnRemover))
+                        .addGap(38, 38, 38)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnPagar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnLimpar, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jLabel3)
+                            .addGap(13, 13, 13)
+                            .addComponent(txtProduPesquisar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(4, 4, 4)))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
         );
 
         setBounds(0, 0, 1000, 631);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnPagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPagarActionPerformed
-        // TODO add your handling code here:
+        //confirma a compra e pega o nome do cliente
+        String nomeCliente = null;
+        int resposta = JOptionPane.showConfirmDialog(
+                null,
+                "Deseja confirmar o pagamento?",
+                "Confirmação de Pagamento",
+                JOptionPane.YES_NO_OPTION);
+        if (resposta == JOptionPane.YES_OPTION) {
+            // Se a resposta for "Sim", pede o nome do cliente
+            nomeCliente = JOptionPane.showInputDialog(
+                    null,
+                    "Digite o nome do cliente:",
+                    "Nome do Cliente",
+                    JOptionPane.QUESTION_MESSAGE);
+        }
+        if (resposta == JOptionPane.YES_OPTION) {
+            try {
+                //aciona o pagamento passando o nome do cliente
+                fazerPagamento(nomeCliente);
+            } catch (SQLException ex) {
+                Logger.getLogger(TelaVender.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (ParseException ex) {
+                Logger.getLogger(TelaVender.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (org.json.simple.parser.ParseException ex) {
+                Logger.getLogger(TelaVender.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }//GEN-LAST:event_btnPagarActionPerformed
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
 
     }//GEN-LAST:event_btnAdicionarActionPerformed
-
-    private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
-        //chamando o método para preencher a tabela de produtos
-        preencherTabelaProduto();
-    }//GEN-LAST:event_formInternalFrameOpened
 
     private void tblProdutosKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tblProdutosKeyPressed
 
@@ -462,8 +742,12 @@ public class TelaVender extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_tblProdutosMouseClicked
 
     private void btnAdicionarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnAdicionarMouseClicked
-        // TODO add your handling code here:
-        adicionarCarrinho();
+        try {
+            // TODO add your handling code here:
+            adicionarProdutos();
+        } catch (SQLException ex) {
+
+        }
     }//GEN-LAST:event_btnAdicionarMouseClicked
 
     private void txtProduPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtProduPesquisarKeyReleased
@@ -473,7 +757,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
         //Chamando o método para remover do carrinho
-        removerDoCarrinho();
+        devolverAoEstoque();
     }//GEN-LAST:event_btnRemoverActionPerformed
 
     private void tblCarrinhoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCarrinhoMouseClicked
@@ -481,13 +765,33 @@ public class TelaVender extends javax.swing.JInternalFrame {
         btnRemover.setEnabled(true);
     }//GEN-LAST:event_tblCarrinhoMouseClicked
 
-    private void formInternalFrameClosed(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameClosed
-        //Retonarnando os produtos ao banco de dados ao fechar a tela
-    }//GEN-LAST:event_formInternalFrameClosed
-
     private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnLimparActionPerformed
+
+    private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
+        //chamando o método para ativar o botão de remover
+        tblCarrinho.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                verificarSelecaoCarrinho(); // Atualiza o estado do botão
+            }
+        });
+        //chamando o método para preencher a tabela de produtos, a tabela total e a tabela carrinho
+        preencherTabelaProduto();
+        try {
+            preencherTabelaTotal();
+        } catch (ParseException ex) {
+            Logger.getLogger(TelaVender.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (org.json.simple.parser.ParseException ex) {
+            Logger.getLogger(TelaVender.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            preencherTabelaCarrinho();
+        } catch (org.json.simple.parser.ParseException ex) {
+        } catch (ParseException ex) {
+            Logger.getLogger(TelaVender.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_formInternalFrameOpened
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -500,12 +804,12 @@ public class TelaVender extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JLabel lblTotal;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable tblCarrinho;
     private javax.swing.JTable tblProdutos;
+    private javax.swing.JTable tblTotal;
     private javax.swing.JTextField txtProduId;
     private javax.swing.JTextField txtProduPesquisar;
     private javax.swing.JTextField txtProduQuanti;
