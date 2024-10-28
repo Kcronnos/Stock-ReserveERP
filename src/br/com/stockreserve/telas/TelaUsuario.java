@@ -45,7 +45,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
             //Validação dos campos obrigatórios
             if (txtUsuNome.getText().isEmpty() || txtUsuLogin.getText().isEmpty()
-                    || txtUsuSenha.getText().isEmpty() || cboUsuSetor.getSelectedItem().toString().isEmpty() || txtUsuFone.getText().isEmpty()) {
+                    || txtUsuSenha.getText().isEmpty() || cboUsuSetor.getSelectedItem().toString().isEmpty() || txtUsuFone.getText().isEmpty() || cboUsuSetor.getSelectedItem().toString().equals(" ")) {
                 JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!");
             } else {
                 //a linha abaixo atualiza a tabela usuarios com os dados do formularios
@@ -147,10 +147,11 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         txtUsuId.setText(tblUsuarios.getModel().getValueAt(setar, 0).toString());
         txtUsuNome.setText(tblUsuarios.getModel().getValueAt(setar, 1).toString());
         txtUsuLogin.setText(tblUsuarios.getModel().getValueAt(setar, 2).toString());
-        txtUsuSenha.setText(tblUsuarios.getModel().getValueAt(setar, 3).toString());
         cboUsuSetor.setSelectedItem(tblUsuarios.getModel().getValueAt(setar, 4).toString());
         txtUsuFone.setText(tblUsuarios.getModel().getValueAt(setar, 5).toString());
         btnAdicionar.setEnabled(false);
+        btnAlterar.setEnabled(true);
+        btnRemover.setEnabled(true);
     }
     
     //método para preencher a tabela dos usuários ao abrir a aba
@@ -295,6 +296,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/user_editar.png"))); // NOI18N
         btnAlterar.setToolTipText("Alterar Dados");
         btnAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAlterar.setEnabled(false);
         btnAlterar.setPreferredSize(new java.awt.Dimension(80, 80));
         btnAlterar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -305,6 +307,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/user_remover.png"))); // NOI18N
         btnRemover.setToolTipText("Remover Usuário");
         btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnRemover.setEnabled(false);
         btnRemover.setPreferredSize(new java.awt.Dimension(80, 80));
         btnRemover.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -418,6 +421,9 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
         //Chamando o método para adicionar usuários
         adicionarUsuarios();
+        btnAlterar.setEnabled(false);
+        btnRemover.setEnabled(false);
+        btnAdicionar.setEnabled(true);
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     private void txtUsuIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsuIdActionPerformed
@@ -432,12 +438,16 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
         //Chamando o método para alterar os dados do usuário
         alterarUsuarios();
+        btnAlterar.setEnabled(false);
+        btnRemover.setEnabled(false);
         btnAdicionar.setEnabled(true);
     }//GEN-LAST:event_btnAlterarActionPerformed
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
         //Chamando o método para remover usuários
         removerUsuarios();
+        btnAlterar.setEnabled(false);
+        btnRemover.setEnabled(false);
         btnAdicionar.setEnabled(true);
     }//GEN-LAST:event_btnRemoverActionPerformed
 
