@@ -11,7 +11,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import javax.lang.model.util.ElementFilter;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -62,6 +64,10 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
             tblEstoStatus.getColumnModel().getColumn(tblEstoStatus.getColumnCount() - 1)
                     .setCellRenderer(new StatusCellRenderer());
 
+            // Aplica o renderizador colorido à coluna `VENCIMENTO`
+            int vencimentoColIndex = tblEstoStatus.getColumnModel().getColumnIndex("VENCIMENTO");
+            tblEstoStatus.getColumnModel().getColumn(vencimentoColIndex).setCellRenderer(new VencimentoCellRenderer());
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
@@ -88,6 +94,40 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
                 }
             } else {
                 cell.setBackground(Color.WHITE);
+            }
+
+            return cell;
+        }
+    }
+
+    // Renderizador personalizado para a coluna `VENCIMENTO`
+    private static class VencimentoCellRenderer extends DefaultTableCellRenderer {
+
+        private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+            if (value != null) {
+                try {
+                    Date vencimentoDate = DATE_FORMAT.parse(value.toString());
+                    Date currentDate = new Date();
+                    long diffInMillis = vencimentoDate.getTime() - currentDate.getTime();
+                    long daysUntilVencimento = TimeUnit.DAYS.convert(diffInMillis, TimeUnit.MILLISECONDS);
+
+                    if (daysUntilVencimento < 0) {
+                        cell.setBackground(Color.RED); // Vencido
+                    } else if (daysUntilVencimento <= 30) {
+                        cell.setBackground(Color.YELLOW); // Faltam 30 dias ou menos
+                    } else {
+                        cell.setBackground(Color.GREEN); // Mais de 30 dias
+                    }
+                } catch (Exception e) {
+                    cell.setBackground(Color.WHITE); // Caso a data não seja válida ou seja nula
+                }
+            } else {
+                cell.setBackground(Color.WHITE); // Sem data de vencimento
             }
 
             return cell;

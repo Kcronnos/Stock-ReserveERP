@@ -150,6 +150,10 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         //a linha abaixo era pra preencher oss campo de vencimento
         //só preenche dps q vc seleciona alguma data por algum motivo que não sei ainda
         //dcVencimento.setDateFormatString(tblProdutos.getModel().getValueAt(setar, 5).toString());
+        
+        btnAdicionar.setEnabled(false);
+        btnAlterar.setEnabled(true);
+        btnRemover.setEnabled(true);
     }
     
     //Método para preencher a tabela dos produtos ao abrir a tela de produtos
@@ -308,6 +312,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_editar.png"))); // NOI18N
         btnAlterar.setToolTipText("Alterar Dados");
         btnAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnAlterar.setEnabled(false);
         btnAlterar.setPreferredSize(new java.awt.Dimension(80, 80));
         btnAlterar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -318,6 +323,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_remover.png"))); // NOI18N
         btnRemover.setToolTipText("Remover Produto");
         btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnRemover.setEnabled(false);
         btnRemover.setPreferredSize(new java.awt.Dimension(80, 80));
         btnRemover.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -447,16 +453,25 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
         //Chamando o método para adicionar produtos
         adicionarProdutos();
+        btnAlterar.setEnabled(false);
+        btnRemover.setEnabled(false);
+        btnAdicionar.setEnabled(true);
     }//GEN-LAST:event_btnAdicionarActionPerformed
 
     private void btnAlterarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAlterarActionPerformed
         //Chamando o método para alterar os dados do produto
         alterarProduto();
+        btnAlterar.setEnabled(false);
+        btnRemover.setEnabled(false);
+        btnAdicionar.setEnabled(true);
     }//GEN-LAST:event_btnAlterarActionPerformed
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
         //Chamando o método para remover produtos
         removerProduto();
+        btnAlterar.setEnabled(false);
+        btnRemover.setEnabled(false);
+        btnAdicionar.setEnabled(true);
     }//GEN-LAST:event_btnRemoverActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
