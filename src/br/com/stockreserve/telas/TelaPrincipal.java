@@ -8,6 +8,7 @@ import java.awt.Desktop;
 import java.net.URI;
 import java.text.DateFormat;
 import java.util.Date;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
@@ -15,12 +16,14 @@ import javax.swing.JOptionPane;
  * @author Felipe
  */
 public class TelaPrincipal extends javax.swing.JFrame {
+    ImageIcon icon = new ImageIcon(getClass().getResource("/br.com.stockreserve.icones/logo_stockreserve.png"));
 
     /**
      * Creates new form TelaPrincipal
      */
     public TelaPrincipal() {
         initComponents();
+        setIconImage(icon.getImage());
     }
 
     /**

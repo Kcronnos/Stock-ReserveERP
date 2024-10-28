@@ -9,13 +9,14 @@ import br.com.stockreserve.dal.ModuloConexao;
 import java.awt.Color;
 import javax.swing.JOptionPane;
 import br.com.stockreserve.dal.Criptografia;
+import javax.swing.ImageIcon;
 
 /**
  *
  * @author Felipe
  */
 public class TelaLogin extends javax.swing.JFrame {
-
+    ImageIcon icon = new ImageIcon(getClass().getResource("/br.com.stockreserve.icones/logo_stockreserve.png"));
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
@@ -76,6 +77,7 @@ public class TelaLogin extends javax.swing.JFrame {
      */
     public TelaLogin() {
         initComponents();
+        setIconImage(icon.getImage());
         conexao = ModuloConexao.conector();
 
         if (conexao != null) {
@@ -84,6 +86,7 @@ public class TelaLogin extends javax.swing.JFrame {
             lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/dberror.png")));
         }
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
