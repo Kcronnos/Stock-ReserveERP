@@ -26,7 +26,12 @@ public class JsonUtil {
             jsonProduto.put("nome", produto.getNome());
             jsonProduto.put("preco", produto.getPreco());
             jsonProduto.put("quantidade", produto.getQuantidade());
-            jsonProduto.put("vencimento", produto.getVencimento().toString());
+            if (produto.getVencimento() != null) {
+               jsonProduto.put("vencimento", produto.getVencimento().toString());
+            } else {
+               jsonProduto.put("vencimento", null);
+            }
+
             jsonArray.add(jsonProduto);
         }
         return jsonArray.toJSONString();
@@ -44,7 +49,10 @@ public class JsonUtil {
             String nome = (String) jsonProduto.get("nome");
             double preco = (double) jsonProduto.get("preco");
             int quantidade = ((Long) jsonProduto.get("quantidade")).intValue();
-            LocalDate vencimento = LocalDate.parse((String) jsonProduto.get("vencimento"));
+            LocalDate vencimento = null;
+            if(jsonProduto.get("vencimento") != null){
+              vencimento = LocalDate.parse((String) jsonProduto.get("vencimento"));   
+            }
             produtos.add(new Produto(id, nome, preco, quantidade, vencimento));
         }
         return produtos;

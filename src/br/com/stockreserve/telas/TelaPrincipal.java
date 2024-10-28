@@ -39,6 +39,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         jMenuBar1 = new javax.swing.JMenuBar();
         menVen = new javax.swing.JMenu();
         menVenVender = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         menEsto = new javax.swing.JMenu();
         menEstPro = new javax.swing.JMenuItem();
         menEstStatus = new javax.swing.JMenuItem();
@@ -88,6 +89,15 @@ public class TelaPrincipal extends javax.swing.JFrame {
             }
         });
         menVen.add(menVenVender);
+
+        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.ALT_DOWN_MASK));
+        jMenuItem1.setText("Notas Fiscais");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        menVen.add(jMenuItem1);
 
         jMenuBar1.add(menVen);
 
@@ -283,6 +293,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
         desktop.add(status);
     }//GEN-LAST:event_menEstStatusActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        //iniciando a tela de Notas Fiscais
+        TelaNotasFiscais notas = new TelaNotasFiscais();
+        notas.setVisible(true);
+        desktop.add(notas);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -322,6 +339,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem MenGerRelVen;
     private javax.swing.JDesktopPane desktop;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPopupMenu jPopupMenu1;
     public static javax.swing.JLabel lblData;
     public static javax.swing.JLabel lblUsuario;

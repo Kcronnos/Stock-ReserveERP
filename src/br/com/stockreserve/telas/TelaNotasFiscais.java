@@ -5,21 +5,16 @@
 package br.com.stockreserve.telas;
 
 import br.com.stockreserve.dal.JsonUtil;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
-import java.sql.*;
 import br.com.stockreserve.dal.ModuloConexao;
 import br.com.stockreserve.dal.Produto;
+import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,30 +32,30 @@ import org.json.simple.parser.ParseException;
 
 /**
  *
- * @author Felipe
+ * @author leog4
  */
-public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
+public class TelaNotasFiscais extends javax.swing.JInternalFrame {
+    
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+
     /**
-     * Creates new form TelaRelatorioVendas
+     * Creates new form TelaNotasFiscais
      */
-    public TelaRelatorioVendas() {
+    public TelaNotasFiscais() {
         initComponents();
-        dcPesquisarData.addPropertyChangeListener("date", evt -> pesquisarNota());
         conexao = ModuloConexao.conector();
-        graficoBarra();
     }
     
     //Método para preencher a tabela ao abrir a aba de notas fiscais
     private void preencherTabelaNotasFiscais() {
-        String sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, valor AS VALOR_VENDA, datacompra AS `DATA/HORA` " +
+        String sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, valor AS VALOR, datacompra AS `DATA/HORA` " +
                  "FROM tbnotasfiscais ";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
-            tblVendedores.setModel(DbUtils.resultSetToTableModel(rs));
+            tblNotasFiscais.setModel(DbUtils.resultSetToTableModel(rs));
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -69,51 +64,35 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
 
     //Método para preencher a tabela ao pesquisar nota
     private void pesquisarNota() {
-    String sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, " +
-                 "valor AS VALOR, datacompra AS `DATA/HORA` " +
+        String sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, valor AS VALOR, datacompra AS `DATA/HORA` " +
                  "FROM tbnotasfiscais " +
-                 "WHERE (idnotafiscal LIKE ? OR nomevendedor LIKE ? OR nomecliente LIKE ?) " +
-                 "AND (? IS NULL OR DATE(datacompra) = ?)";
+                 "WHERE idnotafiscal LIKE ? OR nomevendedor LIKE ? OR nomecliente LIKE ?";
+        try {
+            pst = conexao.prepareStatement(sql);
+            String searchTerm = txtBuscadorDeNotas.getText() + "%"; // Adiciona o curinga para LIKE
+            pst.setString(1, searchTerm);
+            pst.setString(2, searchTerm);
+            pst.setString(3, searchTerm);
+        
+            rs = pst.executeQuery();
 
-    try {
-        pst = conexao.prepareStatement(sql);
+            // A linha abaixo usa a biblioteca rs2xml.jar para preencher a tabela
+            tblNotasFiscais.setModel(DbUtils.resultSetToTableModel(rs));
 
-        // Obtendo o termo de busca dos campos de texto
-        String searchTerm = txtVendPesquisar.getText() + "%";
-        pst.setString(1, searchTerm);
-        pst.setString(2, searchTerm);
-        pst.setString(3, searchTerm);
-
-        // Obtendo a data do JDateChooser e convertendo para java.sql.Date
-        java.util.Date selectedDate = dcPesquisarData.getDate();
-        if (selectedDate != null) {
-            java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
-            pst.setDate(4, sqlDate); // Comparação com a data na cláusula SQL
-            pst.setDate(5, sqlDate);
-        } else {
-            pst.setNull(4, java.sql.Types.DATE); // Definindo como NULL se não houver data
-            pst.setNull(5, java.sql.Types.DATE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
         }
-
-        // Executando a consulta
-        rs = pst.executeQuery();
-
-        // A linha abaixo usa a biblioteca rs2xml.jar para preencher a tabela
-        tblVendedores.setModel(DbUtils.resultSetToTableModel(rs));
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(null, "Erro ao buscar dados: " + e.getMessage());
     }
-}
+    
     // Método para mostrar detalhes da nota fiscal
 private void mostrarDetalhesNotaFiscal() throws SQLException, ParseException {
     String sql = "SELECT * FROM tbnotasfiscais WHERE idnotafiscal = ?";
     String sql2 = "SELECT produtos FROM tbnotasfiscais WHERE idnotafiscal = ?";
     
-    int selectedRow = tblVendedores.getSelectedRow();
+    int selectedRow = tblNotasFiscais.getSelectedRow();
     if (selectedRow >= 0) {
         // Obtendo o ID da nota fiscal selecionada
-        String idNota = (String) tblVendedores.getValueAt(selectedRow, 0);
+        String idNota = (String) tblNotasFiscais.getValueAt(selectedRow, 0);
 
         try (
             PreparedStatement pst1 = conexao.prepareStatement(sql);
@@ -135,11 +114,11 @@ private void mostrarDetalhesNotaFiscal() throws SQLException, ParseException {
                     gbc.anchor = GridBagConstraints.WEST;
 
                     // Adicionando informações da nota fiscal
-                    adicionarLabel(panelDetalhes, "ID Nota:", tblVendedores.getValueAt(selectedRow, 0).toString(), 0, gbc);
-                    adicionarLabel(panelDetalhes, "Vendedor:", tblVendedores.getValueAt(selectedRow, 1).toString(), 1, gbc);
-                    adicionarLabel(panelDetalhes, "Cliente:", tblVendedores.getValueAt(selectedRow, 2).toString(), 2, gbc);
-                    adicionarLabel(panelDetalhes, "Valor:", String.valueOf(tblVendedores.getValueAt(selectedRow, 3)), 3, gbc);
-                    adicionarLabel(panelDetalhes, "Data/Hora:", tblVendedores.getValueAt(selectedRow, 4).toString(), 4, gbc);
+                    adicionarLabel(panelDetalhes, "ID Nota:", tblNotasFiscais.getValueAt(selectedRow, 0).toString(), 0, gbc);
+                    adicionarLabel(panelDetalhes, "Vendedor:", tblNotasFiscais.getValueAt(selectedRow, 1).toString(), 1, gbc);
+                    adicionarLabel(panelDetalhes, "Cliente:", tblNotasFiscais.getValueAt(selectedRow, 2).toString(), 2, gbc);
+                    adicionarLabel(panelDetalhes, "Valor:", String.valueOf(tblNotasFiscais.getValueAt(selectedRow, 3)), 3, gbc);
+                    adicionarLabel(panelDetalhes, "Data/Hora:", tblNotasFiscais.getValueAt(selectedRow, 4).toString(), 4, gbc);
 
                     // Adicionando a lista de produtos
                     gbc.gridy = 5;
@@ -205,44 +184,12 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     panel.add(new JLabel(valueText), gbc);
 }
     
-    //Método para a criação do grafico da quantidade de vendas
-    public void graficoBarra(){
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        dataset.setValue(200, "Quantidade", "1");
-        dataset.setValue(150, "Quantidade", "2");
-        dataset.setValue(18, "Quantidade", "3");
-        dataset.setValue(100, "Quantidade", "4");
-        dataset.setValue(80, "Quantidade", "5");
-        dataset.setValue(250, "Quantidade", "6");
-        dataset.setValue(250, "Quantidade", "7");
-        dataset.setValue(260, "Quantidade", "8");
-        dataset.setValue(150, "Quantidade", "9");
-        dataset.setValue(150, "Quantidade", "10");
-        dataset.setValue(150, "Quantidade", "11");
-        dataset.setValue(150, "Quantidade", "12");
-        
-        JFreeChart chart = ChartFactory.createBarChart("Vendas Realizadas","Mês","Quantidade", 
-                dataset, PlotOrientation.VERTICAL, false,true,false);
-        
-        CategoryPlot categoryPlot = chart.getCategoryPlot();
-        //categoryPlot.setRangeGridlinePaint(Color.BLUE);
-        categoryPlot.setBackgroundPaint(Color.WHITE);
-        BarRenderer renderer = (BarRenderer) categoryPlot.getRenderer();
-        Color clr3 = new Color(204,0,51);
-        renderer.setSeriesPaint(0, clr3);
-        
-        ChartPanel barpChartPanel = new ChartPanel(chart);
-        panelGraficoBarra.removeAll();
-        panelGraficoBarra.add(barpChartPanel, BorderLayout.CENTER);
-        panelGraficoBarra.validate();
-        
-        
-    }
     // Método para habilitar ou desabilitar o botão ver deltalhes
     private void verificarSelecaoTabela() {
-        int linhaSelecionada = tblVendedores.getSelectedRow();
-        btnVerMais.setEnabled(linhaSelecionada != -1); // Habilita o botão se houver uma linha selecionada
+        int linhaSelecionada = tblNotasFiscais.getSelectedRow();
+        btnVerDetalhes.setEnabled(linhaSelecionada != -1); // Habilita o botão se houver uma linha selecionada
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -252,19 +199,19 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tblVendedores = new javax.swing.JTable();
-        txtVendPesquisar = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        dcPesquisarData = new com.toedter.calendar.JDateChooser();
-        panelGraficoBarra = new javax.swing.JPanel();
-        btnVerMais = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblNotasFiscais = new javax.swing.JTable();
+        txtBuscadorDeNotas = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        btnVerDetalhes = new javax.swing.JButton();
 
+        setBackground(new java.awt.Color(204, 255, 204));
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("Relatório de Vendas");
-        setPreferredSize(new java.awt.Dimension(1002, 336));
+        setResizable(true);
+        setPreferredSize(new java.awt.Dimension(1000, 630));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
             }
@@ -284,12 +231,12 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        tblVendedores = new javax.swing.JTable(){
-            public boolean isCellEditable(int rowIndex, int ColIndex){
-                return false;
-            }
-        };
-        tblVendedores.setModel(new javax.swing.table.DefaultTableModel(
+        jLabel1.setFont(new java.awt.Font("MingLiU_HKSCS-ExtB", 0, 25)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("NOTAS FISCAIS");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 0, 220, 110));
+
+        tblNotasFiscais.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -297,69 +244,54 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
                 {null, null, null, null, null}
             },
             new String [] {
-                "ID NOTA", "VENDEDOR", "CLIENTE", "VALOR VENDA", "DATA/HORA"
+                "ID NOTA", "VENDEDOR", "CLIENTE", "VALOR", "DATA/HORA"
             }
         ));
-        jScrollPane2.setViewportView(tblVendedores);
+        jScrollPane1.setViewportView(tblNotasFiscais);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 30, 550, 280));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 80, 900, -1));
 
-        txtVendPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
+        txtBuscadorDeNotas.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtVendPesquisarKeyReleased(evt);
+                txtBuscadorDeNotasKeyReleased(evt);
             }
         });
-        getContentPane().add(txtVendPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 0, 220, -1));
+        getContentPane().add(txtBuscadorDeNotas, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 550, 370, -1));
 
-        jLabel1.setText("Buscar");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 0, 40, -1));
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("BUSCAR NOTAS");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 520, 370, -1));
 
-        dcPesquisarData.setDateFormatString("yyyy-MM-dd");
-        dcPesquisarData.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                dcPesquisarDataKeyReleased(evt);
-            }
-        });
-        getContentPane().add(dcPesquisarData, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 0, 110, -1));
-
-        panelGraficoBarra.setLayout(new java.awt.BorderLayout());
-        getContentPane().add(panelGraficoBarra, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 420, 300));
-
-        btnVerMais.setText("VER DETALHES");
-        btnVerMais.setEnabled(false);
-        btnVerMais.addActionListener(new java.awt.event.ActionListener() {
+        btnVerDetalhes.setText("VER DETALHES");
+        btnVerDetalhes.setEnabled(false);
+        btnVerDetalhes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnVerMaisActionPerformed(evt);
+                btnVerDetalhesActionPerformed(evt);
             }
         });
-        getContentPane().add(btnVerMais, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 0, 130, -1));
+        getContentPane().add(btnVerDetalhes, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 530, 180, 50));
 
-        setBounds(0, 0, 1000, 631);
+        pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtVendPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtVendPesquisarKeyReleased
+    private void txtBuscadorDeNotasKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscadorDeNotasKeyReleased
         // TODO add your handling code here:
         pesquisarNota();
-    }//GEN-LAST:event_txtVendPesquisarKeyReleased
-
-    private void dcPesquisarDataKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_dcPesquisarDataKeyReleased
-        // TODO add your handling code here:
-        pesquisarNota();
-    }//GEN-LAST:event_dcPesquisarDataKeyReleased
+    }//GEN-LAST:event_txtBuscadorDeNotasKeyReleased
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
         preencherTabelaNotasFiscais();
         //chamando o método para ativar o botão de ver detalhes
-        tblVendedores.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+        tblNotasFiscais.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent event) {
                 verificarSelecaoTabela(); // Atualiza o estado do botão
             }
         });
     }//GEN-LAST:event_formInternalFrameOpened
 
-    private void btnVerMaisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerMaisActionPerformed
-        // TODO add your handling code here:
+    private void btnVerDetalhesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerDetalhesActionPerformed
         try {
             // TODO add your handling code here:
             mostrarDetalhesNotaFiscal();
@@ -368,16 +300,15 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         } catch (ParseException ex) {
             Logger.getLogger(TelaNotasFiscais.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_btnVerMaisActionPerformed
+    }//GEN-LAST:event_btnVerDetalhesActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnVerMais;
-    private com.toedter.calendar.JDateChooser dcPesquisarData;
+    private javax.swing.JButton btnVerDetalhes;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JPanel panelGraficoBarra;
-    private javax.swing.JTable tblVendedores;
-    private javax.swing.JTextField txtVendPesquisar;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tblNotasFiscais;
+    private javax.swing.JTextField txtBuscadorDeNotas;
     // End of variables declaration//GEN-END:variables
 }
