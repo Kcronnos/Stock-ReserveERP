@@ -8,12 +8,18 @@ package br.com.stockreserve.telas;
  *
  * @author Felipe
  */
+import java.util.Locale;
+import java.util.ResourceBundle;
 public class TelaSobre extends javax.swing.JFrame {
+    
+    private ResourceBundle bundle;
 
     /**
      * Creates new form TelaSobre
      */
     public TelaSobre() {
+        Locale locale = new Locale("en", "US");
+        bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
     }
 
@@ -31,14 +37,14 @@ public class TelaSobre extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Sobre");
+        setTitle(bundle.getString("about"));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/logo_stockreserve_64x64.png"))); // NOI18N
         jLabel1.setText("jLabel1");
 
-        jLabel2.setText("Sistema ERP StoSale");
-
-        jLabel3.setText("Desenvolvido por Stock&Reserve");
+        jLabel2.setText(bundle.getString("about_msg1"));
+        
+        jLabel3.setText(bundle.getString("about_msg2"));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

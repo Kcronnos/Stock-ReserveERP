@@ -10,6 +10,8 @@ import java.awt.Color;
 import javax.swing.JOptionPane;
 import br.com.stockreserve.dal.Criptografia;
 import javax.swing.ImageIcon;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -20,6 +22,8 @@ public class TelaLogin extends javax.swing.JFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    //internationalization
+    private ResourceBundle bundle;
 
     public void logar() {
         String sql = "Select * from tbusuarios where login = ? and senha = ?";
@@ -76,6 +80,11 @@ public class TelaLogin extends javax.swing.JFrame {
      * Creates new form TelaLogin
      */
     public TelaLogin() {
+        //internationalization
+        Locale locale = new Locale("en", "US");
+        //Locale locale = new Locale("pt", "BR");
+        bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
+
         initComponents();
         setIconImage(icon.getImage());
         conexao = ModuloConexao.conector();
@@ -109,14 +118,14 @@ public class TelaLogin extends javax.swing.JFrame {
         lblStatus = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Login");
+        setTitle(bundle.getString("login"));
         setMinimumSize(new java.awt.Dimension(500, 400));
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(67, 106, 137));
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        btnLogin.setText("ENTRAR");
+        btnLogin.setText(bundle.getString("login"));
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLoginActionPerformed(evt);
@@ -124,9 +133,9 @@ public class TelaLogin extends javax.swing.JFrame {
         });
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("SENHA");
+        jLabel2.setText(bundle.getString("password"));
 
-        jLabel1.setText("USUARIO");
+        jLabel1.setText(bundle.getString("user"));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 25)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -135,7 +144,7 @@ public class TelaLogin extends javax.swing.JFrame {
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/logo_stockreserve_64x64.png"))); // NOI18N
 
-        jLabel5.setText("Bem-Vindo");
+        jLabel5.setText(bundle.getString("welcome"));
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
