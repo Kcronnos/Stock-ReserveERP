@@ -37,7 +37,7 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
      * Creates new form TelaEstoqueStatus
      */
     public TelaEstoqueStatus() {
-        Locale locale = new Locale("en", "US");z
+        Locale locale = new Locale("en", "US");
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
 
         initComponents();
