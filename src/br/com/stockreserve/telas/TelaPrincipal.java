@@ -26,7 +26,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
      * Creates new form TelaPrincipal
      */
     public TelaPrincipal() {
-        Locale locale = new Locale("pt", "US");
+        Locale locale = new Locale("en", "US");
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
         setIconImage(icon.getImage());
@@ -191,7 +191,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menOpc.setText(bundle.getString("options"));
 
         menOpcSai.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menOpcSai.setText(bundle.getString("exit"));
+        menOpcSai.setText("Sair");
         menOpcSai.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menOpcSaiActionPerformed(evt);

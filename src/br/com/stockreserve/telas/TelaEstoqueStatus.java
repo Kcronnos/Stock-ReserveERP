@@ -12,6 +12,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import javax.lang.model.util.ElementFilter;
@@ -29,11 +31,15 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    ResourceBundle bundle;
 
     /**
      * Creates new form TelaEstoqueStatus
      */
     public TelaEstoqueStatus() {
+        Locale locale = new Locale("en", "US");z
+        bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
+
         initComponents();
         conexao = ModuloConexao.conector();
     }
@@ -148,7 +154,7 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setIconifiable(true);
-        setTitle("Status do estoque");
+        setTitle(bundle.getString("stock_status"));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
             }
@@ -178,7 +184,7 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "ID", "NOME", "PREÇO", "QUANTIDADE", "LIMITE_MÍNIMO", "VENCIMENTO", "STATUS"
+                "ID", bundle.getString("name"), bundle.getString("price"), bundle.getString("amount"), bundle.getString("min_limit"), bundle.getString("maturity"), "STATUS"
             }
         ) {
             boolean[] canEdit = new boolean [] {

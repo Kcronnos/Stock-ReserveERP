@@ -19,6 +19,7 @@ public class TelaSobre extends javax.swing.JFrame {
      */
     public TelaSobre() {
         Locale locale = new Locale("en", "US");
+        //Locale locale = new Locale("pt", "BR");
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
     }
