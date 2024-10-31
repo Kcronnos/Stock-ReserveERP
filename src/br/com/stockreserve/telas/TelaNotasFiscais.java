@@ -62,7 +62,7 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
     private void preencherTabelaNotasFiscais() {
         String sql;
         if (LanguageSelection.selectedLanguage) {
-            sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, valor * 5.78 AS VALOR, datacompra AS `DATA/HORA` " +
+            sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, valor / 5.78 AS VALOR, datacompra AS `DATA/HORA` " +
                  "FROM tbnotasfiscais ";
         } else {
             sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, valor AS VALOR, datacompra AS `DATA/HORA` " +

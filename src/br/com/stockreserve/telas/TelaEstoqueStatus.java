@@ -60,7 +60,7 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
             sql = """
                 SELECT idproduto AS ID, 
                 nomeproduto AS NOME, 
-                preco *5.78 AS PREÇO, 
+                preco / 5.78 AS PREÇO, 
                 quantidade AS QUANTIDADE, 
                 limite_minimo AS LIMITE_MÍNIMO, 
                 vencimento AS VENCIMENTO,

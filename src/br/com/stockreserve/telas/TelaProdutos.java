@@ -138,7 +138,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     private void pesquisarProdutos() {
         String sql;
         if (LanguageSelection.selectedLanguage) {
-            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco * 5.78 as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos where nomeproduto like ?";
+            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco / 5.78 as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos where nomeproduto like ?";
         } else {
             sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos where nomeproduto like ?";
         }
@@ -177,7 +177,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     private void preencherTabelaProduto() {
         String sql;
         if (LanguageSelection.selectedLanguage) {
-            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco * 5.78 as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos";
+            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco / 5.78 as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos";
         } else {
             sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos";
         }

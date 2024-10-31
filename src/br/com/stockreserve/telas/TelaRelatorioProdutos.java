@@ -152,7 +152,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
             sql = String.format("""
         SELECT idproduto AS ID, 
                nomeproduto AS %s, 
-               preco * 5.78 AS %s, 
+               preco / 5.78 AS %s, 
                quantidade AS %s, 
                limite_minimo AS %s, 
                vencimento AS %s,

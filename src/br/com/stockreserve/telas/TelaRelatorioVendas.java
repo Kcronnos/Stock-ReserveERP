@@ -48,6 +48,8 @@ import weka.core.Instances;
 import weka.classifiers.functions.LinearRegression;
 import weka.core.FastVector;
 import weka.core.Instance;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -57,10 +59,18 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    ResourceBundle bundle;
     /**
      * Creates new form TelaRelatorioVendas
      */
     public TelaRelatorioVendas() {
+        Locale locale;
+        if (LanguageSelection.selectedLanguage) {
+            locale = Locale.of("en", "US");
+        } else {
+            locale = Locale.of("pt", "BR");
+        }   
+        bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
         dcPesquisarData.addPropertyChangeListener("date", evt -> pesquisarNota());
         adicionarListeners();
@@ -70,7 +80,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
     
     //Método para preencher a tabela ao abrir a aba de notas fiscais
     private void preencherTabelaNotasFiscais() {
-        String sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, valor AS VALOR_VENDA, datacompra AS `DATA/HORA` " +
+        String sql = "SELECT idnotafiscal AS "+bundle.getString("ID_invoices")+", nomevendedor AS "+bundle.getString("seller")+", nomecliente AS "+bundle.getString("client")+", valor / 5.78 AS "+bundle.getString("value")+", datacompra AS `"+bundle.getString("dt")+"` " +
                  "FROM tbnotasfiscais ";
         try {
             pst = conexao.prepareStatement(sql);
@@ -84,8 +94,8 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
 
     //Método para preencher a tabela ao pesquisar nota
     private void pesquisarNota() {
-    String sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, " +
-                 "valor AS VALOR, datacompra AS `DATA/HORA` " +
+    String sql = "SELECT idnotafiscal AS "+bundle.getString("ID_invoices")+", nomevendedor AS "+bundle.getString("seller")+", nomecliente AS "+bundle.getString("client")+", " +
+                 "valor / 5.78 AS "+bundle.getString("value")+", datacompra AS `"+bundle.getString("dt")+"` " +
                  "FROM tbnotasfiscais " +
                  "WHERE (idnotafiscal LIKE ? OR nomevendedor LIKE ? OR nomecliente LIKE ?) " +
                  "AND (? IS NULL OR DATE(datacompra) = ?)";
@@ -130,7 +140,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
                 try {
                     total += Double.valueOf(valor.toString()); // Soma ao total
                 } catch (NumberFormatException e) {
-                   System.out.println("Valor inválido na linha " + i + ": " + valor);
+                   System.out.println(bundle.getString("invalid_value") + i + ": " + valor);
         }
     }
 }
@@ -143,7 +153,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
 
     } catch (SQLException e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(null, "Erro ao buscar dados: " + e.getMessage());
+        JOptionPane.showMessageDialog(null, bundle.getString("error_fetching_data") + e.getMessage());
     }
 }
     
@@ -166,7 +176,7 @@ private void mostrarDetalhesNotaFiscal() throws SQLException, ParseException {
             try (ResultSet rs1 = pst1.executeQuery()) {
                 if (rs1.next()) {
                     // Criando um JFrame para mostrar os detalhes
-                    JFrame detalhesFrame = new JFrame("Detalhes da Nota Fiscal");
+                    JFrame detalhesFrame = new JFrame(bundle.getString("invoice_details"));
                     detalhesFrame.setSize(600, 400);
                     detalhesFrame.setLayout(new BorderLayout());
 
@@ -177,20 +187,20 @@ private void mostrarDetalhesNotaFiscal() throws SQLException, ParseException {
                     gbc.anchor = GridBagConstraints.WEST;
 
                     // Adicionando informações da nota fiscal
-                    adicionarLabel(panelDetalhes, "ID Nota:", tblVendedores.getValueAt(selectedRow, 0).toString(), 0, gbc);
-                    adicionarLabel(panelDetalhes, "Vendedor:", tblVendedores.getValueAt(selectedRow, 1).toString(), 1, gbc);
-                    adicionarLabel(panelDetalhes, "Cliente:", tblVendedores.getValueAt(selectedRow, 2).toString(), 2, gbc);
-                    adicionarLabel(panelDetalhes, "Valor:", String.valueOf(tblVendedores.getValueAt(selectedRow, 3)), 3, gbc);
-                    adicionarLabel(panelDetalhes, "Data/Hora:", tblVendedores.getValueAt(selectedRow, 4).toString(), 4, gbc);
+                    adicionarLabel(panelDetalhes,  bundle.getString("ID_invoices")+":", tblVendedores.getValueAt(selectedRow, 0).toString(), 0, gbc);
+                    adicionarLabel(panelDetalhes, bundle.getString("seller")+":", tblVendedores.getValueAt(selectedRow, 1).toString(), 1, gbc);
+                    adicionarLabel(panelDetalhes, bundle.getString("client")+":", tblVendedores.getValueAt(selectedRow, 2).toString(), 2, gbc);
+                    adicionarLabel(panelDetalhes, bundle.getString("value")+":", String.valueOf(tblVendedores.getValueAt(selectedRow, 3)), 3, gbc);
+                    adicionarLabel(panelDetalhes, bundle.getString("dt")+":", tblVendedores.getValueAt(selectedRow, 4).toString(), 4, gbc);
 
                     // Adicionando a lista de produtos
                     gbc.gridy = 5;
                     gbc.gridwidth = 2;
                     gbc.anchor = GridBagConstraints.CENTER;
-                    panelDetalhes.add(new JLabel("Produtos:"), gbc);
+                    panelDetalhes.add(new JLabel(bundle.getString("prods")), gbc);
 
                     // Configuração da tabela de produtos
-                    String[] colunas = {"ID", "Nome", "Preço", "Quantidade"};
+                    String[] colunas = {"ID", bundle.getString("name"), bundle.getString("value"), bundle.getString("amount")};
                     DefaultTableModel produtoTableModel = new DefaultTableModel(colunas, 0);
                     JTable tableProdutos = new JTable(produtoTableModel);
 
@@ -225,15 +235,15 @@ private void mostrarDetalhesNotaFiscal() throws SQLException, ParseException {
                     detalhesFrame.setVisible(true);
 
                 } else {
-                    JOptionPane.showMessageDialog(this, "Nota Fiscal não encontrada!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, bundle.getString("invoice_not_found"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (SQLException | ParseException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Erro ao buscar detalhes: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, bundle.getString("error_fetching_details") + e.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
         }
     } else {
-        JOptionPane.showMessageDialog(this, "Nenhuma nota fiscal selecionada!", "Aviso", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this, bundle.getString("no_invoice_selected"), bundle.getString("attention"), JOptionPane.WARNING_MESSAGE);
     }
 }
 
@@ -263,7 +273,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         dataset.setValue(150, "Quantidade", "11");
         dataset.setValue(150, "Quantidade", "12");
         
-        JFreeChart chart = ChartFactory.createBarChart("Vendas Realizadas","Mês","Quantidade", 
+        JFreeChart chart = ChartFactory.createBarChart(bundle.getString("sales_made"),bundle.getString("month"),bundle.getString("amount"), 
                 dataset, PlotOrientation.VERTICAL, false,true,false);
         
         CategoryPlot categoryPlot = chart.getCategoryPlot();
@@ -295,11 +305,17 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         // Aqui é para filtrar as vendas de um mês específico e comparar as vendas por dias do mês
         String mes = String.valueOf(comonBoxMes1.getSelectedItem()); // Pega o mês selecionado
         String ano = String.valueOf(comonBoxAno1.getSelectedItem()); // Pega o ano selecionado
-
-        sql = "SELECT DAY(datacompra) AS dia, SUM(valor) AS total_vendas FROM tbnotasfiscais " +
-              "WHERE MONTH(datacompra) = ? AND YEAR(datacompra) = ? " +
-              "GROUP BY DAY(datacompra) " +
-              "ORDER BY dia";
+        if (LanguageSelection.selectedLanguage) {
+            sql = "SELECT DAY(datacompra) AS dia, SUM(valor) / 5.78 AS total_vendas FROM tbnotasfiscais " +
+                  "WHERE MONTH(datacompra) = ? AND YEAR(datacompra) = ? " +
+                  "GROUP BY DAY(datacompra) " +
+                  "ORDER BY dia";
+        } else {
+            sql = "SELECT DAY(datacompra) AS dia, SUM(valor) AS total_vendas FROM tbnotasfiscais " +
+                  "WHERE MONTH(datacompra) = ? AND YEAR(datacompra) = ? " +
+                  "GROUP BY DAY(datacompra) " +
+                  "ORDER BY dia";
+        }
 
         // Prepare a declaração antes de definir os parâmetros
         pst = conexao.prepareStatement(sql);
@@ -310,11 +326,17 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     } else if (radioBtnMes.isSelected()) {
         // Aqui para filtrar as vendas de um ano específico e comparar as vendas por meses do ano
         String ano = (String) comonBoxAno2.getSelectedItem(); // Assume que comonBoxAno2 retorna um valor adequado
-
-        sql = "SELECT MONTH(datacompra) AS mes, SUM(valor) AS total_vendas FROM tbnotasfiscais " +
-              "WHERE YEAR(datacompra) = ? " +
-              "GROUP BY MONTH(datacompra) " +
-              "ORDER BY mes";
+        if (LanguageSelection.selectedLanguage) {
+            sql = "SELECT MONTH(datacompra) AS mes, SUM(valor) / 5.78 AS total_vendas FROM tbnotasfiscais " +
+                  "WHERE YEAR(datacompra) = ? " +
+                  "GROUP BY MONTH(datacompra) " +
+                  "ORDER BY mes";
+        } else {
+            sql = "SELECT MONTH(datacompra) AS mes, SUM(valor) AS total_vendas FROM tbnotasfiscais " +
+                  "WHERE YEAR(datacompra) = ? " +
+                  "GROUP BY MONTH(datacompra) " +
+                  "ORDER BY mes";
+        }
 
         // Prepare a declaração antes de definir os parâmetros
         pst = conexao.prepareStatement(sql);
@@ -324,10 +346,17 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     } else if (radioBtnAno.isSelected()) {
         // Aqui seleciona um ano específico e compara as vendas com os anos seguintes até o ano atual
         String ano = (String) comonBoxAno3.getSelectedItem();
-        sql = "SELECT YEAR(datacompra) AS ano, SUM(valor) AS total_vendas FROM tbnotasfiscais " +
-              "WHERE YEAR(datacompra) >= ? " + // Filtra por ano e anos seguintes
-              "GROUP BY YEAR(datacompra) " +
-              "ORDER BY ano";
+        if(LanguageSelection.selectedLanguage){
+            sql = "SELECT YEAR(datacompra) AS ano, SUM(valor) / 5.78 AS total_vendas FROM tbnotasfiscais " +
+                  "WHERE YEAR(datacompra) >= ? " + // Filtra por ano e anos seguintes
+                  "GROUP BY YEAR(datacompra) " +
+                  "ORDER BY ano";
+        }else{
+            sql = "SELECT YEAR(datacompra) AS ano, SUM(valor) AS total_vendas FROM tbnotasfiscais " +
+                "WHERE YEAR(datacompra) >= ? " + // Filtra por ano e anos seguintes
+                "GROUP BY YEAR(datacompra) " +
+                "ORDER BY ano";
+        }
 
         // Prepare a declaração antes de definir o parâmetro
         pst = conexao.prepareStatement(sql);
@@ -343,16 +372,16 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
 
         // Verifica se o resultado está vazio e adiciona zero quando necessário
         if (!rs.isBeforeFirst()) { // Se não há resultados
-            dataset.addValue(0, "Vendas", "Nenhum Resultado"); // Adiciona um valor de 0 para evitar gráficos vazios
+            dataset.addValue(0, bundle.getString("sales"), bundle.getString("no_result")); // Adiciona um valor de 0 para evitar gráficos vazios
         } else {
             while (rs.next()) {
                 String periodo; // Armazena o período (dia, mês ou ano)
                 if (radioBtnDia.isSelected()) {
-                    periodo = rs.getString("dia"); // Dia do mês
+                    periodo = rs.getString(bundle.getString("day")); // Dia do mês
                 } else if (radioBtnMes.isSelected()) {
-                    periodo = String.valueOf(rs.getInt("mes")); // Mês do ano
+                    periodo = String.valueOf(rs.getInt(bundle.getString("month"))); // Mês do ano
                 } else {
-                    periodo = rs.getString("ano"); // Ano
+                    periodo = rs.getString(bundle.getString("yer")); // Ano
                 }
 
                 double totalVendas = rs.getDouble("total_vendas");
@@ -361,7 +390,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
                     totalVendas = 0;
                 }
 
-                dataset.addValue(totalVendas, "Vendas", periodo);
+                dataset.addValue(totalVendas, bundle.getString("sales"), periodo);
             }
         }
 
@@ -375,7 +404,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         }
 
     } catch (SQLException e) {
-        JOptionPane.showMessageDialog(null, "Erro ao buscar dados: " + e.getMessage());
+        JOptionPane.showMessageDialog(null, bundle.getString("error_fetching_data") + e.getMessage());
     } finally {
         // Fechamento dos recursos
         if (rs != null) try { rs.close(); } catch (SQLException e) {}
@@ -386,9 +415,9 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     private void atualizarGrafico1(DefaultCategoryDataset dataset) {
     // Cria um gráfico de barras
     JFreeChart chart = ChartFactory.createBarChart(
-        "Vendas por Período",  // Título do gráfico
-        "Comparação por Dias do Mes Selecionado",             // Eixo X
-        "Total de Vendas",     // Eixo Y
+        bundle.getString("sales_period"),  // Título do gráfico
+        bundle.getString("comparisonD"),             // Eixo X
+        bundle.getString("total_sales"),     // Eixo Y
         dataset,               // Conjunto de dados
         PlotOrientation.VERTICAL,
         true,                  // Inclui legenda
@@ -405,9 +434,9 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     private void atualizarGrafico2(DefaultCategoryDataset dataset) {
     // Cria um gráfico de barras
     JFreeChart chart = ChartFactory.createBarChart(
-        "Vendas por Período",  // Título do gráfico
-        " Comparação por Meses do Ano Selecionado",             // Eixo X
-        "Total de Vendas",     // Eixo Y
+        bundle.getString("sales_period"),  // Título do gráfico
+        bundle.getString("comparisonM"),             // Eixo X
+        bundle.getString("total_sales"),     // Eixo Y
         dataset,               // Conjunto de dados
         PlotOrientation.VERTICAL,
         true,                  // Inclui legenda
@@ -424,9 +453,9 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     private void atualizarGrafico3(DefaultCategoryDataset dataset) {
     // Cria um gráfico de barras
     JFreeChart chart = ChartFactory.createBarChart(
-        "Vendas por Período",  // Título do gráfico
-        "Comparação por Anos",             // Eixo X
-        "Total de Vendas",     // Eixo Y
+        bundle.getString("sales_period"),  // Título do gráfico
+        bundle.getString("comaparisonY"),             // Eixo X
+        bundle.getString("total_sales"),     // Eixo Y
         dataset,               // Conjunto de dados
         PlotOrientation.VERTICAL,
         true,                  // Inclui legenda
@@ -449,7 +478,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
                     buscarDados();
                 } catch (SQLException ex) {
                     Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
-                    JOptionPane.showMessageDialog(TelaRelatorioVendas.this, "Erro ao buscar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(TelaRelatorioVendas.this, bundle.getString("error_fetching_data") + ex.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -504,9 +533,17 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     List<double[]> salesData = new ArrayList<>();
 
     try (Statement statement = conexao.createStatement()) {
-        String sql = "SELECT MONTH(datacompra) AS mes, SUM(valor) AS total " +
+        String sql;
+        if(LanguageSelection.selectedLanguage){
+            sql = "SELECT MONTH(datacompra) AS mes, SUM(valor) / 5.78 AS total " +
                      "FROM tbnotasfiscais " +
                      "GROUP BY MONTH(datacompra)";
+            }else
+            {
+            sql = "SELECT MONTH(datacompra) AS mes, SUM(valor) AS total " +
+                     "FROM tbnotasfiscais " +
+                     "GROUP BY MONTH(datacompra)";
+            }
         ResultSet resultSet = statement.executeQuery(sql);
         while (resultSet.next()) {
             int mes = resultSet.getInt("mes");
@@ -558,7 +595,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         List<double[]> monthlySalesData = getDadosMensais();
 
         // Criar o modelo da tabela com as coluna: Vendas Previstas
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Valor das Vendas Previstas para o proximo mês"}, 0);
+        DefaultTableModel model = new DefaultTableModel(new String[]{bundle.getString("expected_sales")}, 0);
         tblPrevisoes.setModel(model);
 
         // Fazer a previsão para o próximo mês
@@ -583,8 +620,8 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
 
     } catch (Exception e) {
         e.printStackTrace();
-        JOptionPane.showMessageDialog(null, "Erro ao carregar os dados: " + e.getMessage(),
-                "Erro", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(null, bundle.getString("error_fetching_data") + e.getMessage(),
+        bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
     }
     }
     /**
@@ -620,7 +657,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("Relatório de Vendas");
+        setTitle(bundle.getString("sales_Rep"));
         setPreferredSize(new java.awt.Dimension(1002, 336));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -654,7 +691,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
                 {null, null, null, null, null}
             },
             new String [] {
-                "ID NOTA", "VENDEDOR", "CLIENTE", "VALOR VENDA", "DATA/HORA"
+                bundle.getString("ID_invoices"), bundle.getString("seller"), bundle.getString("client"), bundle.getString("value"), bundle.getString("dt")
             }
         ));
         jScrollPane2.setViewportView(tblVendedores);
@@ -668,7 +705,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         });
         getContentPane().add(txtVendPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 0, 220, -1));
 
-        jLabel1.setText("Buscar");
+        jLabel1.setText(bundle.getString("search"));
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 0, 40, -1));
 
         dcPesquisarData.setDateFormatString("yyyy-MM-dd");
@@ -682,7 +719,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         panelGraficoBarra.setLayout(new java.awt.BorderLayout());
         getContentPane().add(panelGraficoBarra, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 420, 300));
 
-        btnVerMais.setText("VER DETALHES");
+        btnVerMais.setText(bundle.getString("see_details"));
         btnVerMais.setEnabled(false);
         btnVerMais.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -692,7 +729,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         getContentPane().add(btnVerMais, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 0, 130, -1));
 
         grupoBotoesData.add(radioBtnAno);
-        radioBtnAno.setText("ANO");
+        radioBtnAno.setText(bundle.getString("year"));
         radioBtnAno.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioBtnAnoActionPerformed(evt);
@@ -701,7 +738,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         getContentPane().add(radioBtnAno, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 510, -1, -1));
 
         grupoBotoesData.add(radioBtnMes);
-        radioBtnMes.setText("MÊS");
+        radioBtnMes.setText(bundle.getString("month"));
         radioBtnMes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioBtnMesActionPerformed(evt);
@@ -710,7 +747,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         getContentPane().add(radioBtnMes, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 430, -1, -1));
 
         grupoBotoesData.add(radioBtnDia);
-        radioBtnDia.setText("DIA");
+        radioBtnDia.setText(bundle.getString("day"));
         radioBtnDia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioBtnDiaActionPerformed(evt);
@@ -718,7 +755,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         });
         getContentPane().add(radioBtnDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 50, -1));
 
-        jLabel2.setText("FILTRAR E COMPARAR POR:");
+        jLabel2.setText(bundle.getString("filter_compare"));
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 310, -1, -1));
 
         comonBoxMes1.setEnabled(false);
@@ -756,7 +793,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
                 {null, null, null}
             },
             new String [] {
-                "Mês", "Total de Vendas", "Vendas Previstas"
+                bundle.getString("month"), bundle.getString("total_sales"), bundle.getString("expected_sales2")
             }
         ));
         jScrollPane3.setViewportView(tblPrevisoes);
