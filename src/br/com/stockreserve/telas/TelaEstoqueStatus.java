@@ -21,6 +21,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import net.proteanit.sql.DbUtils;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -37,10 +39,12 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
      * Creates new form TelaEstoqueStatus
      */
     public TelaEstoqueStatus() {
-        Locale locale = new Locale("en", "US");
+        //Locale locale = Locale.of("pt", "BR");
+        Locale locale = Locale.of("en", "US");
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
 
         initComponents();
+        setTitle(bundle.getString("stock_status"));
         conexao = ModuloConexao.conector();
     }
 
@@ -74,11 +78,23 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
             int vencimentoColIndex = tblEstoStatus.getColumnModel().getColumnIndex("VENCIMENTO");
             tblEstoStatus.getColumnModel().getColumn(vencimentoColIndex).setCellRenderer(new VencimentoCellRenderer());
 
+            atualizarNomesColunas();
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
     }
 
+    private void atualizarNomesColunas() {
+        tblEstoStatus.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("prod_id"));
+        tblEstoStatus.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("prod_name"));
+        tblEstoStatus.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("prod_price"));
+        tblEstoStatus.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("amount"));
+        tblEstoStatus.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("min_limit"));
+        tblEstoStatus.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("maturity"));
+        tblEstoStatus.getColumnModel().getColumn(6).setHeaderValue(bundle.getString("stock_status"));
+        tblEstoStatus.getTableHeader().repaint(); // Re-renderiza o cabeçalho para exibir as novas strings
+    }
     // Renderizador personalizado para a coluna `status`
     private static class StatusCellRenderer extends DefaultTableCellRenderer {
 

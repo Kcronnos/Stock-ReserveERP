@@ -15,8 +15,8 @@ public class ModuloConexao {
         
         //Armazenando informações referente ao banco
         String url = "jdbc:mysql://localhost:3306/dberp";
-        String user = "root";
-        String password = "";
+        String user = "elinaldo";
+        String password = "snow2501";
         
         //Estabelecendo a conexao com o banco
         try {

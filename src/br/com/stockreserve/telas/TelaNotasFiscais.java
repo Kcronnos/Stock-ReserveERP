@@ -29,6 +29,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import net.proteanit.sql.DbUtils;
 import org.json.simple.parser.ParseException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -39,12 +41,16 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-
+    ResourceBundle bundle;
     /**
      * Creates new form TelaNotasFiscais
      */
     public TelaNotasFiscais() {
+        //Locale locale = Locale.of("pt", "BR");
+        Locale locale = Locale.of("en", "US");
+        bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
+        setTitle(bundle.getString("invoices"));
         conexao = ModuloConexao.conector();
     }
     
@@ -56,10 +62,20 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tblNotasFiscais.setModel(DbUtils.resultSetToTableModel(rs));
+            atualizarNomesColunas();
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
+    }
+
+    private void atualizarNomesColunas() {
+        tblNotasFiscais.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("ID_invoices"));
+        tblNotasFiscais.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("seller"));
+        tblNotasFiscais.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("client"));
+        tblNotasFiscais.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("value"));
+        tblNotasFiscais.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("dt"));
+        tblNotasFiscais.getTableHeader().repaint();
     }
 
     //Método para preencher a tabela ao pesquisar nota
@@ -103,7 +119,7 @@ private void mostrarDetalhesNotaFiscal() throws SQLException, ParseException {
             try (ResultSet rs1 = pst1.executeQuery()) {
                 if (rs1.next()) {
                     // Criando um JFrame para mostrar os detalhes
-                    JFrame detalhesFrame = new JFrame("Detalhes da Nota Fiscal");
+                    JFrame detalhesFrame = new JFrame("invoice_details");
                     detalhesFrame.setSize(600, 400);
                     detalhesFrame.setLayout(new BorderLayout());
 
@@ -113,21 +129,24 @@ private void mostrarDetalhesNotaFiscal() throws SQLException, ParseException {
                     gbc.insets = new Insets(5, 5, 5, 5);
                     gbc.anchor = GridBagConstraints.WEST;
 
+                    
+
+
                     // Adicionando informações da nota fiscal
-                    adicionarLabel(panelDetalhes, "ID Nota:", tblNotasFiscais.getValueAt(selectedRow, 0).toString(), 0, gbc);
-                    adicionarLabel(panelDetalhes, "Vendedor:", tblNotasFiscais.getValueAt(selectedRow, 1).toString(), 1, gbc);
-                    adicionarLabel(panelDetalhes, "Cliente:", tblNotasFiscais.getValueAt(selectedRow, 2).toString(), 2, gbc);
-                    adicionarLabel(panelDetalhes, "Valor:", String.valueOf(tblNotasFiscais.getValueAt(selectedRow, 3)), 3, gbc);
-                    adicionarLabel(panelDetalhes, "Data/Hora:", tblNotasFiscais.getValueAt(selectedRow, 4).toString(), 4, gbc);
+                    adicionarLabel(panelDetalhes, bundle.getString("ID_invoices") + ":", tblNotasFiscais.getValueAt(selectedRow, 0).toString(), 0, gbc);
+                    adicionarLabel(panelDetalhes, bundle.getString("seller") + ":", tblNotasFiscais.getValueAt(selectedRow, 1).toString(), 1, gbc);
+                    adicionarLabel(panelDetalhes, bundle.getString("client") + ":", tblNotasFiscais.getValueAt(selectedRow, 2).toString(), 2, gbc);
+                    adicionarLabel(panelDetalhes, bundle.getString("value") + ":", String.valueOf(tblNotasFiscais.getValueAt(selectedRow, 3)), 3, gbc);
+                    adicionarLabel(panelDetalhes, bundle.getString("dt") + ":", tblNotasFiscais.getValueAt(selectedRow, 4).toString(), 4, gbc);
 
                     // Adicionando a lista de produtos
                     gbc.gridy = 5;
                     gbc.gridwidth = 2;
                     gbc.anchor = GridBagConstraints.CENTER;
-                    panelDetalhes.add(new JLabel("Produtos:"), gbc);
+                    panelDetalhes.add(new JLabel(bundle.getString("prods")), gbc);
 
                     // Configuração da tabela de produtos
-                    String[] colunas = {"ID", "Nome", "Preço", "Quantidade"};
+                    String[] colunas = {"ID", bundle.getString("prod_name"), bundle.getString("prod_price"), bundle.getString("amount")};
                     DefaultTableModel produtoTableModel = new DefaultTableModel(colunas, 0);
                     JTable tableProdutos = new JTable(produtoTableModel);
 
@@ -162,15 +181,15 @@ private void mostrarDetalhesNotaFiscal() throws SQLException, ParseException {
                     detalhesFrame.setVisible(true);
 
                 } else {
-                    JOptionPane.showMessageDialog(this, "Nota Fiscal não encontrada!", "Erro", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, bundle.getString("invoice_not_found"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (SQLException | ParseException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Erro ao buscar detalhes: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, bundle.getString("error_fetching_details") + e.getMessage(), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
         }
     } else {
-        JOptionPane.showMessageDialog(this, "Nenhuma nota fiscal selecionada!", "Aviso", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this, bundle.getString("no_invoice_selected"), bundle.getString("warning"), JOptionPane.WARNING_MESSAGE);
     }
 }
 
@@ -233,7 +252,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
 
         jLabel1.setFont(new java.awt.Font("MingLiU_HKSCS-ExtB", 0, 25)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("NOTAS FISCAIS");
+        jLabel1.setText(bundle.getString("invoices"));
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 0, 220, 110));
 
         tblNotasFiscais.setModel(new javax.swing.table.DefaultTableModel(
@@ -244,7 +263,11 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
                 {null, null, null, null, null}
             },
             new String [] {
-                "ID NOTA", "VENDEDOR", "CLIENTE", "VALOR", "DATA/HORA"
+                bundle.getString("ID_invoices"), 
+                bundle.getString("seller"), 
+                bundle.getString("client"), 
+                bundle.getString("value"), 
+                bundle.getString("dt")
             }
         ));
         jScrollPane1.setViewportView(tblNotasFiscais);
@@ -260,10 +283,10 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("BUSCAR NOTAS");
+        jLabel2.setText(bundle.getString("search_invoices"));
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 520, 370, -1));
 
-        btnVerDetalhes.setText("VER DETALHES");
+        btnVerDetalhes.setText(bundle.getString("see_details"));
         btnVerDetalhes.setEnabled(false);
         btnVerDetalhes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
