@@ -132,7 +132,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     
     //Método para pesquisar os produtos no banco de dados e adicionar a tabela enquanto você digita o nome
     private void pesquisarProdutos() {
-        String sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("maturity")+" from tbprodutos where nomeproduto like ?";
+        String sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos where nomeproduto like ?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -166,7 +166,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     
     //Método para preencher a tabela dos produtos ao abrir a tela de produtos
     private void preencherTabelaProduto() {
-        String sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("maturity")+" from tbprodutos";
+        String sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -270,7 +270,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 bundle.getString("prod_price"),
                 bundle.getString("amount"),
                 bundle.getString("min_limit"),
-                bundle.getString("maturity")
+                bundle.getString("expiry")
             }
         ));
         tblProdutos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -308,9 +308,9 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
 
         jLabel5.setText("*"+bundle.getString("min_limit"));
 
-        jLabel12.setText("*"+bundle.getString("mandatoryf"));
+        jLabel12.setText(bundle.getString("mandatoryf"));
 
-        jLabel6.setText(bundle.getString("maturity"));
+        jLabel6.setText(bundle.getString("expiry"));
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_adicionar.png"))); // NOI18N
         btnAdicionar.setToolTipText(bundle.getString("prod_add"));

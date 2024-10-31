@@ -22,6 +22,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import net.proteanit.sql.DbUtils;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -32,12 +34,17 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    ResourceBundle bundle;
 
     /**
      * Creates new form TelaRelatorios
      */
     public TelaRelatorioProdutos() {
+        Locale locale = Locale.of("en", "US");
+        //Locale locale = Locale.of("pt", "BR");
+        bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
+        setTitle(bundle.getString("Prod_Rep"));
         conexao = ModuloConexao.conector();
         graficoBarra();
     }
@@ -51,11 +58,11 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
             pst.setString(2, txtIdProdu.getText());
 
             if (txtNovoPreco.getText().isEmpty() || txtIdProdu.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Tenha certeza que os campos estão preenchidos");
+                JOptionPane.showMessageDialog(null, bundle.getString("mandatory"));
             } else {
                 int alterado = pst.executeUpdate();
                 if (alterado > 0) {
-                    JOptionPane.showMessageDialog(null, "Dados do produto alterados com sucesso!");
+                    JOptionPane.showMessageDialog(null, bundle.getString("product_updated_success"));
                     preencherTabelaProduto();
                     limpar();
                 }
@@ -92,20 +99,20 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
                 produtosSemData = rs.getInt("sem_data");
             }
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro ao carregar dados do gráfico: " + e);
+            JOptionPane.showMessageDialog(null, bundle.getString("error_loading_chart") + e);
         }
 
         // Configuração do gráfico de barras
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        dataset.addValue(produtosVencidos, "Vencido", "Status");
-        dataset.addValue(produtosPertoDeVencer, "Perto de Vencer", "Status");
-        dataset.addValue(produtosLongeDeVencer, "Longe de Vencer", "Status");
-        dataset.addValue(produtosSemData, "Sem Data", "Status");
+         dataset.addValue(produtosVencidos, bundle.getString("expired"), "Status");
+        dataset.addValue(produtosPertoDeVencer, bundle.getString("near_expiry"), "Status");
+        dataset.addValue(produtosLongeDeVencer, bundle.getString("long_expiry"), "Status");
+        dataset.addValue(produtosSemData, bundle.getString("no_date"), "Status");
 
         JFreeChart chart = ChartFactory.createBarChart(
-                "Data de Validade dos Produtos",
+                bundle.getString("product_expiry_data"),
                 "Status",
-                "Quantidade",
+                bundle.getString("amount"),
                 dataset,
                 PlotOrientation.VERTICAL,
                 true, // Exibe legenda
@@ -131,20 +138,25 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
 
     //Método para preencher a tabela ao abrir a aba de relatório de produtos
     private void preencherTabelaProduto() {
-        String sql = """
+        String nome = bundle.getString("name");
+        String preco = bundle.getString("price");
+        String quantidade = bundle.getString("amount");
+        String limiteMinimo = bundle.getString("min_limit");
+        String vencimento = bundle.getString("expiry");
+        String sql = String.format("""
         SELECT idproduto AS ID, 
-               nomeproduto AS NOME, 
-               preco AS PREÇO, 
-               quantidade AS QUANTIDADE, 
-               limite_minimo AS LIMITE_MÍNIMO, 
-               vencimento AS VENCIMENTO,
+               nomeproduto AS %s, 
+               preco AS %s, 
+               quantidade AS %s, 
+               limite_minimo AS %s, 
+               vencimento AS %s,
                CASE 
                    WHEN quantidade = 0 THEN 'Vazio' 
                    WHEN quantidade < limite_minimo THEN 'Precisa Abastecer' 
                    ELSE 'OK' 
                END AS STATUS
         FROM tbprodutos;
-        """;
+        """, nome, preco, quantidade, limiteMinimo, vencimento);
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -160,19 +172,24 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
                     .setCellRenderer(new TelaRelatorioProdutos.VencimentoCellRenderer());
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
+            String n = "penis";
         }
     }
 
     //Método para pesquisar os produtos no banco de dados e adicionar a tabela enquanto você digita o nome
     private void pesquisarProdutos() {
-        String sql = """
+        String nome = bundle.getString("name");
+        String preco = bundle.getString("price");
+        String quantidade = bundle.getString("amount");
+        String limiteMinimo = bundle.getString("min_limit");
+        String vencimento = bundle.getString("expiry");
+        String sql = String.format("""
     SELECT idproduto AS ID, 
-           nomeproduto AS NOME, 
-           preco AS PREÇO,
-           quantidade AS QUANTIDADE,
-           limite_minimo AS LIMITE_MÍNIMO,
-           vencimento AS VENCIMENTO,
+           nomeproduto AS %s, 
+           preco AS %s,
+           quantidade AS %s,
+           limite_minimo AS %s,
+           vencimento AS %s,
            CASE 
                WHEN quantidade = 0 THEN 'Vazio' 
                WHEN quantidade < limite_minimo THEN 'Precisa Abastecer' 
@@ -180,7 +197,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
            END AS STATUS
     FROM tbprodutos
     WHERE nomeproduto LIKE ?
-    """;
+    """, nome, preco, quantidade, limiteMinimo, vencimento);
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -202,7 +219,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
                     .setCellRenderer(new TelaRelatorioProdutos.VencimentoCellRenderer());
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, e);
+            String n = "penis";
         }
     }
     
@@ -303,7 +320,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("Relatório de Produtos");
+        setTitle(bundle.getString("Prod_Rep"));
         setDoubleBuffered(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -341,7 +358,13 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "NOME", "PREÇO", "QUANTIDADE", "LIMITE_MÍNIMO", "VENCIMENTO", "STATUS"
+                bundle.getString("prod_id"),
+                bundle.getString("prod_name"),
+                bundle.getString("prod_price"),
+                bundle.getString("amount"),
+                bundle.getString("min_limit"),
+                bundle.getString("expiry"),
+                "STATUS"
             }
         ));
         tblProdutos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -360,17 +383,17 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         });
         getContentPane().add(txtProduPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 0, 230, -1));
 
-        jLabel2.setText("Buscar");
+        jLabel2.setText(bundle.getString("search")); 
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 0, 40, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("Alterar o Preço:");
+        jLabel1.setText(bundle.getString("change_price"));
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 310, -1, -1));
 
         jLabel3.setText("ID");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 350, 50, -1));
 
-        jLabel4.setText("Novo Preço");
+        jLabel4.setText(bundle.getString("new_price"));
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 380, -1, -1));
 
         txtIdProdu.setEnabled(false);
@@ -378,7 +401,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         getContentPane().add(txtNovoPreco, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 380, 110, -1));
 
         btnAlterarPreco.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_editar.png"))); // NOI18N
-        btnAlterarPreco.setToolTipText("Alterar Preço");
+        jLabel1.setText(bundle.getString("change_price"));
         btnAlterarPreco.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterarPreco.setPreferredSize(new java.awt.Dimension(50, 50));
         btnAlterarPreco.addActionListener(new java.awt.event.ActionListener() {

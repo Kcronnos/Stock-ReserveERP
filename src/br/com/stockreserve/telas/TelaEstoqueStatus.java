@@ -91,7 +91,7 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
         tblEstoStatus.getColumnModel().getColumn(2).setHeaderValue(bundle.getString("prod_price"));
         tblEstoStatus.getColumnModel().getColumn(3).setHeaderValue(bundle.getString("amount"));
         tblEstoStatus.getColumnModel().getColumn(4).setHeaderValue(bundle.getString("min_limit"));
-        tblEstoStatus.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("maturity"));
+        tblEstoStatus.getColumnModel().getColumn(5).setHeaderValue(bundle.getString("expiry"));
         tblEstoStatus.getColumnModel().getColumn(6).setHeaderValue(bundle.getString("stock_status"));
         tblEstoStatus.getTableHeader().repaint(); // Re-renderiza o cabeçalho para exibir as novas strings
     }
@@ -200,7 +200,7 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "ID", bundle.getString("name"), bundle.getString("price"), bundle.getString("amount"), bundle.getString("min_limit"), bundle.getString("maturity"), "STATUS"
+                "ID", bundle.getString("name"), bundle.getString("price"), bundle.getString("amount"), bundle.getString("min_limit"), bundle.getString("expiry"), "STATUS"
             }
         ) {
             boolean[] canEdit = new boolean [] {
