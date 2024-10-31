@@ -166,7 +166,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     
     //Método para preencher a tabela dos produtos ao abrir a tela de produtos
     private void preencherTabelaProduto() {
-        String sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as z"+bundle.getString("maturity")+" from tbprodutos";
+        String sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("maturity")+" from tbprodutos";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -300,20 +300,20 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel2.setText(bundle.getString("prod_name"));
+        jLabel2.setText("*"+bundle.getString("prod_name"));
 
-        jLabel3.setText(bundle.getString("amount"));
+        jLabel3.setText("*"+bundle.getString("amount"));
 
-        jLabel4.setText(bundle.getString("prod_price"));
+        jLabel4.setText("*"+bundle.getString("prod_price"));
 
-        jLabel5.setText(bundle.getString("min_limit"));
+        jLabel5.setText("*"+bundle.getString("min_limit"));
 
-        jLabel12.setText(bundle.getString("mandatoryf"));
+        jLabel12.setText("*"+bundle.getString("mandatoryf"));
 
         jLabel6.setText(bundle.getString("maturity"));
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_adicionar.png"))); // NOI18N
-        btnAdicionar.setToolTipText("Adicionar Produto");
+        btnAdicionar.setToolTipText(bundle.getString("prod_add"));
         btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAdicionar.setPreferredSize(new java.awt.Dimension(80, 80));
         btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
