@@ -9,6 +9,9 @@ import br.com.stockreserve.dal.ModuloConexao;
 import java.sql.*;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
+import java.util.ResourceBundle;
+import java.util.Locale;
+
 
 /**
  *
@@ -19,11 +22,20 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    ResourceBundle bundle;
 
     /**
      * Creates new form TelaUsuario
      */
     public TelaUsuario() {
+        Locale locale;
+        if (LanguageSelection.selectedLanguage) {
+            locale = Locale.of("en", "US");
+        } else {
+            locale = Locale.of("pt", "BR");
+        }
+        bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
+
         initComponents();
         conexao = ModuloConexao.conector();
     }
@@ -46,13 +58,13 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             //Validação dos campos obrigatórios
             if (txtUsuNome.getText().isEmpty() || txtUsuLogin.getText().isEmpty()
                     || txtUsuSenha.getText().isEmpty() || cboUsuSetor.getSelectedItem().toString().isEmpty() || txtUsuFone.getText().isEmpty() || cboUsuSetor.getSelectedItem().toString().equals(" ")) {
-                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!");
+                        JOptionPane.showMessageDialog(null, bundle.getString("mandatory"));
             } else {
                 //a linha abaixo atualiza a tabela usuarios com os dados do formularios
                 //a estrutura abaixo é usada para confirma a inserção dos dados na tabela
                 int adicionado = pst.executeUpdate();
                 if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Usuário cadastrado com sucesso!");
+                    JOptionPane.showMessageDialog(null, bundle.getString("user_added_success"));
                     limpar();
                 }
             }
@@ -83,13 +95,13 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
             if (txtUsuId.getText().isEmpty() || txtUsuNome.getText().isEmpty() || txtUsuLogin.getText().isEmpty()
                     || txtUsuSenha.getText().isEmpty() || txtUsuFone.getText().isEmpty() || cboUsuSetor.getSelectedItem().toString().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!");
+                        JOptionPane.showMessageDialog(null, bundle.getString("mandatory"));
             } else {
                 //a linha abaixo atualiza a tabela usuarios com os dados do formularios
                 //a estrutura abaixo é usada para confirma a inserção dos dados na tabela
                 int alterado = pst.executeUpdate();
                 if (alterado > 0) {
-                    JOptionPane.showMessageDialog(null, "Dados do usuário alterados com sucesso!");
+                    JOptionPane.showMessageDialog(null, bundle.getString("user_updated_success"));
                     limpar();
                 }
             }
@@ -103,7 +115,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
 
     //Método para remover usuários do banco de dados
     private void removerUsuarios() {
-        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o usuário?", "Atenção", JOptionPane.YES_NO_OPTION);
+        int confirma = JOptionPane.showConfirmDialog(null, bundle.getString("confirm_remove_user"), bundle.getString("attention"), JOptionPane.YES_NO_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             String sql = "delete from tbusuarios where iduser=?";
             try {
@@ -111,7 +123,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
                 pst.setString(1, txtUsuId.getText());
                 int removido = pst.executeUpdate();
                 if (removido > 0) {
-                    JOptionPane.showMessageDialog(null, "Uusuário removido com sucesso!");
+                    JOptionPane.showMessageDialog(null, bundle.getString("user_removed_success"));
                     limpar();
                 }
             } catch (Exception e) {
@@ -126,7 +138,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     
     //Método para pesquisar os usuários no banco de dados e adicionar a tabela enquanto você digita o nome
     private void pesquisarUsuarios() {
-        String sql = "select iduser as ID, nome as Nome, login as Login, senha as Senha, setor as Setor, fone as Fone from tbusuarios where nome like ?";
+        String sql = "select iduser as ID, nome as "+bundle.getString("anme")+", login as LOGIN, senha as "+bundle.getString("password")+", setor as "+bundle.getString("sector")+", fone as "+bundle.getString("phone")+" from tbusuarios where nome like ?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -156,7 +168,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     
     //método para preencher a tabela dos usuários ao abrir a aba
     private void preencherTabelaUsuarios() {
-        String sql = "select iduser as ID, nome as Nome, login as Login,senha as Senha,setor as Setor, fone as Telefone from tbusuarios";
+        String sql = "select iduser as ID, nome as "+bundle.getString("name")+", login as LOGIN,senha as "+bundle.getString("password")+",setor as "+bundle.getString("sector")+", fone as "+bundle.getString("phone")+" from tbusuarios";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -210,7 +222,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("Cadastro/Alteração/Remoção de Usuários");
+        setTitle(bundle.getString("user_title"));
         setName(""); // NOI18N
         setPreferredSize(new java.awt.Dimension(1000, 631));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
@@ -244,7 +256,12 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nome", "Login", "Senha", "Setor", "Telefone"
+                "ID",
+                bundle.getString("name"),
+                "LOGIN",
+                bundle.getString("password"),
+                bundle.getString("sector"),
+                bundle.getString("phone")
             }
         ));
         tblUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -254,9 +271,9 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         });
         jScrollPane1.setViewportView(tblUsuarios);
 
-        jLabel12.setText("*Campos Obrigatórios");
+        jLabel12.setText(bundle.getString("mandatoryf"));
 
-        jLabel1.setText("ID Usuário");
+        jLabel1.setText("user_id");
 
         txtUsuId.setEnabled(false);
         txtUsuId.addActionListener(new java.awt.event.ActionListener() {
@@ -265,13 +282,13 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel2.setText("*Nome");
+        jLabel2.setText("*"+bundle.getString("name"));
 
-        jLabel3.setText("*Login");
+        jLabel3.setText("*LOGIN");
 
-        jLabel4.setText("*Telefone");
+        jLabel4.setText("*"+bundle.getString("phone"));
 
-        jLabel5.setText("*Senha");
+        jLabel5.setText("*"+bundle.getString("password"));
 
         txtUsuPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -279,12 +296,12 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             }
         });
 
-        cboUsuSetor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Estoque", "Gerência", "Vendas" }));
+        cboUsuSetor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", bundle.getString("stock"), bundle.getString("management"), bundle.getString("sales")}));
 
-        jLabel6.setText("*Setor");
+        jLabel6.setText("*"+bundle.getString("sector"));
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/user_add.png"))); // NOI18N
-        btnAdicionar.setToolTipText("Adicionar Usuário");
+        btnAdicionar.setToolTipText(bundle.getString("add_user"));
         btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAdicionar.setPreferredSize(new java.awt.Dimension(80, 80));
         btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
@@ -294,7 +311,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         });
 
         btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/user_editar.png"))); // NOI18N
-        btnAlterar.setToolTipText("Alterar Dados");
+        btnAlterar.setToolTipText(bundle.getString("change_data"));
         btnAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterar.setEnabled(false);
         btnAlterar.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -305,7 +322,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         });
 
         btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/user_remover.png"))); // NOI18N
-        btnRemover.setToolTipText("Remover Usuário");
+        btnRemover.setToolTipText(bundle.getString("remove_user"));
         btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRemover.setEnabled(false);
         btnRemover.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -316,7 +333,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         });
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel7.setText("BUSCAR");
+        jLabel7.setText(bundle.getString("search"));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

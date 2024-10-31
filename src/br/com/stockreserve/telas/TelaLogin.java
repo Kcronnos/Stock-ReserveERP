@@ -87,8 +87,6 @@ public class TelaLogin extends javax.swing.JFrame {
         } else {
             locale = Locale.of("pt", "BR");
         }
-        //Locale locale = Locale.of("en", "US");
-        //Locale locale = Locale.of("pt", "BR");
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
 
         initComponents();

@@ -23,6 +23,9 @@ public class LanguageSelection extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        // Define o ícone do aplicativo
+        setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br.com.stockreserve.icones/logo_stockreserve_64x64.png"))); // Ajuste o caminho conforme necessário
+
         // Painel principal com layout centralizado
         JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
