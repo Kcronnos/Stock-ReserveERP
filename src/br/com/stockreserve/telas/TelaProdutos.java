@@ -9,6 +9,8 @@ import br.com.stockreserve.dal.ModuloConexao;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import net.proteanit.sql.DbUtils;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -18,11 +20,17 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    ResourceBundle bundle;
     /**
      * Creates new form TelaProdutos
      */
     public TelaProdutos() {
+        Locale locale = Locale.of("en", "US");
+        //Locale locale = Locale.of("pt", "BR");
+        bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
+
         initComponents();
+        setTitle(bundle.getString("prod_title"));
         conexao = ModuloConexao.conector();
     }
     
@@ -45,13 +53,13 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
 
             //Validação dos campos obrigatórios
             if (txtProduId.getText().isEmpty() || txtProduNome.getText().isEmpty() || txtProduPreco.getText().isEmpty() || txtProduQuanti.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!");
+                JOptionPane.showMessageDialog(null, bundle.getString("mandatory"));
             } else {
                 //a linha abaixo atualiza a tabela usuarios com os dados do formularios
                 //a estrutura abaixo é usada para confirma a inserção dos dados na tabela
                 int adicionado = pst.executeUpdate();
                 if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Produto cadastrado com sucesso!");
+                    JOptionPane.showMessageDialog(null, bundle.getString("product_added_success"));
                     limpar();
                 }
             }
@@ -82,13 +90,13 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             pst.setString(6, txtProduId.getText());
 
             if (txtProduId.getText().isEmpty() || txtProduNome.getText().isEmpty() || txtProduPreco.getText().isEmpty() || txtProduQuanti.getText().isEmpty() || txtProduLimi.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Preencha todos os campos obrigatórios!");
+                JOptionPane.showMessageDialog(null, bundle.getString("mandatory"));
             } else {
                 //a linha abaixo atualiza a tabela produtos com os dados do formularios
                 //a estrutura abaixo é usada para confirma a inserção dos dados na tabela
                 int alterado = pst.executeUpdate();
                 if (alterado > 0) {
-                    JOptionPane.showMessageDialog(null, "Dados do produto alterados com sucesso!");
+                    JOptionPane.showMessageDialog(null, bundle.getString("product_updated_success"));
                     limpar();
                 }
             }
@@ -102,7 +110,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     
     //Método para remover produtos do banco de dados
     private void removerProduto() {
-        int confirma = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja remover o produto?", "Atenção", JOptionPane.YES_NO_OPTION);
+        int confirma = JOptionPane.showConfirmDialog(null, bundle.getString("confirm_remove_product"), bundle.getString("attention"), JOptionPane.YES_NO_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
             String sql = "delete from tbprodutos where idproduto=?";
             try {
@@ -110,7 +118,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 pst.setString(1, txtProduId.getText());
                 int removido = pst.executeUpdate();
                 if (removido > 0) {
-                    JOptionPane.showMessageDialog(null, "Produto removido com sucesso!");
+                    JOptionPane.showMessageDialog(null, bundle.getString("product_removed_success"));
                     limpar();
                 }
             } catch (Exception e) {
@@ -124,7 +132,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     
     //Método para pesquisar os produtos no banco de dados e adicionar a tabela enquanto você digita o nome
     private void pesquisarProdutos() {
-        String sql = "select idproduto as ID, nomeproduto as Nome, preco as Preço,quantidade as Quantidade, limite_minimo as Limite_Mínimo, vencimento as Vencimento from tbprodutos where nomeproduto like ?";
+        String sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("maturity")+" from tbprodutos where nomeproduto like ?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -158,7 +166,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     
     //Método para preencher a tabela dos produtos ao abrir a tela de produtos
     private void preencherTabelaProduto() {
-        String sql = "select idproduto as ID, nomeproduto as Nome, preco as Preço,quantidade as Quantidade, limite_minimo as Limite_Minimo, vencimento as Vencimento from tbprodutos";
+        String sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as z"+bundle.getString("maturity")+" from tbprodutos";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -218,7 +226,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("Cadastro/Alteração/Remoção de Produtos");
+        setTitle(bundle.getString("prod_title"));
         setPreferredSize(new java.awt.Dimension(1000, 631));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -257,7 +265,12 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nome", "Preço", "Quantidade", "Limite Mínimo", "Vencimento"
+                bundle.getString("prod_id"),
+                bundle.getString("prod_name"),
+                bundle.getString("prod_price"),
+                bundle.getString("amount"),
+                bundle.getString("min_limit"),
+                bundle.getString("maturity")
             }
         ));
         tblProdutos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -273,7 +286,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel1.setText("ID Produto");
+        jLabel1.setText(bundle.getString("prod_id"));
 
         txtProduPreco.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -287,17 +300,17 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel2.setText("*Nome Produto");
+        jLabel2.setText(bundle.getString("prod_name"));
 
-        jLabel3.setText("*Quantidade");
+        jLabel3.setText(bundle.getString("amount"));
 
-        jLabel4.setText("*Preço Produto");
+        jLabel4.setText(bundle.getString("prod_price"));
 
-        jLabel5.setText("*Limite Mínimo");
+        jLabel5.setText(bundle.getString("min_limit"));
 
-        jLabel12.setText("*Campos Obrigatórios");
+        jLabel12.setText(bundle.getString("mandatoryf"));
 
-        jLabel6.setText("Vencimento");
+        jLabel6.setText(bundle.getString("maturity"));
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_adicionar.png"))); // NOI18N
         btnAdicionar.setToolTipText("Adicionar Produto");
@@ -310,7 +323,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         });
 
         btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_editar.png"))); // NOI18N
-        btnAlterar.setToolTipText("Alterar Dados");
+        btnAlterar.setToolTipText(bundle.getString("change_data"));
         btnAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterar.setEnabled(false);
         btnAlterar.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -321,7 +334,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         });
 
         btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_remover.png"))); // NOI18N
-        btnRemover.setToolTipText("Remover Produto");
+        btnRemover.setToolTipText(bundle.getString("prod_remove"));
         btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRemover.setEnabled(false);
         btnRemover.setPreferredSize(new java.awt.Dimension(80, 80));
