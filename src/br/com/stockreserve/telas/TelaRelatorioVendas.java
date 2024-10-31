@@ -370,7 +370,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         atualizarGrafico1(dataset);
         } else if (radioBtnMes.isSelected()){
         atualizarGrafico2(dataset);
-        }else if (radioBtnMes.isSelected()){
+        }else if (radioBtnAno.isSelected()){
         atualizarGrafico3(dataset);
         }
 
@@ -441,63 +441,44 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     }
     
      private void adicionarListeners() {
-        comonBoxMes1.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    if (radioBtnDia.isSelected()) {
-                        try {
-                            buscarDados();
-                        } catch (SQLException ex) {
-                            Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
-                            JOptionPane.showMessageDialog(TelaRelatorioVendas.this, "Erro ao buscar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
+    // Método auxiliar para reduzir repetição
+    ItemListener itemListener = new ItemListener() {
+        public void itemStateChanged(ItemEvent e) {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                try {
+                    buscarDados();
+                } catch (SQLException ex) {
+                    Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(TelaRelatorioVendas.this, "Erro ao buscar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                 }
             }
-        });
-        comonBoxAno1.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    if (radioBtnDia.isSelected()) {
-                        try {
-                            buscarDados();
-                        } catch (SQLException ex) {
-                            Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
-                            JOptionPane.showMessageDialog(TelaRelatorioVendas.this, "Erro ao buscar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                }
-            }
-        });
-        comonBoxAno2.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    if (radioBtnMes.isSelected()) {
-                        try {
-                            buscarDados();
-                        } catch (SQLException ex) {
-                            Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
-                            JOptionPane.showMessageDialog(TelaRelatorioVendas.this, "Erro ao buscar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                }
-            }
-        });
-        comonBoxAno3.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    if (radioBtnAno.isSelected()) {
-                        try {
-                            buscarDados();
-                        } catch (SQLException ex) {
-                            Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
-                            JOptionPane.showMessageDialog(TelaRelatorioVendas.this, "Erro ao buscar dados: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                }
-            }
-        });
-    }
+        }
+    };
+
+    comonBoxMes1.addItemListener(e -> {
+        if (radioBtnDia.isSelected()) {
+            itemListener.itemStateChanged(e);
+        }
+    });
+
+    comonBoxAno1.addItemListener(e -> {
+        if (radioBtnDia.isSelected()) {
+            itemListener.itemStateChanged(e);
+        }
+    });
+
+    comonBoxAno2.addItemListener(e -> {
+        if (radioBtnMes.isSelected()) {
+            itemListener.itemStateChanged(e);
+        }
+    });
+
+    comonBoxAno3.addItemListener(e -> {
+        if (radioBtnAno.isSelected()) {
+            itemListener.itemStateChanged(e);
+        }
+    });
+}
 
     private void ConfigurarComonBox(){
     
