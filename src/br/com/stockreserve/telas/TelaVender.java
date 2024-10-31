@@ -118,7 +118,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
                     return new Produto(
                             rs.getInt("idproduto"), rs.getString("nomeproduto"),
                             rs.getDouble("preco"), rs.getInt("quantidade"),
-                            rs.getDate("vencimento").toLocalDate()
+                            rs.getDate("vencimento") != null ? rs.getDate("vencimento").toLocalDate() : null
                     );
                 }
             }
@@ -149,7 +149,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
         String jsonProdutos = JsonUtil.produtosParaJson(produtosCarrinho);
 
         String sql = "INSERT INTO titulos (idtitulo, preco, pago, produtosCarrinho) VALUES (?, ?, ?, ?)";
-        String idTitulo = UUID.randomUUID().toString();
+        String idTitulo = "NF-" + UUID.randomUUID().toString();
 
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setString(1, idTitulo);
@@ -326,7 +326,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
             String jasonCarrinho = JsonUtil.produtosParaJson(produtos);
             Timestamp dataDaCompra = Timestamp.valueOf(LocalDateTime.now());
-            String idNotaFiscal = titulo.getId();
+            String idNotaFiscal = "NF-" + titulo.getId();
             String nomeVendedor = TelaPrincipal.lblUsuario.getText();
 
             // Inserir a nota fiscal no banco de dados
