@@ -22,6 +22,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,8 +35,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import net.proteanit.sql.DbUtils;
@@ -573,20 +576,29 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     try {
         List<double[]> monthlySalesData = getDadosMensais();
 
-        // Criar o modelo da tabela com as colunas: Mês, Total de Vendas, Vendas Previstas
-        DefaultTableModel model = new DefaultTableModel(new String[]{"Mês", "Total de Vendas", "Vendas Previstas"}, 0);
+        // Criar o modelo da tabela com as coluna: Vendas Previstas
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Valor das Vendas Previstas para o proximo mês"}, 0);
         tblPrevisoes.setModel(model);
 
         // Fazer a previsão para o próximo mês
         double predictedSales = predictNextMonthSales(monthlySalesData);
+        
+        // Formatar o valor para duas casas decimais
+        DecimalFormat df = new DecimalFormat("#.00");
+        String formattedSales = df.format(predictedSales);
 
-        // Adicionar os dados mensais ao modelo da tabela
-        for (double[] data : monthlySalesData) {
-            model.addRow(new Object[]{(int) data[0], data[1], null}); // Adiciona null para vendas previstas
-        }
-
+        
         // Adicionar a previsão do próximo mês na tabela
-        model.addRow(new Object[]{"Próximo Mês", null, predictedSales});
+        model.addRow(new Object[]{formattedSales});
+        
+        // Centralizar o texto da coluna
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        tblPrevisoes.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        
+        // Centralizar o texto do cabeçalho da coluna
+        DefaultTableCellRenderer headerRenderer = (DefaultTableCellRenderer) tblPrevisoes.getTableHeader().getDefaultRenderer();
+        headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
     } catch (Exception e) {
         e.printStackTrace();
