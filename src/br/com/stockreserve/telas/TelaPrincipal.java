@@ -26,8 +26,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
      * Creates new form TelaPrincipal
      */
     public TelaPrincipal() {
-        //Locale locale = new Locale("en", "US");
-        Locale locale = new Locale("pt", "BR");
+        //Locale locale = Locale.of("en", "US");
+        Locale locale = Locale.of("pt", "BR");
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
         setIconImage(icon.getImage());

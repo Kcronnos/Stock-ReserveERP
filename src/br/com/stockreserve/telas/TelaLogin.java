@@ -69,7 +69,7 @@ public class TelaLogin extends javax.swing.JFrame {
                     }
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Usuario ou senha inválido");
+                JOptionPane.showMessageDialog(null, bundle.getString("login_error"));
             }
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
@@ -81,8 +81,8 @@ public class TelaLogin extends javax.swing.JFrame {
      */
     public TelaLogin() {
         //internationalization
-        //Locale locale = new Locale("en", "US");
-        Locale locale = new Locale("pt", "BR");
+        //Locale locale = Locale.of("en", "US");
+        Locale locale = Locale.of("pt", "BR");
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
 
         initComponents();
