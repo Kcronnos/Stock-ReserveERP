@@ -80,8 +80,14 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
     
     //Método para preencher a tabela ao abrir a aba de notas fiscais
     private void preencherTabelaNotasFiscais() {
-        String sql = "SELECT idnotafiscal AS "+bundle.getString("ID_invoices")+", nomevendedor AS "+bundle.getString("seller")+", nomecliente AS "+bundle.getString("client")+", valor / 5.78 AS "+bundle.getString("value")+", datacompra AS `"+bundle.getString("dt")+"` " +
+        String sql;
+        if (LanguageSelection.selectedLanguage) {
+            sql = "SELECT idnotafiscal AS "+bundle.getString("ID_invoices")+", nomevendedor AS "+bundle.getString("seller")+", nomecliente AS "+bundle.getString("client")+", valor / 5.78 AS "+bundle.getString("value")+", datacompra AS `"+bundle.getString("dt")+"` " +
                  "FROM tbnotasfiscais ";
+        } else {
+            sql = "SELECT idnotafiscal AS "+bundle.getString("ID_invoices")+", nomevendedor AS "+bundle.getString("seller")+", nomecliente AS "+bundle.getString("client")+", valor AS "+bundle.getString("value")+", datacompra AS `"+bundle.getString("dt")+"` " +
+                 "FROM tbnotasfiscais ";
+        }
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -94,11 +100,18 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
 
     //Método para preencher a tabela ao pesquisar nota
     private void pesquisarNota() {
-    String sql = "SELECT idnotafiscal AS "+bundle.getString("ID_invoices")+", nomevendedor AS "+bundle.getString("seller")+", nomecliente AS "+bundle.getString("client")+", " +
-                 "valor / 5.78 AS "+bundle.getString("value")+", datacompra AS `"+bundle.getString("dt")+"` " +
-                 "FROM tbnotasfiscais " +
-                 "WHERE (idnotafiscal LIKE ? OR nomevendedor LIKE ? OR nomecliente LIKE ?) " +
-                 "AND (? IS NULL OR DATE(datacompra) = ?)";
+    String sql;
+    if(LanguageSelection.selectedLanguage){
+        sql = "SELECT idnotafiscal AS "+bundle.getString("ID_invoices")+", nomevendedor AS "+bundle.getString("seller")+", nomecliente AS "+bundle.getString("client")+", valor / 5.78 AS "+bundle.getString("value")+", datacompra AS `"+bundle.getString("dt")+"` " +
+             "FROM tbnotasfiscais " +
+             "WHERE (idnotafiscal LIKE ? OR nomevendedor LIKE ? OR nomecliente LIKE ?) " +
+             "AND (? IS NULL OR DATE(datacompra) = ?)";
+    }else{
+        sql = "SELECT idnotafiscal AS "+bundle.getString("ID_invoices")+", nomevendedor AS "+bundle.getString("seller")+", nomecliente AS "+bundle.getString("client")+", valor AS "+bundle.getString("value")+", datacompra AS `"+bundle.getString("dt")+"` " +
+             "FROM tbnotasfiscais " +
+             "WHERE (idnotafiscal LIKE ? OR nomevendedor LIKE ? OR nomecliente LIKE ?) " +
+             "AND (? IS NULL OR DATE(datacompra) = ?)";
+    }
 
     try {
         pst = conexao.prepareStatement(sql);

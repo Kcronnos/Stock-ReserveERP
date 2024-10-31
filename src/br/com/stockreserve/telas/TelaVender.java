@@ -26,6 +26,8 @@ import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -36,11 +38,19 @@ public class TelaVender extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    ResourceBundle bundle;
 
     /**
      * Creates new form TelaVender
      */
     public TelaVender() {
+        Locale locale;
+        if (LanguageSelection.selectedLanguage) {
+            locale = Locale.of("en", "US");
+        } else {
+            locale = Locale.of("pt", "BR");
+        }   
+        bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
         conexao = ModuloConexao.conector();
     }
@@ -51,14 +61,14 @@ public class TelaVender extends javax.swing.JInternalFrame {
             // Verifica se os campos não estão vazios
             if (txtProduQuanti.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(null,
-                        "Por favor, preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
+                        bundle.getString("mandatory"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
             if (!aindaTemProduto(txtProduQuanti)) {
                 JOptionPane.showMessageDialog(null,
-                        "Quantidade em falta no estoque ou informações incorretas.",
-                        "Erro", JOptionPane.ERROR_MESSAGE);
+                        bundle.getString("insufficient"),
+                        bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
                 txtProduQuanti.setText(null);
                 return;
             }
@@ -74,7 +84,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
             preencherTabelaTotal();
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, bundle.getString("error") + ": " + e.getMessage());
         }
     }
 
@@ -82,7 +92,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
     public String colocarProdutoCarrinho(JTextField quantidadeProduto) throws SQLException, ParseException, org.json.simple.parser.ParseException {
         int linhaSelecionada = tblProdutos.getSelectedRow();
         if (linhaSelecionada == -1) {
-            return "Nenhuma linha selecionada";
+            return bundle.getString("electProduct");
         }
 
         String produtoId = tblProdutos.getValueAt(linhaSelecionada, 0).toString();
@@ -91,10 +101,10 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
         Produto produto = buscarProduto(idproduto);
         if (produto == null) {
-            return "Produto não encontrado.";
+            return bundle.getString("productNotFound");
         }
         if (produto.getQuantidade() < produtoQuant) {
-            return "Quantidade insuficiente.";
+            return bundle.getString("insufficient2");
         }
 
         Titulo titulo = buscarTituloAberto();
@@ -105,7 +115,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
         }
 
         atualizarEstoque(produto, produtoQuant);
-        return "Produto adicionado ao carrinho.";
+        return bundle.getString("productAdded");
     }
 
     // Método para buscar o produto no banco de dados
@@ -224,9 +234,9 @@ public class TelaVender extends javax.swing.JInternalFrame {
                 }
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Quantidade inválida: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, bundle.getString("invalid_quantity") + e.getMessage());
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, bundle.getString("error")+": " + e.getMessage());
         }
         return false;
     }
@@ -238,7 +248,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
         if (linhaSelecionada != -1) { // Se uma linha está selecionada
             // Pergunta ao usuário se deseja realmente remover o produto
-            int resposta = JOptionPane.showConfirmDialog(null, "Deseja realmente remover o produto do carrinho?", "Confirmação", JOptionPane.YES_NO_OPTION);
+            int resposta = JOptionPane.showConfirmDialog(null, bundle.getString("remove_from_cart"), bundle.getString("Confirmation"), JOptionPane.YES_NO_OPTION);
 
             if (resposta == JOptionPane.YES_OPTION) {
                 // Atualizando a quantidade no banco de dados
@@ -262,13 +272,13 @@ public class TelaVender extends javax.swing.JInternalFrame {
                     preencherTabelaProduto();
                     preencherTabelaTotal();
 
-                    JOptionPane.showMessageDialog(null, "Produto removido do carrinho!");
+                    JOptionPane.showMessageDialog(null, bundle.getString("product_removed_success"));
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, "Erro ao remover o produto: " + e.getMessage());
+                    JOptionPane.showMessageDialog(null, bundle.getString("error_removing") + e.getMessage());
                 }
             }
         } else {
-            JOptionPane.showMessageDialog(null, "Selecione um produto para remover!");
+            JOptionPane.showMessageDialog(null, bundle.getString("select_to_remove"));
         }
 
         preencherTabelaProduto();
@@ -305,7 +315,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
             }
         } else {
             // Mensagem de erro caso o produto não seja encontrado
-            JOptionPane.showMessageDialog(null, "Produto não encontrado no carrinho!");
+            JOptionPane.showMessageDialog(null, bundle.getString("not_found_cart"));
         }
     }
 
@@ -349,10 +359,10 @@ public class TelaVender extends javax.swing.JInternalFrame {
                 preencherTabelaProduto();
                 preencherTabelaTotal();
 
-                JOptionPane.showMessageDialog(null, "Pagamento realizado com sucesso!");
+                JOptionPane.showMessageDialog(null, bundle.getString("payment_successfully"));
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao realizar pagamento: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, bundle.getString("error_payment") + e.getMessage());
         }
     }
 
@@ -374,7 +384,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
         try (PreparedStatement pst = conexao.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
 
             DefaultTableModel model = new DefaultTableModel(
-                    new String[]{"ID", "NOME", "PREÇO", "QUANTIDADE", "TOTAL"}, 0);
+                    new String[]{"ID", bundle.getString("name"), bundle.getString("price"), bundle.getString("amount"), "TOTAL"}, 0);
 
             if (rs.next()) {
                 List<Produto> produtos = JsonUtil.jsonParaProdutos(rs.getString("produtosCarrinho"));
@@ -387,7 +397,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
             }
             tblCarrinho.setModel(model);
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao carregar o carrinho: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, bundle.getString("error_loading_cart") + e.getMessage());
         }
     }
 
@@ -411,13 +421,13 @@ public class TelaVender extends javax.swing.JInternalFrame {
             model.addRow(new Object[]{df.format(total)});
             tblTotal.setModel(model);
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao carregar o carrinho: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, bundle.getString("error_loading_cart") + e.getMessage());
         }
     }
 
     //Método para preencher a tabela ao abrir a aba de relatório de produtos
     private void preencherTabelaProduto() {
-        String sql = "select idproduto as ID,nomeproduto as NOME, preco as PREÇO , quantidade as QUANT from tbprodutos";
+        String sql = "select idproduto as ID,nomeproduto as NOME, preco / 5.78 as PREÇO , quantidade as QUANT from tbprodutos";
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -430,7 +440,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
     //Método para preencher a tabela ao abrir a aba de relatório de produtos
     private void pesquisarProduto() {
-        String sql = "select idproduto as ID,nomeproduto as NOME, preco as PREÇO , quantidade as QUANT from tbprodutos where nomeproduto like ?";
+        String sql = "select idproduto as ID,nomeproduto as NOME, preco / 5.78 as PREÇO , quantidade as QUANT from tbprodutos where nomeproduto like ?";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtProduPesquisar.getText() + "%");
@@ -474,7 +484,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("Vender");
+        setTitle(bundle.getString("sell")); // NOI18N
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
             }
@@ -493,7 +503,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
             }
         });
 
-        btnPagar.setText("PAGAR");
+        btnPagar.setText(bundle.getString("pay"));
         btnPagar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnPagarActionPerformed(evt);
@@ -501,7 +511,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
         });
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("BUSCAR PRODUTOS");
+        jLabel3.setText(bundle.getString("search"));
 
         txtProduPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -522,7 +532,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "ID", "NOME", "PREÇO ", "QUANT"
+                "ID", bundle.getString("name"), bundle.getString("price"), bundle.getString("amount")
             }
         ));
         tblProdutos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -547,7 +557,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "ID", "NOME", "PREÇO ", "QUANT", "TOTAL"
+                "ID", bundle.getString("name"), bundle.getString("price"), bundle.getString("amount"), "TOTAL"
             }
         ));
         tblCarrinho.setToolTipText("");
@@ -559,20 +569,20 @@ public class TelaVender extends javax.swing.JInternalFrame {
         jScrollPane1.setViewportView(tblCarrinho);
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("PRODUTOS EM ESTOQUE");
+        jLabel2.setText(bundle.getString("prod_stock"));
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("CARRINHO");
+        jLabel1.setText(bundle.getString("cart"));
 
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("ID DO PRODUTO SELECIONADO");
+        jLabel5.setText(bundle.getString("selc_prod_id"));
 
         txtProduId.setEnabled(false);
 
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("COLOQUE A QUANTIDADE DO PRODUTO");
+        jLabel4.setText(bundle.getString("put_amout_prod"));
 
-        btnAdicionar.setText("ADICIONAR");
+        btnAdicionar.setText(bundle.getString("add"));
         btnAdicionar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 btnAdicionarMouseClicked(evt);
@@ -584,7 +594,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
             }
         });
 
-        btnRemover.setText("REMOVER");
+        btnRemover.setText(bundle.getString("remove"));
         btnRemover.setEnabled(false);
         btnRemover.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -592,7 +602,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
             }
         });
 
-        btnLimpar.setText("LIMPAR");
+        btnLimpar.setText(bundle.getString("clear"));
         btnLimpar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLimparActionPerformed(evt);
@@ -700,15 +710,15 @@ public class TelaVender extends javax.swing.JInternalFrame {
         String nomeCliente = null;
         int resposta = JOptionPane.showConfirmDialog(
                 null,
-                "Deseja confirmar o pagamento?",
-                "Confirmação de Pagamento",
+                bundle.getString("confirm_payment"),
+                bundle.getString("payment_confirmation"),
                 JOptionPane.YES_NO_OPTION);
         if (resposta == JOptionPane.YES_OPTION) {
             // Se a resposta for "Sim", pede o nome do cliente
             nomeCliente = JOptionPane.showInputDialog(
                     null,
-                    "Digite o nome do cliente:",
-                    "Nome do Cliente",
+                    bundle.getString("customer_name"),
+                    bundle.getString("client_name"),
                     JOptionPane.QUESTION_MESSAGE);
         }
         if (resposta == JOptionPane.YES_OPTION) {
