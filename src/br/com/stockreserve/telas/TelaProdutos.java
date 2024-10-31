@@ -25,8 +25,12 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
      * Creates new form TelaProdutos
      */
     public TelaProdutos() {
-        Locale locale = Locale.of("en", "US");
-        //Locale locale = Locale.of("pt", "BR");
+        Locale locale;
+        if (LanguageSelection.selectedLanguage) {
+            locale = Locale.of("en", "US");
+        } else {
+            locale = Locale.of("pt", "BR");
+        }   
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
 
         initComponents();
@@ -132,7 +136,12 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     
     //Método para pesquisar os produtos no banco de dados e adicionar a tabela enquanto você digita o nome
     private void pesquisarProdutos() {
-        String sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos where nomeproduto like ?";
+        String sql;
+        if (LanguageSelection.selectedLanguage) {
+            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco * 5.78 as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos where nomeproduto like ?";
+        } else {
+            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos where nomeproduto like ?";
+        }
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -166,7 +175,12 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     
     //Método para preencher a tabela dos produtos ao abrir a tela de produtos
     private void preencherTabelaProduto() {
-        String sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos";
+        String sql;
+        if (LanguageSelection.selectedLanguage) {
+            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco * 5.78 as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos";
+        } else {
+            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos";
+        }
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();

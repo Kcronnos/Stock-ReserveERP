@@ -39,8 +39,12 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
      * Creates new form TelaEstoqueStatus
      */
     public TelaEstoqueStatus() {
-        //Locale locale = Locale.of("pt", "BR");
-        Locale locale = Locale.of("en", "US");
+        Locale locale;
+        if (LanguageSelection.selectedLanguage) {
+            locale = Locale.of("en", "US");
+        } else {
+            locale = Locale.of("pt", "BR");
+        }   
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
 
         initComponents();
@@ -50,7 +54,25 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
 
     // Método para verificar o estoque e emitir alertas quando necessário
     public void verificarEstoque() {
-        String sql = """
+        String sql;
+        if (LanguageSelection.selectedLanguage) {
+            // SQL para selecionar os produtos e adicionar uma coluna `STATUS` com base na quantidade
+            sql = """
+                SELECT idproduto AS ID, 
+                nomeproduto AS NOME, 
+                preco *5.78 AS PREÇO, 
+                quantidade AS QUANTIDADE, 
+                limite_minimo AS LIMITE_MÍNIMO, 
+                vencimento AS VENCIMENTO,
+                CASE 
+                    WHEN quantidade = 0 THEN 'Vazio' 
+                    WHEN quantidade < limite_minimo THEN 'Precisa Abastecer' 
+                    ELSE 'OK' 
+                END AS STATUS
+        FROM tbprodutos;
+                """;
+        } else {
+            sql = """
         SELECT idproduto AS ID, 
                nomeproduto AS NOME, 
                preco AS PREÇO, 
@@ -64,6 +86,9 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
                END AS STATUS
         FROM tbprodutos;
         """;
+        }
+            // SQL para selecionar os produtos e adicionar uma coluna `STATUS` com base na quantidade
+        
 
         try {
             pst = conexao.prepareStatement(sql);

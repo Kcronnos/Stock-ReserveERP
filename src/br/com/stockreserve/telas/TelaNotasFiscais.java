@@ -46,8 +46,12 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
      * Creates new form TelaNotasFiscais
      */
     public TelaNotasFiscais() {
-        //Locale locale = Locale.of("pt", "BR");
-        Locale locale = Locale.of("en", "US");
+        Locale locale;
+        if (LanguageSelection.selectedLanguage) {
+            locale = Locale.of("en", "US");
+        } else {
+            locale = Locale.of("pt", "BR");
+        }   
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
         setTitle(bundle.getString("invoices"));
@@ -56,8 +60,14 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
     
     //Método para preencher a tabela ao abrir a aba de notas fiscais
     private void preencherTabelaNotasFiscais() {
-        String sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, valor AS VALOR, datacompra AS `DATA/HORA` " +
+        String sql;
+        if (LanguageSelection.selectedLanguage) {
+            sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, valor * 5.78 AS VALOR, datacompra AS `DATA/HORA` " +
                  "FROM tbnotasfiscais ";
+        } else {
+            sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, valor AS VALOR, datacompra AS `DATA/HORA` " +
+                 "FROM tbnotasfiscais ";
+        }
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();

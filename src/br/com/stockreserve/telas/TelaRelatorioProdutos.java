@@ -40,8 +40,12 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
      * Creates new form TelaRelatorios
      */
     public TelaRelatorioProdutos() {
-        Locale locale = Locale.of("en", "US");
-        //Locale locale = Locale.of("pt", "BR");
+        Locale locale;
+        if (LanguageSelection.selectedLanguage) {
+            locale = Locale.of("en", "US");
+        } else {
+            locale = Locale.of("pt", "BR");
+        }   
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
         setTitle(bundle.getString("Prod_Rep"));
@@ -138,12 +142,29 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
 
     //Método para preencher a tabela ao abrir a aba de relatório de produtos
     private void preencherTabelaProduto() {
+        String sql;
         String nome = bundle.getString("name");
         String preco = bundle.getString("price");
         String quantidade = bundle.getString("amount");
         String limiteMinimo = bundle.getString("min_limit");
         String vencimento = bundle.getString("expiry");
-        String sql = String.format("""
+        if (LanguageSelection.selectedLanguage) {
+            sql = String.format("""
+        SELECT idproduto AS ID, 
+               nomeproduto AS %s, 
+               preco * 5.78 AS %s, 
+               quantidade AS %s, 
+               limite_minimo AS %s, 
+               vencimento AS %s,
+               CASE 
+                   WHEN quantidade = 0 THEN 'Vazio' 
+                   WHEN quantidade < limite_minimo THEN 'Precisa Abastecer' 
+                   ELSE 'OK' 
+               END AS STATUS
+        FROM tbprodutos;
+        """, nome, preco, quantidade, limiteMinimo, vencimento);
+        } else {
+            sql = String.format("""
         SELECT idproduto AS ID, 
                nomeproduto AS %s, 
                preco AS %s, 
@@ -157,6 +178,8 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
                END AS STATUS
         FROM tbprodutos;
         """, nome, preco, quantidade, limiteMinimo, vencimento);
+        }
+        
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
