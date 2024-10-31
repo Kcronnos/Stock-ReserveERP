@@ -23,6 +23,7 @@ import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
@@ -39,6 +40,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import net.proteanit.sql.DbUtils;
 import org.json.simple.parser.ParseException;
+import weka.core.Attribute;
+import weka.core.Instances;
+import weka.classifiers.functions.LinearRegression;
+import weka.core.FastVector;
+import weka.core.Instance;
 
 /**
  *
@@ -509,6 +515,85 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         comonBoxAno3.addItem(String.valueOf(ano));
         }
     }
+    
+    public List<double[]> getDadosMensais() throws Exception {
+    List<double[]> salesData = new ArrayList<>();
+
+    try (Statement statement = conexao.createStatement()) {
+        String sql = "SELECT MONTH(datacompra) AS mes, SUM(valor) AS total " +
+                     "FROM tbnotasfiscais " +
+                     "GROUP BY MONTH(datacompra)";
+        ResultSet resultSet = statement.executeQuery(sql);
+        while (resultSet.next()) {
+            int mes = resultSet.getInt("mes");
+            double total = resultSet.getDouble("total");
+            salesData.add(new double[]{mes, total}); // Adiciona um array de doubles
+        }
+    }
+    return salesData;
+    }
+
+    public double predictNextMonthSales(List<double[]> salesData) throws Exception {
+    // Definir atributos usando FastVector
+    FastVector attributes = new FastVector(2);
+    attributes.addElement(new Attribute("mes")); // Mês
+    attributes.addElement(new Attribute("total")); // Total de vendas
+
+    // Criar conjunto de dados
+    Instances dataset = new Instances("SalesData", attributes, salesData.size());
+    dataset.setClassIndex(1); // A classe (o que queremos prever) é o total de vendas
+
+    // Adicionar dados
+    for (double[] data : salesData) {
+        double[] values = new double[dataset.numAttributes()];
+        values[0] = data[0]; // Mês
+        values[1] = data[1]; // Total de vendas
+        
+        // Criar uma nova instância e adicioná-la ao dataset
+        Instance instance = new Instance(1.0, values);
+        dataset.add(instance);
+    }
+
+    // Treinar o modelo de regressão
+    LinearRegression model = new LinearRegression();
+    model.buildClassifier(dataset);
+
+    // Criar um novo registro para prever o próximo mês
+    double[] nextMonthValues = new double[dataset.numAttributes()];
+    nextMonthValues[0] = salesData.size() + 1; // Próximo mês
+    Instance nextMonthInstance = new Instance(1.0, nextMonthValues);
+    nextMonthInstance.setDataset(dataset); // Associar ao dataset
+
+    // Fazer previsão
+    return model.classifyInstance(nextMonthInstance);
+}
+
+    
+    public void carregarTabelaPrevisoes() {
+    try {
+        List<double[]> monthlySalesData = getDadosMensais();
+
+        // Criar o modelo da tabela com as colunas: Mês, Total de Vendas, Vendas Previstas
+        DefaultTableModel model = new DefaultTableModel(new String[]{"Mês", "Total de Vendas", "Vendas Previstas"}, 0);
+        tblPrevisoes.setModel(model);
+
+        // Fazer a previsão para o próximo mês
+        double predictedSales = predictNextMonthSales(monthlySalesData);
+
+        // Adicionar os dados mensais ao modelo da tabela
+        for (double[] data : monthlySalesData) {
+            model.addRow(new Object[]{(int) data[0], data[1], null}); // Adiciona null para vendas previstas
+        }
+
+        // Adicionar a previsão do próximo mês na tabela
+        model.addRow(new Object[]{"Próximo Mês", null, predictedSales});
+
+    } catch (Exception e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Erro ao carregar os dados: " + e.getMessage(),
+                "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -536,6 +621,8 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         comonBoxAno3 = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblTotal = new javax.swing.JTable();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tblPrevisoes = new javax.swing.JTable();
 
         setClosable(true);
         setIconifiable(true);
@@ -666,7 +753,22 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         ));
         jScrollPane1.setViewportView(tblTotal);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 320, 140, 60));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 320, 130, 50));
+
+        tblPrevisoes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Mês", "Total de Vendas", "Vendas Previstas"
+            }
+        ));
+        jScrollPane3.setViewportView(tblPrevisoes);
+
+        getContentPane().add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 377, 550, 220));
 
         setBounds(0, 0, 1000, 634);
     }// </editor-fold>//GEN-END:initComponents
@@ -684,6 +786,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         // TODO add your handling code here:
         preencherTabelaNotasFiscais();
+        carregarTabelaPrevisoes();
         //chamando o método para ativar o botão de ver detalhes
         tblVendedores.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent event) {
@@ -759,10 +862,12 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JPanel panelGraficoBarra;
     private javax.swing.JRadioButton radioBtnAno;
     private javax.swing.JRadioButton radioBtnDia;
     private javax.swing.JRadioButton radioBtnMes;
+    private javax.swing.JTable tblPrevisoes;
     private javax.swing.JTable tblTotal;
     private javax.swing.JTable tblVendedores;
     private javax.swing.JTextField txtVendPesquisar;
