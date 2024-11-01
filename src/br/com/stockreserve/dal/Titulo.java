@@ -21,6 +21,9 @@ public class Titulo {
     private String id;
     private double preco;
     private boolean pago;
+    /**
+     * Lista de produtos associados a este título de venda.
+     */
     public List<Produto> produtosCarrinho;
 
     /**

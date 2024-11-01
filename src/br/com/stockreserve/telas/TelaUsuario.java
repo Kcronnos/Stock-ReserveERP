@@ -15,6 +15,9 @@ import java.util.ResourceBundle;
 import java.util.Locale;
 
 /**
+ * Classe que representa a interface do usuário para gerenciamento de usuários.
+ * Esta classe estende JInternalFrame e permite adicionar, alterar, remover e
+ * pesquisar usuários no banco de dados.
  *
  * @author Felipe
  */
@@ -26,7 +29,8 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     ResourceBundle bundle;
 
     /**
-     * Creates new form TelaUsuario
+     * Cria um novo formulário TelaUsuario. Este construtor inicializa a
+     * interface e a conexão com o banco de dados.
      */
     public TelaUsuario() {
         Locale locale;
