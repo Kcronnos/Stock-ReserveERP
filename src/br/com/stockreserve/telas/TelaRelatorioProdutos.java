@@ -17,13 +17,16 @@ import java.sql.*;
 import br.com.stockreserve.dal.ModuloConexao;
 import java.awt.Component;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import net.proteanit.sql.DbUtils;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -318,6 +321,93 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
             return cell;
         }
     }
+    
+    // Método para calcular a média de preços da concorrência para cada produto
+    public Map<String, Double> calcularMediaPrecosConcorrenciaPorProduto() throws SQLException {
+        String query = "SELECT nome, AVG(preco) AS media_preco FROM ("
+                     + "SELECT nome, preco FROM concorrencia1 "
+                     + "UNION ALL "
+                     + "SELECT nome, preco FROM concorrencia2"
+                     + ") AS precos_concorrencia GROUP BY nome";
+
+        Map<String, Double> mediasConcorrencia = new HashMap<>();
+
+        try (
+             PreparedStatement pstmt = conexao.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String nomeProduto = rs.getString("nome");
+                double mediaPreco = rs.getDouble("media_preco");
+                mediasConcorrencia.put(nomeProduto, mediaPreco);
+            }
+        }
+        return mediasConcorrencia;
+    }
+
+    // Método para sugerir novo preço para todos os produtos com base na média da concorrência
+    public Map<String, Double> sugerirNovoPrecoParaTodos() throws SQLException {
+        Map<String, Double> mediasConcorrencia = calcularMediaPrecosConcorrenciaPorProduto();
+        Map<String, Double> sugestoesNovosPrecos = new HashMap<>();
+
+        String queryProduto = "SELECT nomeproduto, preco FROM tbprodutos";
+        
+        try (
+             PreparedStatement pstmt = conexao.prepareStatement(queryProduto);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                String nomeProduto = rs.getString("nomeproduto");
+                double precoAtual = rs.getDouble("preco");
+
+                // Se a concorrência possui uma média para o produto, calcula o preço sugerido
+                if (mediasConcorrencia.containsKey(nomeProduto)) {
+                    double mediaConcorrencia = mediasConcorrencia.get(nomeProduto);
+                    double novoPrecoSugerido = (mediaConcorrencia < precoAtual) ? mediaConcorrencia * 0.9 : precoAtual;
+                    sugestoesNovosPrecos.put(nomeProduto, novoPrecoSugerido);
+                }
+            }
+        }
+        return sugestoesNovosPrecos;
+    }
+
+    // Método para preencher a tabela com as sugestões de preço
+    public void preencherTabelaAnaliseConcorrencia() throws SQLException {
+    DefaultTableModel model = new DefaultTableModel();
+    model.addColumn("Nome do Produto");
+    model.addColumn("Preço Atual");
+    model.addColumn("Média Preço Concorrência");
+    model.addColumn("Novo Preço Sugerido");
+    tblAnaliseConcorrencia.setModel(model);
+
+    // Obtém as médias de preço da concorrência e as sugestões de novo preço
+    Map<String, Double> mediasConcorrencia = calcularMediaPrecosConcorrenciaPorProduto();
+    Map<String, Double> sugestoesNovosPrecos = sugerirNovoPrecoParaTodos();
+
+    model.setRowCount(0); // Limpa as linhas atuais da tabela
+
+    String queryPrecoAtual = "SELECT nomeproduto, preco FROM tbprodutos";
+    try (PreparedStatement pstmt = conexao.prepareStatement(queryPrecoAtual);
+         ResultSet rs = pstmt.executeQuery()) {
+        
+        while (rs.next()) {
+            String nomeProduto = rs.getString("nomeproduto");
+            double precoAtual = rs.getDouble("preco");
+
+            // Verifica se o produto possui uma média de concorrência
+            if (mediasConcorrencia.containsKey(nomeProduto)) {
+                double mediaConcorrencia = mediasConcorrencia.get(nomeProduto);
+                double novoPreco = sugestoesNovosPrecos.getOrDefault(nomeProduto, precoAtual);
+
+                // Adiciona os dados como uma nova linha na tabela
+                model.addRow(new Object[]{
+                    nomeProduto,
+                    String.format("R$ %.2f", precoAtual),
+                    String.format("R$ %.2f", mediaConcorrencia),
+                    String.format("R$ %.2f", novoPreco)
+                });
+            }
+        }
+    }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -339,11 +429,14 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         txtIdProdu = new javax.swing.JTextField();
         txtNovoPreco = new javax.swing.JTextField();
         btnAlterarPreco = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblAnaliseConcorrencia = new javax.swing.JTable();
+        jLabel5 = new javax.swing.JLabel();
 
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle(bundle.getString("Prod_Rep"));
+        setTitle("Relatório de Produtos");
         setDoubleBuffered(true);
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -381,13 +474,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                bundle.getString("prod_id"),
-                bundle.getString("prod_name"),
-                bundle.getString("prod_price"),
-                bundle.getString("amount"),
-                bundle.getString("min_limit"),
-                bundle.getString("expiry"),
-                "STATUS"
+                "ID", "NOME", "PREÇO", "QUANTIDADE", "LIMITE_MÍNIMO", "VENCIMENTO", "STATUS"
             }
         ));
         tblProdutos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -406,25 +493,25 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         });
         getContentPane().add(txtProduPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 0, 230, -1));
 
-        jLabel2.setText(bundle.getString("search")); 
+        jLabel2.setText("Buscar");
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 0, 40, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText(bundle.getString("change_price"));
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 310, -1, -1));
+        jLabel1.setText("Alterar o Preço:");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, -1, -1));
 
         jLabel3.setText("ID");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 350, 50, -1));
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 50, -1));
 
-        jLabel4.setText(bundle.getString("new_price"));
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 380, -1, -1));
+        jLabel4.setText("Novo Preço");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 390, -1, -1));
 
         txtIdProdu.setEnabled(false);
-        getContentPane().add(txtIdProdu, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 350, 110, -1));
-        getContentPane().add(txtNovoPreco, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 380, 110, -1));
+        getContentPane().add(txtIdProdu, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 350, 110, -1));
+        getContentPane().add(txtNovoPreco, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 390, 110, -1));
 
         btnAlterarPreco.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_editar.png"))); // NOI18N
-        jLabel1.setText(bundle.getString("change_price"));
+        btnAlterarPreco.setToolTipText("Alterar Preço");
         btnAlterarPreco.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterarPreco.setPreferredSize(new java.awt.Dimension(50, 50));
         btnAlterarPreco.addActionListener(new java.awt.event.ActionListener() {
@@ -432,7 +519,27 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
                 btnAlterarPrecoActionPerformed(evt);
             }
         });
-        getContentPane().add(btnAlterarPreco, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 350, -1, 50));
+        getContentPane().add(btnAlterarPreco, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 350, -1, 50));
+
+        tblAnaliseConcorrencia.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(tblAnaliseConcorrencia);
+
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 330, 560, 270));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText("ANALISE DA CONCORRÊNCIA");
+        getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 310, -1, -1));
 
         setBounds(0, 0, 1000, 631);
     }// </editor-fold>//GEN-END:initComponents
@@ -471,8 +578,11 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JPanel panelGraficoBarra1;
+    private javax.swing.JTable tblAnaliseConcorrencia;
     private javax.swing.JTable tblProdutos;
     private javax.swing.JTextField txtIdProdu;
     private javax.swing.JTextField txtNovoPreco;

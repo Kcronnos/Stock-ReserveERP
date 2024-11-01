@@ -159,7 +159,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
         String jsonProdutos = JsonUtil.produtosParaJson(produtosCarrinho);
 
         String sql = "INSERT INTO titulos (idtitulo, preco, pago, produtosCarrinho) VALUES (?, ?, ?, ?)";
-        String idTitulo = "NF-" + UUID.randomUUID().toString();
+        String idTitulo = UUID.randomUUID().toString();
 
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setString(1, idTitulo);
@@ -352,7 +352,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
                 pst1.executeUpdate();
 
                 // Deletar o título pago
-                pst2.setString(1, idNotaFiscal);
+                pst2.setString(1, titulo.getId());
                 pst2.executeUpdate();
 
                 preencherTabelaCarrinho();
