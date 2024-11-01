@@ -48,6 +48,14 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         conexao = ModuloConexao.conector();
     }
     
+    /**
+     * Método para adicionar produtos no banco de dados. O método pegará as
+     * informações dos campos de textos, extrairá as string deles e essas string
+     * serão passadas como parametros do comando mysql
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     private void adicionarProdutos() {
         String sql = "insert into tbprodutos(idproduto, nomeproduto,preco,quantidade,limite_minimo,vencimento) values(?,?,?,?,?,?)";
         try {
@@ -86,7 +94,15 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         preencherTabelaProduto();
     }
     
-    //Método para alterar informações do produto
+    /**
+     * Método para alterar informações do produto no banco de dados. O método
+     * pegará as informações dos campos de textos, extrairá as strings deles e
+     * essas strings serão passdas como parametros do comando mysql
+     *
+     * @author Feliipee013
+     * @version 2.0
+     
+     */
     private void alterarProduto() {
         String sql = "update tbprodutos set nomeproduto =?, preco=?, quantidade=?, limite_minimo=?, vencimento=? where idproduto=?";
         try {
@@ -122,7 +138,15 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         preencherTabelaProduto();
     }
     
-    //Método para remover produtos do banco de dados
+    /**
+     * Método para remover produtos do banco de dados. O método pegará as
+     * informações dos campos de textos, extrairá as strings deles e essas
+     * strings serão passdas como parametros do comando mysql
+     *
+     * @author Feliipee013
+     * @version 2.0
+     
+     */
     private void removerProduto() {
         int confirma = JOptionPane.showConfirmDialog(null, bundle.getString("confirm_remove_product"), bundle.getString("attention"), JOptionPane.YES_NO_OPTION);
         if (confirma == JOptionPane.YES_OPTION) {
@@ -144,7 +168,14 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         preencherTabelaProduto();
     }
     
-    //Método para pesquisar os produtos no banco de dados e adicionar a tabela enquanto você digita o nome
+    /**
+     * Método para pesquisar os produtos no banco de dados e filtrar a tabela
+     * enquanto você digita o nome usando o método DbUtils da biblioteca rs2xml
+     *
+     * @author Feliipee013
+     * @version 2.0
+     
+     */
     private void pesquisarProdutos() {
         String sql;
         if (LanguageSelection.selectedLanguage) {
@@ -166,7 +197,14 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         }
     }
     
-    //Método para setar os campos do formulario com o conteudo da tabela
+    /**
+     * Método para setar os campos de textos do formulario com o conteudo da
+     * tabela ao clicar em uma linha da tabela
+     *
+     * @author Feliipee013
+     * @version 2.0
+     
+     */
     public void setarCampos() {
         int setar = tblProdutos.getSelectedRow();
         txtProduId.setText(tblProdutos.getModel().getValueAt(setar, 0).toString());
@@ -183,7 +221,14 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         btnRemover.setEnabled(true);
     }
     
-    //Método para preencher a tabela dos produtos ao abrir a tela de produtos
+    /**
+     * Método responsavela por preencher a tabela dos produtos quando alguma
+     * ação ocorre
+     *
+     * @author Feliipee013
+     * @version 2.0
+     
+     */
     private void preencherTabelaProduto() {
         String sql;
         if (LanguageSelection.selectedLanguage) {
@@ -201,6 +246,12 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         }
     }
     
+    /**
+     * Método responsavel por limpar todos os campos do formulario após os botões de adicionar, alterar ou remover serem acionados
+     * 
+     * @author Feliipee013
+     * @version 2.0
+     */
     private void limpar() {
         txtProduId.setText(null);
         txtProduNome.setText(null);
