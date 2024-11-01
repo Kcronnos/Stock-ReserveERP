@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package br.com.stockreserve.dal;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -11,6 +12,18 @@ import java.security.NoSuchAlgorithmException;
  * @author leog4
  */
 public class Criptografia {
+
+    /**
+     * Criptografa uma senha utilizando o algoritmo SHA-256.
+     *
+     * @param senha A senha em formato de String que será criptografada.
+     * @return Uma representação hexadecimal da senha criptografada.
+     * @throws RuntimeException Se ocorrer um erro ao obter a instância do
+     * algoritmo de hash.
+     * 
+     * @author leog4
+     * @version 2.0
+     */
     public static String criptografar(String senha) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
