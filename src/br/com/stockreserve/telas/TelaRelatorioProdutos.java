@@ -52,19 +52,28 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
             locale = Locale.of("en", "US");
         } else {
             locale = Locale.of("pt", "BR");
-        }   
+        }
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
         setTitle(bundle.getString("Prod_Rep"));
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-               tblProdutos.clearSelection();
+                tblProdutos.clearSelection();
             }
         });
         conexao = ModuloConexao.conector();
         graficoBarra();
     }
 
+    /**
+     * Altera o preço de um produto específico no banco de dados. O método
+     * valida os campos de entrada e atualiza o preço caso estejam preenchidos.
+     * Após a atualização, a tabela de produtos é recarregada e os campos são
+     * limpos.
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     private void alterarPreco() {
         String sql = "update tbprodutos set preco =? where idproduto =?";
 
@@ -87,8 +96,16 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-    
-    //Método para criar o graádico de barras
+
+    /**
+     * Gera um gráfico de barras que exibe a quantidade de produtos com
+     * diferentes status de validade (vencidos, perto de vencer, longe de
+     * vencer, sem data). Os dados são obtidos do banco de dados e o gráfico é
+     * exibido em um painel da interface.
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     public void graficoBarra() {
         int produtosVencidos = 0;
         int produtosPertoDeVencer = 0;
@@ -120,7 +137,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
 
         // Configuração do gráfico de barras
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-         dataset.addValue(produtosVencidos, bundle.getString("expired"), "Status");
+        dataset.addValue(produtosVencidos, bundle.getString("expired"), "Status");
         dataset.addValue(produtosPertoDeVencer, bundle.getString("near_expiry"), "Status");
         dataset.addValue(produtosLongeDeVencer, bundle.getString("long_expiry"), "Status");
         dataset.addValue(produtosSemData, bundle.getString("no_date"), "Status");
@@ -152,7 +169,14 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         panelGraficoBarra1.validate();
     }
 
-    //Método para preencher a tabela ao abrir a aba de relatório de produtos
+    /**
+     * Preenche a tabela de produtos com dados do banco de dados ao abrir a aba
+     * de relatório. O método também configura renderizadores para colunas,
+     * aplicando cores com base no status e na data de vencimento.
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     private void preencherTabelaProduto() {
         String sql;
         String nome = bundle.getString("name");
@@ -191,7 +215,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         FROM tbprodutos;
         """, nome, preco, quantidade, limiteMinimo, vencimento);
         }
-        
+
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -211,7 +235,14 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         }
     }
 
-    //Método para pesquisar os produtos no banco de dados e adicionar a tabela enquanto você digita o nome
+    /**
+     * Realiza uma busca no banco de dados e preenche a tabela de produtos com
+     * resultados que correspondem ao nome digitado. O método configura
+     * renderizadores de cor para status e data de vencimento.
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     private void pesquisarProdutos() {
         String nome = bundle.getString("name");
         String preco = bundle.getString("price");
@@ -257,20 +288,41 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
             String n = "penis";
         }
     }
-    
-    //Método para setar o id ao clicar na tabela
+
+    /**
+     * Define o ID do produto nos campos de texto ao selecionar uma linha na
+     * tabela de produtos. Esse método facilita a edição do produto ao exibir
+     * seu ID nos campos apropriados.
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     private void setarCampos() {
         int setar = tblProdutos.getSelectedRow();
         txtIdProdu.setText(tblProdutos.getModel().getValueAt(setar, 0).toString());
     }
-    
-    //Método para limpar os campos após alterar o preço
+
+    /**
+     * Limpa os campos de ID e preço novo após a alteração do preço. Esse método
+     * é usado para evitar que dados antigos permaneçam nos campos após a
+     * operação.
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     private void limpar() {
         txtIdProdu.setText(null);
         txtNovoPreco.setText(null);
     }
 
-    // Renderizador personalizado para a coluna `status`
+    /**
+     * Renderizador personalizado para a coluna `STATUS` da tabela. Aplica uma
+     * cor de fundo à célula com base no valor (por exemplo, `Vazio` em
+     * vermelho, `OK` em verde).
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     private static class StatusCellRenderer extends DefaultTableCellRenderer {
 
         @Override
@@ -297,7 +349,15 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         }
     }
 
-    // Renderizador personalizado para a coluna `VENCIMENTO`
+    /**
+     * Renderizador personalizado para a coluna `VENCIMENTO` da tabela. Aplica
+     * cores de fundo para células de acordo com a proximidade da data de
+     * vencimento. A célula fica vermelha para produtos vencidos, amarela para
+     * os próximos de vencer, e verde para vencimento distante.
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     private static class VencimentoCellRenderer extends DefaultTableCellRenderer {
 
         private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
@@ -330,20 +390,31 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
             return cell;
         }
     }
-    
-    // Método para calcular a média de preços da concorrência para cada produto
+
+    /**
+     * Calcula a média de preços da concorrência para cada produto. Este método
+     * consulta tabelas de preços de concorrentes e calcula a média para cada
+     * produto.
+     *
+     * @return Um mapa onde as chaves são os nomes dos produtos e os valores são
+     * as médias de preço da concorrência.
+     * @throws SQLException caso ocorra algum erro durante a consulta ao banco
+     * de dados.
+     *
+     * @author leog4
+     * @version 2.0
+     */
     public Map<String, Double> calcularMediaPrecosConcorrenciaPorProduto() throws SQLException {
         String query = "SELECT nome, AVG(preco) AS media_preco FROM ("
-                     + "SELECT nome, preco FROM concorrencia1 "
-                     + "UNION ALL "
-                     + "SELECT nome, preco FROM concorrencia2"
-                     + ") AS precos_concorrencia GROUP BY nome";
+                + "SELECT nome, preco FROM concorrencia1 "
+                + "UNION ALL "
+                + "SELECT nome, preco FROM concorrencia2"
+                + ") AS precos_concorrencia GROUP BY nome";
 
         Map<String, Double> mediasConcorrencia = new HashMap<>();
 
         try (
-             PreparedStatement pstmt = conexao.prepareStatement(query);
-             ResultSet rs = pstmt.executeQuery()) {
+                PreparedStatement pstmt = conexao.prepareStatement(query); ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 String nomeProduto = rs.getString("nome");
                 double mediaPreco = rs.getDouble("media_preco");
@@ -353,16 +424,27 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         return mediasConcorrencia;
     }
 
-    // Método para sugerir novo preço para todos os produtos com base na média da concorrência
+    /**
+     * Sugere um novo preço para todos os produtos com base na média de preços
+     * da concorrência. Se a média de um concorrente for menor que o preço
+     * atual, aplica-se um desconto; caso contrário, mantém o preço.
+     *
+     * @return Um mapa onde as chaves são os nomes dos produtos e os valores são
+     * os preços sugeridos.
+     * @throws SQLException caso ocorra algum erro durante a consulta ao banco
+     * de dados.
+     *
+     * @author leog4
+     * @version 2.0
+     */
     public Map<String, Double> sugerirNovoPrecoParaTodos() throws SQLException {
         Map<String, Double> mediasConcorrencia = calcularMediaPrecosConcorrenciaPorProduto();
         Map<String, Double> sugestoesNovosPrecos = new HashMap<>();
 
         String queryProduto = "SELECT nomeproduto, preco FROM tbprodutos";
-        
+
         try (
-             PreparedStatement pstmt = conexao.prepareStatement(queryProduto);
-             ResultSet rs = pstmt.executeQuery()) {
+                PreparedStatement pstmt = conexao.prepareStatement(queryProduto); ResultSet rs = pstmt.executeQuery()) {
             while (rs.next()) {
                 String nomeProduto = rs.getString("nomeproduto");
                 double precoAtual = rs.getDouble("preco");
@@ -378,44 +460,53 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         return sugestoesNovosPrecos;
     }
 
-    // Método para preencher a tabela com as sugestões de preço
+    /**
+     * Preenche a tabela de análise de concorrência com sugestões de novos
+     * preços. Os dados exibidos incluem o preço atual, a média de preços da
+     * concorrência e o preço sugerido para cada produto.
+     *
+     * @throws SQLException caso ocorra algum erro durante a consulta ao banco
+     * de dados.
+     * 
+     * @author leog4
+     * @version 2.0
+     */
     public void preencherTabelaAnaliseConcorrencia() throws SQLException {
-    DefaultTableModel model = new DefaultTableModel();
-    model.addColumn(bundle.getString("name"));
-    model.addColumn(bundle.getString("current_price"));
-    model.addColumn(bundle.getString("average_price"));
-    model.addColumn(bundle.getString("new_price"));
-    tblAnaliseConcorrencia.setModel(model);
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn(bundle.getString("name"));
+        model.addColumn(bundle.getString("current_price"));
+        model.addColumn(bundle.getString("average_price"));
+        model.addColumn(bundle.getString("new_price"));
+        tblAnaliseConcorrencia.setModel(model);
 
-    // Obtém as médias de preço da concorrência e as sugestões de novo preço
-    Map<String, Double> mediasConcorrencia = calcularMediaPrecosConcorrenciaPorProduto();
-    Map<String, Double> sugestoesNovosPrecos = sugerirNovoPrecoParaTodos();
+        // Obtém as médias de preço da concorrência e as sugestões de novo preço
+        Map<String, Double> mediasConcorrencia = calcularMediaPrecosConcorrenciaPorProduto();
+        Map<String, Double> sugestoesNovosPrecos = sugerirNovoPrecoParaTodos();
 
-    model.setRowCount(0); // Limpa as linhas atuais da tabela
+        model.setRowCount(0); // Limpa as linhas atuais da tabela
 
-    String queryPrecoAtual = "SELECT nomeproduto, preco FROM tbprodutos";
-    try (PreparedStatement pstmt = conexao.prepareStatement(queryPrecoAtual);
-         ResultSet rs = pstmt.executeQuery()) {
-        
-        while (rs.next()) {
-            String nomeProduto = rs.getString("nomeproduto");
-            double precoAtual = rs.getDouble("preco");
+        String queryPrecoAtual = "SELECT nomeproduto, preco FROM tbprodutos";
+        try (PreparedStatement pstmt = conexao.prepareStatement(queryPrecoAtual); ResultSet rs = pstmt.executeQuery()) {
 
-            // Verifica se o produto possui uma média de concorrência
-            if (mediasConcorrencia.containsKey(nomeProduto)) {
-                double mediaConcorrencia = mediasConcorrencia.get(nomeProduto);
-                double novoPreco = sugestoesNovosPrecos.getOrDefault(nomeProduto, precoAtual);
+            while (rs.next()) {
+                String nomeProduto = rs.getString("nomeproduto");
+                double precoAtual = rs.getDouble("preco");
 
-                // Adiciona os dados como uma nova linha na tabela
-                model.addRow(new Object[]{
-                    nomeProduto,
-                    String.format("R$ %.2f", precoAtual),
-                    String.format("R$ %.2f", mediaConcorrencia),
-                    String.format("R$ %.2f", novoPreco)
-                });
+                // Verifica se o produto possui uma média de concorrência
+                if (mediasConcorrencia.containsKey(nomeProduto)) {
+                    double mediaConcorrencia = mediasConcorrencia.get(nomeProduto);
+                    double novoPreco = sugestoesNovosPrecos.getOrDefault(nomeProduto, precoAtual);
+
+                    // Adiciona os dados como uma nova linha na tabela
+                    model.addRow(new Object[]{
+                        nomeProduto,
+                        String.format("R$ %.2f", precoAtual),
+                        String.format("R$ %.2f", mediaConcorrencia),
+                        String.format("R$ %.2f", novoPreco)
+                    });
+                }
             }
         }
-    }
     }
 
     /**

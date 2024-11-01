@@ -44,7 +44,7 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
             locale = Locale.of("en", "US");
         } else {
             locale = Locale.of("pt", "BR");
-        }   
+        }
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
 
         initComponents();
@@ -52,7 +52,19 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
         conexao = ModuloConexao.conector();
     }
 
-    // Método para verificar o estoque e emitir alertas quando necessário
+    /**
+     * Método que verifica o estoque de produtos e atualiza a tabela de exibição
+     * com as informações, incluindo a quantidade, vencimento e o status do
+     * produto (ex.: Vazio, Precisa Abastecer). Configura renderizadores
+     * personalizados para colorir as colunas `STATUS` e `VENCIMENTO` conforme a
+     * condição de cada produto.
+     *
+     * @throws SQLException caso ocorra algum erro durante a consulta ao banco
+     * de dados.
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     public void verificarEstoque() {
         String sql;
         if (LanguageSelection.selectedLanguage) {
@@ -87,8 +99,7 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
         FROM tbprodutos;
         """;
         }
-            // SQL para selecionar os produtos e adicionar uma coluna `STATUS` com base na quantidade
-        
+        // SQL para selecionar os produtos e adicionar uma coluna `STATUS` com base na quantidade
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -110,6 +121,15 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
         }
     }
 
+    /**
+     * Atualiza os nomes das colunas na interface da tabela de estoque com as
+     * strings de idioma apropriadas, carregadas de um arquivo de recursos
+     * (bundle). Este método garante que os títulos das colunas estejam no
+     * idioma correto, conforme definido na aplicação.
+     *
+     * @author ElinaldoLopes
+     * @version 2.0
+     */
     private void atualizarNomesColunas() {
         tblEstoStatus.getColumnModel().getColumn(0).setHeaderValue(bundle.getString("prod_id"));
         tblEstoStatus.getColumnModel().getColumn(1).setHeaderValue(bundle.getString("prod_name"));
@@ -120,7 +140,15 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
         tblEstoStatus.getColumnModel().getColumn(6).setHeaderValue(bundle.getString("stock_status"));
         tblEstoStatus.getTableHeader().repaint(); // Re-renderiza o cabeçalho para exibir as novas strings
     }
-    // Renderizador personalizado para a coluna `status`
+
+    /**
+     * Renderizador personalizado para a coluna `STATUS` da tabela. Aplica uma
+     * cor de fundo à célula com base no valor (por exemplo, `Vazio` em
+     * vermelho, `OK` em verde).
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     private static class StatusCellRenderer extends DefaultTableCellRenderer {
 
         @Override
@@ -147,7 +175,15 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
         }
     }
 
-    // Renderizador personalizado para a coluna `VENCIMENTO`
+    /**
+     * Renderizador personalizado para a coluna `VENCIMENTO` da tabela. Aplica
+     * cores de fundo para células de acordo com a proximidade da data de
+     * vencimento. A célula fica vermelha para produtos vencidos, amarela para
+     * os próximos de vencer, e verde para vencimento distante.
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     private static class VencimentoCellRenderer extends DefaultTableCellRenderer {
 
         private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");

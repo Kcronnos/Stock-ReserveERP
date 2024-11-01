@@ -5,6 +5,14 @@ import java.awt.*;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ * Classe que representa a tela de seleção de idioma para o aplicativo. Esta
+ * classe permite que o usuário escolha entre os idiomas disponíveis (Inglês e
+ * Português) e atualiza a interface do usuário com base na seleção realizada.
+ *
+ * @author ElinaldoLopes
+ * @version 2.0
+ */
 public class LanguageSelection extends JFrame {
 
     // Variável global para armazenar o idioma selecionado
@@ -13,6 +21,14 @@ public class LanguageSelection extends JFrame {
     // Bundle de recursos para armazenar as traduções
     private ResourceBundle bundle;
 
+    /**
+     * Construtor da classe LanguageSelection. Inicializa a interface do
+     * usuário, define o idioma com base na seleção e configura o layout e
+     * componentes da tela.
+     *
+     * @author ElinaldoLopes
+     * @version 2.0
+     */
     public LanguageSelection() {
         // Define o idioma inicial com base no valor de selectedLanguage
         updateLocale();
@@ -71,13 +87,25 @@ public class LanguageSelection extends JFrame {
         add(panel);
     }
 
-    // Método para atualizar o Locale e carregar o ResourceBundle correto
+    /**
+     * Método para atualizar o Locale e carregar o ResourceBundle correto com
+     * base no idioma selecionado.
+     *
+     * @author ElinaldoLopes
+     * @version 2.0
+     */
     private void updateLocale() {
         Locale locale = selectedLanguage ? new Locale("en", "US") : new Locale("pt", "BR");
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
     }
 
-    // Método para atualizar os textos dos botões e do título
+    /**
+     * Método para atualizar os textos dos botões e do título da janela com base
+     * no idioma selecionado.
+     * 
+     * @author ElinaldoLopes
+     * @version 2.0
+     */
     private void updateTexts() {
         setTitle(bundle.getString("lang_title"));
     }

@@ -18,6 +18,7 @@ import java.util.ResourceBundle;
  * @author Felipe
  */
 public class TelaLogin extends javax.swing.JFrame {
+
     ImageIcon icon = new ImageIcon(getClass().getResource("/br.com.stockreserve.icones/logo_stockreserve.png"));
     Connection conexao = null;
     PreparedStatement pst = null;
@@ -25,6 +26,23 @@ public class TelaLogin extends javax.swing.JFrame {
     //internationalization
     private ResourceBundle bundle;
 
+    /**
+     * Método responsável por realizar a autenticação do usuário no sistema.
+     * Verifica o login e a senha informados pelo usuário na interface,
+     * comparando-os com os dados armazenados na tabela `tbusuarios` do banco de
+     * dados. Em caso de sucesso, habilita os menus correspondentes ao setor do
+     * usuário e fecha a tela de login.
+     *
+     * A senha é criptografada antes de ser comparada com o valor armazenado no
+     * banco. Caso as credenciais estejam incorretas, exibe uma mensagem de
+     * erro.
+     *
+     * @throws Exception se ocorrer algum erro durante a execução da consulta ao
+     * banco de dados.
+     *
+     * @author Feliipee013
+     * @version 2.0
+     */
     public void logar() {
         String sql = "Select * from tbusuarios where login = ? and senha = ?";
         try {
@@ -99,7 +117,6 @@ public class TelaLogin extends javax.swing.JFrame {
             lblStatus.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/dberror.png")));
         }
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
