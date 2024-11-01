@@ -374,10 +374,10 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
     // Método para preencher a tabela com as sugestões de preço
     public void preencherTabelaAnaliseConcorrencia() throws SQLException {
     DefaultTableModel model = new DefaultTableModel();
-    model.addColumn("Nome do Produto");
-    model.addColumn("Preço Atual");
-    model.addColumn("Média Preço Concorrência");
-    model.addColumn("Novo Preço Sugerido");
+    model.addColumn(bundle.getString("name"));
+    model.addColumn(bundle.getString("current_price"));
+    model.addColumn(bundle.getString("average_price"));
+    model.addColumn(bundle.getString("new_price"));
     tblAnaliseConcorrencia.setModel(model);
 
     // Obtém as médias de preço da concorrência e as sugestões de novo preço
@@ -540,7 +540,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("ANALISE DA CONCORRÊNCIA");
+        jLabel5.setText(bundle.getString("competition_analysis"));
         getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 310, -1, -1));
 
         setBounds(0, 0, 1000, 631);
