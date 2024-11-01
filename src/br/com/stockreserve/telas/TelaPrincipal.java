@@ -13,13 +13,12 @@ import javax.swing.JOptionPane;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-
 /**
  *
- * @author 
- * @version 2.0
+ * @author @version 2.0
  */
 public class TelaPrincipal extends javax.swing.JFrame {
+
     ImageIcon icon = new ImageIcon(getClass().getResource("/br.com.stockreserve.icones/logo_stockreserve.png"));
     private ResourceBundle bundle;
 
@@ -32,7 +31,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
             locale = Locale.of("en", "US");
         } else {
             locale = Locale.of("pt", "BR");
-        }   
+        }
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
         setIconImage(icon.getImage());
@@ -237,12 +236,22 @@ public class TelaPrincipal extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Trata a ação do menu que inicializa a tela "Sobre".
+     *
+     * @param evt o evento de ação gerado pelo menu
+     */
     private void menAjuSobActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menAjuSobActionPerformed
         //Inicializando a tela Sobre
         TelaSobre sobre = new TelaSobre();
         sobre.setVisible(true);
     }//GEN-LAST:event_menAjuSobActionPerformed
 
+    /**
+     * Trata a ação do menu que inicializa a tela de estoque de produtos.
+     *
+     * @param evt o evento de ação gerado pelo menu
+     */
     private void menEstProActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menEstProActionPerformed
         //Inicializando a tela de estoque de produtos
         TelaProdutos produtos = new TelaProdutos();
@@ -250,6 +259,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         desktop.add(produtos);
     }//GEN-LAST:event_menEstProActionPerformed
 
+    /**
+     * Trata o evento de ativação da janela, atualizando a data atual exibida.
+     *
+     * @param evt o evento de ativação da janela
+     */
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
         //Fazendo aparecer a data atual
         Date data = new Date();
@@ -257,6 +271,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         lblData.setText(formatador.format(data));
     }//GEN-LAST:event_formWindowActivated
 
+    /**
+     * Trata a ação do menu que inicializa a tela de gestão de usuários.
+     *
+     * @param evt o evento de ação gerado pelo menu
+     */
     private void menGerUsuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menGerUsuActionPerformed
         //Inicializando a tela de gestão de usuários
         TelaUsuario usuario = new TelaUsuario();
@@ -264,6 +283,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         desktop.add(usuario);
     }//GEN-LAST:event_menGerUsuActionPerformed
 
+    /**
+     * Trata a ação do menu que inicializa a tela de relatório de produtos.
+     *
+     * @param evt o evento de ação gerado pelo menu
+     */
     private void menGerRelProActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menGerRelProActionPerformed
         //Inicializando a tela de relatorio de produtos
         TelaRelatorioProdutos relatorioProdu = new TelaRelatorioProdutos();
@@ -271,6 +295,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         desktop.add(relatorioProdu);
     }//GEN-LAST:event_menGerRelProActionPerformed
 
+    /**
+     * Trata a ação do menu que inicializa a tela de relatório de vendas.
+     *
+     * @param evt o evento de ação gerado pelo menu
+     */
     private void MenGerRelVenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MenGerRelVenActionPerformed
         //Inicializando a tela de relatorio de vendas
         TelaRelatorioVendas relatorioVend = new TelaRelatorioVendas();
@@ -278,6 +307,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         desktop.add(relatorioVend);
     }//GEN-LAST:event_MenGerRelVenActionPerformed
 
+    /**
+     * Trata a ação do menu que exibe uma caixa de diálogo para confirmação de
+     * saída.
+     *
+     * @param evt o evento de ação gerado pelo menu
+     */
     private void menOpcSaiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menOpcSaiActionPerformed
         //Exibe uma caixa de dialogo
         int sair = JOptionPane.showConfirmDialog(null, bundle.getString("close_msg"), bundle.getString("attention"), JOptionPane.YES_NO_OPTION);
@@ -286,6 +321,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_menOpcSaiActionPerformed
 
+    /**
+     * Trata a ação do menu que inicializa a tela de venda.
+     *
+     * @param evt o evento de ação gerado pelo menu
+     */
     private void menVenVenderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menVenVenderActionPerformed
         //Inicializando a tela de venda
         TelaVender vender = new TelaVender();
@@ -293,6 +333,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         desktop.add(vender);
     }//GEN-LAST:event_menVenVenderActionPerformed
 
+    /**
+     * Trata a ação do menu que abre o suporte no Discord.
+     *
+     * @param evt o evento de ação gerado pelo menu
+     */
     private void menAjuSupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menAjuSupActionPerformed
         //Adicionando o comando que irá abrir o suporte noo dicord
         try {
@@ -302,6 +347,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_menAjuSupActionPerformed
 
+    /**
+     * Trata a ação do menu que inicializa a tela de status do estoque.
+     *
+     * @param evt o evento de ação gerado pelo menu
+     */
     private void menEstStatusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menEstStatusActionPerformed
         //Inicializando a tela de status do estoque
         TelaEstoqueStatus status = new TelaEstoqueStatus();
@@ -309,6 +359,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         desktop.add(status);
     }//GEN-LAST:event_menEstStatusActionPerformed
 
+    /**
+     * Trata a ação do menu que inicializa a tela de Notas Fiscais.
+     *
+     * @param evt o evento de ação gerado pelo menu
+     */
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         //iniciando a tela de Notas Fiscais
         TelaNotasFiscais notas = new TelaNotasFiscais();

@@ -16,8 +16,17 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
+ * Classe responsável pela interface de gerenciamento de produtos do sistema.
+ * Permite a visualização, adição, alteração e remoção de produtos através de
+ * uma interface gráfica.
  *
- * @author Felipe
+ * A classe também lida com a conexão ao banco de dados e utiliza a classe
+ * {@link ModuloConexao} para estabelecer a conexão. A interface é configurada
+ * para suportar a internacionalização, permitindo que os textos exibidos sejam
+ * adaptados ao idioma do usuário.
+ *
+ * @author Feliipee013
+ * @version 2.0
  */
 public class TelaProdutos extends javax.swing.JInternalFrame {
 
@@ -27,7 +36,15 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     ResourceBundle bundle;
 
     /**
-     * Creates new form TelaProdutos
+     * Construtor da classe TelaProdutos. Inicializa a interface e configura a
+     * conexão com o banco de dados. Também configura o suporte à
+     * internacionalização com base na linguagem selecionada pelo usuário. Além
+     * disso, adiciona um ouvinte de mouse à tabela de produtos, que limpa a
+     * seleção e habilita/desabilita botões conforme necessário.
+     *
+     * @author Feliipee013
+     * @author ElinaldoLopes
+     * @version 2.0
      */
     public TelaProdutos() {
         Locale locale;
@@ -529,11 +546,23 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         setBounds(0, 0, 1000, 631);
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Método chamado quando uma tecla é liberada no campo de pesquisa. Realiza
+     * a pesquisa de produtos e atualiza a tabela.
+     *
+     * @param evt Evento gerado pela liberação de uma tecla.
+     */
     private void txtProduPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtProduPesquisarKeyReleased
         //Chamando o método para pesquisar produtos e preencher a tabela
         pesquisarProdutos();
     }//GEN-LAST:event_txtProduPesquisarKeyReleased
 
+    /**
+     * Método chamado quando o mouse é clicado na tabela de produtos. Preenche
+     * os campos do formulário com os dados do produto selecionado.
+     *
+     * @param evt Evento gerado pelo clique do mouse.
+     */
     private void tblProdutosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblProdutosMouseClicked
         //Chamando o setar campos para preencher os campos do formulário
         setarCampos();
@@ -555,6 +584,12 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtProduPrecoActionPerformed
 
+    /**
+     * Método chamado ao clicar no botão para adicionar produtos. Adiciona um
+     * novo produto ao banco de dados.
+     *
+     * @param evt Evento gerado pelo clique do mouse.
+     */
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed
         //Chamando o método para adicionar produtos
         adicionarProdutos();
