@@ -16,7 +16,8 @@ import java.util.ResourceBundle;
 
 /**
  *
- * @author Felipe
+ * @author 
+ * @version 2.0
  */
 public class TelaPrincipal extends javax.swing.JFrame {
     ImageIcon icon = new ImageIcon(getClass().getResource("/br.com.stockreserve.icones/logo_stockreserve.png"));

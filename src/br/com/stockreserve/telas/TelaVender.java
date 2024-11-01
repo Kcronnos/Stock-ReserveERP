@@ -30,38 +30,49 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
+ * Classe que representa a tela de vendas do sistema, permitindo que o usuário
+ * adicione produtos ao carrinho e realize a compra. Esta classe estende
+ * JInternalFrame para ser utilizada em uma interface gráfica.
  *
- * @author Felipe
+ * @author leog4
+ * @version 2.0
  */
 public class TelaVender extends javax.swing.JInternalFrame {
 
-    Connection conexao = null;
-    PreparedStatement pst = null;
-    ResultSet rs = null;
-    ResourceBundle bundle;
+    Connection conexao = null; // Conexão com o banco de dados
+    PreparedStatement pst = null; // PreparedStatement para consultas
+    ResultSet rs = null; // ResultSet para armazenar os resultados da consulta
+    ResourceBundle bundle; // Recurso de bundle para suporte a múltiplos idiomas
 
     /**
-     * Creates new form TelaVender
+     * Cria uma nova instância da tela de vendas. Inicializa os componentes e a
+     * conexão com o banco de dados.
      */
     public TelaVender() {
         Locale locale;
         if (LanguageSelection.selectedLanguage) {
-            locale = Locale.of("en", "US");
+            locale = Locale.of("en", "US"); // Define o idioma para inglês
         } else {
-            locale = Locale.of("pt", "BR");
-        }   
+            locale = Locale.of("pt", "BR"); // Define o idioma para português
+        }
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-               tblProdutos.clearSelection();
-               tblCarrinho.clearSelection();
+                tblProdutos.clearSelection(); // Limpa a seleção da tabela de produtos
+                tblCarrinho.clearSelection(); // Limpa a seleção da tabela do carrinho
             }
         });
-        initComponents();
-        conexao = ModuloConexao.conector();
+        initComponents(); // Inicializa os componentes da interface
+        conexao = ModuloConexao.conector(); // Conecta ao banco de dados
     }
 
-// Método para adicionar produtos ao carrinho
+    /**
+     * Método para adicionar produtos ao carrinho. Verifica se os campos não
+     * estão vazios e se há produtos disponíveis no estoque. Atualiza as tabelas
+     * de produtos e carrinho após a adição.
+     *
+     * @throws SQLException Se ocorrer um erro ao acessar o banco de dados.
+     */
     private void adicionarProdutos() throws SQLException {
         try {
             // Verifica se os campos não estão vazios
@@ -70,7 +81,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
                         bundle.getString("mandatory"), bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
+            //verifica se tem produto suficiente em estoque
             if (!aindaTemProduto(txtProduQuanti)) {
                 JOptionPane.showMessageDialog(null,
                         bundle.getString("insufficient"),
@@ -94,11 +105,21 @@ public class TelaVender extends javax.swing.JInternalFrame {
         }
     }
 
-    // Coloca o produto no título/carrinho
+    /**
+     * Coloca um produto no título/carrinho.
+     *
+     * @param quantidadeProduto Campo de texto que contém a quantidade do
+     * produto.
+     * @return Mensagem indicando o resultado da operação.
+     * @throws SQLException Se ocorrer um erro ao acessar o banco de dados.
+     * @throws ParseException Se ocorrer um erro ao analisar a data.
+     * @throws org.json.simple.parser.ParseException Se ocorrer um erro ao
+     * analisar JSON.
+     */
     public String colocarProdutoCarrinho(JTextField quantidadeProduto) throws SQLException, ParseException, org.json.simple.parser.ParseException {
         int linhaSelecionada = tblProdutos.getSelectedRow();
         if (linhaSelecionada == -1) {
-            return bundle.getString("electProduct");
+            return bundle.getString("electProduct"); // Mensagem se nenhum produto foi selecionado
         }
 
         String produtoId = tblProdutos.getValueAt(linhaSelecionada, 0).toString();
@@ -107,24 +128,30 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
         Produto produto = buscarProduto(idproduto);
         if (produto == null) {
-            return bundle.getString("productNotFound");
+            return bundle.getString("productNotFound"); // Mensagem se o produto não for encontrado
         }
         if (produto.getQuantidade() < produtoQuant) {
-            return bundle.getString("insufficient2");
+            return bundle.getString("insufficient2"); // Mensagem se não houver quantidade suficiente
         }
 
         Titulo titulo = buscarTituloAberto();
         if (titulo == null) {
-            titulo = criarNovoTitulo(produto, produtoQuant);
+            titulo = criarNovoTitulo(produto, produtoQuant); // Cria um novo título se não houver
         } else {
-            adicionarProdutoAoTitulo(titulo, produto, produtoQuant);
+            adicionarProdutoAoTitulo(titulo, produto, produtoQuant); // Adiciona ao título existente
         }
 
-        atualizarEstoque(produto, produtoQuant);
-        return bundle.getString("productAdded");
+        atualizarEstoque(produto, produtoQuant); // Atualiza o estoque
+        return bundle.getString("productAdded"); // Mensagem de sucesso
     }
 
-    // Método para buscar o produto no banco de dados
+    /**
+     * Busca um produto no banco de dados pelo ID.
+     *
+     * @param id ID do produto a ser buscado.
+     * @return O produto encontrado ou null se não for encontrado.
+     * @throws SQLException Se ocorrer um erro ao acessar o banco de dados.
+     */
     private Produto buscarProduto(int id) throws SQLException {
         String sql = "SELECT * FROM tbprodutos WHERE idproduto = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
@@ -139,25 +166,39 @@ public class TelaVender extends javax.swing.JInternalFrame {
                 }
             }
         }
-        return null;
+        return null; // Retorna null se o produto não for encontrado
     }
 
-    //metódo para ver se tem um titulo em aberto
+    /**
+     * Busca um título em aberto no banco de dados.
+     *
+     * @return O título encontrado ou null se não houver nenhum aberto.
+     * @throws SQLException Se ocorrer um erro ao acessar o banco de dados.
+     * @throws ParseException Se ocorrer um erro ao analisar a data.
+     * @throws org.json.simple.parser.ParseException Se ocorrer um erro ao
+     * analisar JSON.
+     */
     private Titulo buscarTituloAberto() throws SQLException, ParseException, org.json.simple.parser.ParseException {
         String sql = "SELECT * FROM titulos WHERE pago = false LIMIT 1";
         try (Statement stmt = conexao.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             if (rs.next()) {
                 String jsonProdutos = rs.getString("produtosCarrinho");
                 List<Produto> produtos = JsonUtil.jsonParaProdutos(jsonProdutos);
-                //se encontrar retorna o titulo
                 return new Titulo(rs.getString("idtitulo"), rs.getDouble("preco"), false, produtos);
             }
         }
-        //se não encontrar retorna nulo
-        return null;
+
+        return null; // Retorna null se não houver título em aberto
     }
 
-    // Método para criar um novo título e adicionar o produto
+    /**
+     * Cria um novo título e adiciona um produto a ele.
+     *
+     * @param produto Produto a ser adicionado.
+     * @param quantidade Quantidade do produto a ser adicionada.
+     * @return O título criado.
+     * @throws SQLException Se ocorrer um erro ao acessar o banco de dados.
+     */
     private Titulo criarNovoTitulo(Produto produto, int quantidade) throws SQLException {
         List<Produto> produtosCarrinho = new ArrayList<>();
         produtosCarrinho.add(new Produto(produto.getId(), produto.getNome(),
@@ -178,7 +219,14 @@ public class TelaVender extends javax.swing.JInternalFrame {
         return new Titulo(idTitulo, produto.getPreco(), false, produtosCarrinho);
     }
 
-    //metódo para adicionar um novo produto ao carrinho
+    /**
+     * Adiciona um novo produto ao título existente no carrinho.
+     *
+     * @param titulo Título ao qual o produto será adicionado.
+     * @param produto Produto a ser adicionado.
+     * @param quantidade Quantidade do produto a ser adicionada.
+     * @throws SQLException Se ocorrer um erro ao acessar o banco de dados.
+     */
     private void adicionarProdutoAoTitulo(Titulo titulo, Produto produto, int quantidade) throws SQLException {
         List<Produto> produtosCarrinho = titulo.getProdutosCarrinho();
         boolean produtoExistente = false;
@@ -210,7 +258,13 @@ public class TelaVender extends javax.swing.JInternalFrame {
         }
     }
 
-    // Atualiza o estoque do produto
+    /**
+     * Atualiza o estoque de um produto após uma venda.
+     *
+     * @param produto Produto a ser atualizado.
+     * @param quantidade Quantidade vendida do produto.
+     * @throws SQLException Se ocorrer um erro ao acessar o banco de dados.
+     */
     private void atualizarEstoque(Produto produto, int quantidade) throws SQLException {
         String sql = "UPDATE tbprodutos SET quantidade = quantidade - ? WHERE idproduto = ?";
         try (PreparedStatement stmt = conexao.prepareStatement(sql)) {
@@ -220,7 +274,14 @@ public class TelaVender extends javax.swing.JInternalFrame {
         }
     }
 
-// Verifica se ainda há produto no estoque
+    /**
+     * Verifica se ainda há produto disponível no estoque.
+     *
+     * @param quantidadeProduto o campo de texto que contém a quantidade
+     * desejada do produto
+     * @return true se a quantidade disponível no estoque for suficiente para
+     * atender a quantidade desejada, false caso contrário ou em caso de erro
+     */
     public boolean aindaTemProduto(JTextField quantidadeProduto) {
         int linhaSelecionada = tblProdutos.getSelectedRow();
         if (linhaSelecionada == -1) {
@@ -242,12 +303,18 @@ public class TelaVender extends javax.swing.JInternalFrame {
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, bundle.getString("invalid_quantity") + e.getMessage());
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, bundle.getString("error")+": " + e.getMessage());
+            JOptionPane.showMessageDialog(null, bundle.getString("error") + ": " + e.getMessage());
         }
         return false;
     }
 
-    // Método para devolver produto ao estoque
+    /**
+     * Devolve um produto ao estoque e atualiza as informações do carrinho. Se
+     * uma linha está selecionada no carrinho, pergunta ao usuário se deseja
+     * remover o produto. Se o usuário confirmar, atualiza a quantidade do
+     * produto no estoque, remove o produto do carrinho, e atualiza as tabelas
+     * de produtos e carrinho.
+     */
     private void devolverAoEstoque() {
         // Verifica se uma linha foi selecionada na tabela do carrinho
         int linhaSelecionada = tblCarrinho.getSelectedRow();
@@ -289,8 +356,15 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
         preencherTabelaProduto();
     }
-// Método para remover um produto do carrinho
 
+    /**
+     * Remove um produto do carrinho associado a um título específico.
+     *
+     * @param titulo o título do carrinho onde o produto está
+     * @param idProduto o ID do produto a ser removido
+     * @param quantidade a quantidade do produto a ser removida
+     * @throws SQLException se ocorrer um erro ao acessar o banco de dados
+     */
     private void removerProdutoDoCarrinho(Titulo titulo, int idProduto, int quantidade) throws SQLException {
         List<Produto> produtosCarrinho = titulo.getProdutosCarrinho();
         Produto produtoEncontrado = null;
@@ -325,7 +399,16 @@ public class TelaVender extends javax.swing.JInternalFrame {
         }
     }
 
-    //método para fazer o pagamento
+    /**
+     * Processa o pagamento de um título, gerando uma nota fiscal e removendo o
+     * título do banco de dados.
+     *
+     * @param nomeCliente o nome do cliente para registrar no recibo
+     * @throws SQLException se ocorrer um erro ao acessar o banco de dados
+     * @throws ParseException se ocorrer um erro ao converter os dados de data
+     * @throws org.json.simple.parser.ParseException se ocorrer um erro ao
+     * processar JSON
+     */
     private void fazerPagamento(String nomeCliente) throws SQLException, ParseException, org.json.simple.parser.ParseException {
 
         String sql = "insert into tbnotasfiscais(idnotafiscal,nomevendedor,nomecliente,valor,datacompra,produtos) values(?,?,?,?,?,?)";
@@ -372,25 +455,37 @@ public class TelaVender extends javax.swing.JInternalFrame {
         }
     }
 
-    // Método para habilitar ou desabilitar o botão btRemover
+    /**
+     * Habilita ou desabilita o botão btRemover com base na seleção de uma linha
+     * no carrinho.
+     */
     private void verificarSelecaoCarrinho() {
         int linhaSelecionada = tblCarrinho.getSelectedRow();
         btnRemover.setEnabled(linhaSelecionada != -1);// Habilita o botão se houver uma linha selecionada
-        if(linhaSelecionada != -1){
+        if (linhaSelecionada != -1) {
             tblProdutos.clearSelection();
         }
     }
 
-    //Método para setar o id ao clicar tabela
+    /**
+     * Define o ID do produto ao clicar em uma linha da tabela de produtos e
+     * limpa a seleção do carrinho.
+     */
     public void setarCampos() {
         int setar = tblProdutos.getSelectedRow();
         txtProduId.setText(tblProdutos.getModel().getValueAt(setar, 0).toString());
-        if(setar != -1){
+        if (setar != -1) {
             tblCarrinho.clearSelection();
         }
     }
 
-    // Método para preencher a tabela do carrinho
+    /**
+     * Preenche a tabela do carrinho com os produtos atualmente no carrinho.
+     *
+     * @throws ParseException se ocorrer um erro ao converter os dados de data
+     * @throws org.json.simple.parser.ParseException se ocorrer um erro ao
+     * processar JSON
+     */
     private void preencherTabelaCarrinho() throws ParseException, org.json.simple.parser.ParseException {
         String sql = "SELECT produtosCarrinho FROM titulos WHERE pago = false LIMIT 1";
         try (PreparedStatement pst = conexao.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
@@ -413,7 +508,14 @@ public class TelaVender extends javax.swing.JInternalFrame {
         }
     }
 
-// Método para preencher a tabela do carrinho
+    /**
+     * Preenche a tabela do total com o valor total de todos os produtos no
+     * carrinho.
+     *
+     * @throws ParseException se ocorrer um erro ao converter os dados de data
+     * @throws org.json.simple.parser.ParseException se ocorrer um erro ao
+     * processar JSON
+     */
     private void preencherTabelaTotal() throws ParseException, org.json.simple.parser.ParseException {
         String sql = "SELECT produtosCarrinho FROM titulos WHERE pago = false LIMIT 1";
         try (PreparedStatement pst = conexao.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
@@ -437,7 +539,12 @@ public class TelaVender extends javax.swing.JInternalFrame {
         }
     }
 
-    //Método para preencher a tabela ao abrir a aba de relatório de produtos
+    /**
+     * Preenche a tabela de produtos ao abrir a aba de relatório de produtos.
+     * Converte os preços dos produtos para uma moeda de referência, dividindo
+     * por 5.78. Os dados são exibidos na tabela 'tblProdutos' usando a
+     * biblioteca rs2xml.jar.
+     */
     private void preencherTabelaProduto() {
         String sql = "select idproduto as ID,nomeproduto as NOME, preco / 5.78 as PREÇO , quantidade as QUANT from tbprodutos";
         try {
@@ -450,7 +557,14 @@ public class TelaVender extends javax.swing.JInternalFrame {
         }
     }
 
-    //Método para preencher a tabela ao abrir a aba de relatório de produtos
+    /**
+     * Pesquisa um produto na tabela de produtos usando um termo de busca
+     * parcial. O termo é obtido a partir do campo de texto 'txtProduPesquisar'
+     * e exibe resultados onde o nome do produto começa com o termo fornecido.
+     * Os preços dos produtos também são convertidos para a moeda de referência
+     * dividindo-os por 5.78. Os dados são exibidos na tabela 'tblProdutos'
+     * usando a biblioteca rs2xml.jar.
+     */
     private void pesquisarProduto() {
         String sql = "select idproduto as ID,nomeproduto as NOME, preco / 5.78 as PREÇO , quantidade as QUANT from tbprodutos where nomeproduto like ?";
         try {
