@@ -11,6 +11,8 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,6 +57,12 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
         setTitle(bundle.getString("invoices"));
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+               tblNotasFiscais.clearSelection();
+               btnVerDetalhes.setEnabled(false);
+            }
+        });
         conexao = ModuloConexao.conector();
     }
     

@@ -22,6 +22,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,6 +76,11 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         initComponents();
         dcPesquisarData.addPropertyChangeListener("date", evt -> pesquisarNota());
         adicionarListeners();
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+               tblVendedores.clearSelection();
+            }
+        });
         conexao = ModuloConexao.conector();
         graficoBarra();
     }
@@ -670,7 +677,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle(bundle.getString("sales_Rep"));
+        setTitle("Relatório de Vendas");
         setPreferredSize(new java.awt.Dimension(1002, 336));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -704,7 +711,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
                 {null, null, null, null, null}
             },
             new String [] {
-                bundle.getString("ID_invoices"), bundle.getString("seller"), bundle.getString("client"), bundle.getString("value"), bundle.getString("dt")
+                "ID NOTA", "VENDEDOR", "CLIENTE", "VALOR VENDA", "DATA/HORA"
             }
         ));
         jScrollPane2.setViewportView(tblVendedores);
@@ -718,7 +725,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         });
         getContentPane().add(txtVendPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 0, 220, -1));
 
-        jLabel1.setText(bundle.getString("search"));
+        jLabel1.setText("Buscar");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 0, 40, -1));
 
         dcPesquisarData.setDateFormatString("yyyy-MM-dd");
@@ -732,7 +739,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         panelGraficoBarra.setLayout(new java.awt.BorderLayout());
         getContentPane().add(panelGraficoBarra, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 420, 300));
 
-        btnVerMais.setText(bundle.getString("see_details"));
+        btnVerMais.setText("VER DETALHES");
         btnVerMais.setEnabled(false);
         btnVerMais.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -742,7 +749,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         getContentPane().add(btnVerMais, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 0, 130, -1));
 
         grupoBotoesData.add(radioBtnAno);
-        radioBtnAno.setText(bundle.getString("year"));
+        radioBtnAno.setText("ANO");
         radioBtnAno.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioBtnAnoActionPerformed(evt);
@@ -751,7 +758,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         getContentPane().add(radioBtnAno, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 510, -1, -1));
 
         grupoBotoesData.add(radioBtnMes);
-        radioBtnMes.setText(bundle.getString("month"));
+        radioBtnMes.setText("MÊS");
         radioBtnMes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioBtnMesActionPerformed(evt);
@@ -760,7 +767,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         getContentPane().add(radioBtnMes, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 430, -1, -1));
 
         grupoBotoesData.add(radioBtnDia);
-        radioBtnDia.setText(bundle.getString("day"));
+        radioBtnDia.setText("DIA");
         radioBtnDia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioBtnDiaActionPerformed(evt);
@@ -768,7 +775,7 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
         });
         getContentPane().add(radioBtnDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 50, -1));
 
-        jLabel2.setText(bundle.getString("filter_compare"));
+        jLabel2.setText("FILTRAR E COMPARAR POR:");
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 310, -1, -1));
 
         comonBoxMes1.setEnabled(false);
@@ -806,9 +813,10 @@ private void adicionarLabel(JPanel panel, String labelText, String valueText, in
                 {null, null, null}
             },
             new String [] {
-                bundle.getString("month"), bundle.getString("total_sales"), bundle.getString("expected_sales2")
+                "Mês", "Total de Vendas", "Vendas Previstas"
             }
         ));
+        tblPrevisoes.setEnabled(false);
         jScrollPane3.setViewportView(tblPrevisoes);
 
         getContentPane().add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 377, 550, 220));
