@@ -26,6 +26,8 @@ import net.proteanit.sql.DbUtils;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -559,6 +561,11 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
         //Chamando o método pra preencher a tabela ao abrir a aba
         preencherTabelaProduto();
+        try {
+            preencherTabelaAnaliseConcorrencia();
+        } catch (SQLException ex) {
+            Logger.getLogger(TelaRelatorioProdutos.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_formInternalFrameOpened
 
     private void txtProduPesquisarKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtProduPesquisarKeyReleased
