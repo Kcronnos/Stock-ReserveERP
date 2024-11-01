@@ -51,6 +51,7 @@
   <SubComponents>
     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
       <AuxValues>
+        <AuxValue name="JavaCodeGenerator_DeclarationPre" type="java.lang.String" value="/**&#xa; * scrollpane da tabela estoque&#xa; */"/>
         <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
       </AuxValues>
 
@@ -113,6 +114,7 @@
             </Property>
           </Properties>
           <AuxValues>
+            <AuxValue name="JavaCodeGenerator_DeclarationPre" type="java.lang.String" value="/**&#xa; * tabela que exibe status importante do estoque&#xa; */"/>
             <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="tblEstoStatus = new javax.swing.JTable(){&#xa;    public boolean isCellEditable(int rowIndex, int ColIndex){&#xa;        return false;&#xa;    } &#xa;};"/>
             <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="TelaEstoqueStatus_tblEstoStatus"/>
           </AuxValues>

@@ -58,7 +58,6 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
      * dos campos de texto e as utiliza como parâmetros para o comando SQL de
      * inserção no banco. Inclui validação dos campos obrigatórios.
      *
-     * @throws Exception se ocorrer algum erro durante a execução do comando
      * @author Feliipee013
      * @version 2.0
      */
@@ -103,9 +102,6 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
      * dados do usuário selecionado com base nos valores dos campos de texto.
      * Inclui validação dos campos obrigatórios e notificação ao usuário em caso
      * de sucesso.
-     *
-     * @throws Exception se ocorrer algum erro durante a execução do comando
-     * SQL.
      * @author Feliipee013
      * @version 2.0
      */
@@ -148,9 +144,6 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
      * Método para remover usuários do banco de dados Solicita confirmação antes
      * de remover o usuário selecionado exibe uma mensagem de confirmação em
      * caso de successo.
-     *
-     * @throws Exception se ocorrer algum erro durante a execução do comando
-     * @param confirma Exibe um diálogo de confirmação para o usuário.
      * @see JOptionPane#showConfirmDialog
      * @see JOptionPane#showMessageDialog
      * @see #limpar()
@@ -184,9 +177,6 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
      * Método para pesquisar usuários no banco de dados. Filtra a tabela
      * enquanto o usuário digita o nome, utilizando a biblioteca rs2xml para
      * atualizar a tabela com os resultados da pesquisa.
-     *
-     * @throws Exception se ocorrer algum erro durante a execução do comando
-     * SQL.
      * @see DbUtils#resultSetToTableModel
      *
      * @author Feliipee013
@@ -233,9 +223,6 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     /**
      * Método responsável por preencher a tabela de usuários. Atualiza a tabela
      * com todos os usuários cadastrados no banco de dados.
-     *
-     * @throws Exception se ocorrer algum erro durante a execução do comando
-     * SQL.
      * @see DbUtils#resultSetToTableModel
      *
      * @author Feliipee013

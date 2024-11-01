@@ -1,6 +1,25 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
+ * The MIT License
+ *
+ * Copyright 2024 Stock&Reserve.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package br.com.stockreserve.telas;
 
@@ -73,9 +92,6 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
      * texto. O método valida se todos os campos obrigatórios estão preenchidos
      * antes de inserir. Após a inserção, a tabela de produtos é atualizada.
      *
-     * @throws Exception caso ocorra algum erro na operação com o banco de
-     * dados.
-     *
      * @author Feliipee013
      * @version 2.0
      */
@@ -121,10 +137,6 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
      * Atualiza as informações de um produto existente no banco de dados. O
      * método valida se todos os campos obrigatórios estão preenchidos antes de
      * atualizar. Após a atualização, a tabela de produtos é atualizada.
-     *
-     * @throws Exception caso ocorra algum erro na operação com o banco de
-     * dados.
-     *
      * @author Feliipee013
      * @version 2.0
      */
@@ -167,10 +179,6 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
      * Remove um produto do banco de dados com base no ID. Solicita confirmação
      * do usuário antes de proceder com a exclusão. Após a remoção, a tabela de
      * produtos é atualizada.
-     *
-     * @throws Exception caso ocorra algum erro na operação com o banco de
-     * dados.
-     *
      * @author Feliipee013
      * @version 2.0
      */
@@ -199,9 +207,6 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
      * Pesquisa produtos no banco de dados e filtra a tabela de exibição com
      * base no nome. Usa o método DbUtils para preencher a tabela de produtos
      * enquanto o usuário digita.
-     *
-     * @throws Exception caso ocorra algum erro na operação com o banco de
-     * dados.
      *
      * @author Feliipee013
      * @version 2.0
@@ -254,9 +259,6 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
     /**
      * Atualiza a tabela de produtos na interface com todos os produtos do banco
      * de dados. Usa o método DbUtils para atualizar a exibição da tabela.
-     *
-     * @throws Exception caso ocorra algum erro na operação com o banco de
-     * dados.
      *
      * @author Feliipee013
      * @version 2.0
