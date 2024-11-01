@@ -50,10 +50,11 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     }
 
     /**
-     * Método para adicionar usuários no banco de dados. O método pegará as
-     * informações dos campos de textos, extrairá as string deles e essas string
-     * serão passadas como parametros do comando mysql
+     * Método para adicionar usuários no banco de dados. Extrai as informações
+     * dos campos de texto e as utiliza como parâmetros para o comando SQL de
+     * inserção no banco. Inclui validação dos campos obrigatórios.
      *
+     * @throws Exception se ocorrer algum erro durante a execução do comando
      * @author Feliipee013
      * @version 2.0
      */
@@ -94,13 +95,15 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     }
 
     /**
-     * Método para alterar informações do usuário no banco de dados. O método
-     * pegará as informações dos campos de textos, extrairá as strings deles e
-     * essas strings serão passdas como parametros do comando mysql
+     * Método para alterar informações do usuário no banco de dados. Atualiza os
+     * dados do usuário selecionado com base nos valores dos campos de texto.
+     * Inclui validação dos campos obrigatórios e notificação ao usuário em caso
+     * de sucesso.
      *
+     * @throws Exception se ocorrer algum erro durante a execução do comando
+     * SQL.
      * @author Feliipee013
      * @version 2.0
-     
      */
     private void alterarUsuarios() {
         String sql = "update tbusuarios set nome =?, login=?, senha=?, setor=?, fone=? where iduser=?";
@@ -138,13 +141,19 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     }
 
     /**
-     * Método para remover usuários do banco de dados. O método pegará as
-     * informações dos campos de textos, extrairá as strings deles e essas
-     * strings serão passdas como parametros do comando mysql
+     * Método para remover usuários do banco de dados Solicita confirmação antes
+     * de remover o usuário selecionado exibe uma mensagem de confirmação em
+     * caso de successo.
+     *
+     * @throws Exception se ocorrer algum erro durante a execução do comando
+     * @param confirma Exibe um diálogo de confirmação para o usuário.
+     * @see JOptionPane#showConfirmDialog
+     * @see JOptionPane#showMessageDialog
+     * @see #limpar()
+     * @see #preencherTabelaUsuarios()
      *
      * @author Feliipee013
      * @version 2.0
-     
      */
     private void removerUsuarios() {
         int confirma = JOptionPane.showConfirmDialog(null, bundle.getString("confirm_remove_user"), bundle.getString("attention"), JOptionPane.YES_NO_OPTION);
@@ -168,12 +177,16 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     }
 
     /**
-     * Método para pesquisar os usuários no banco de dados e filtrar a tabela
-     * enquanto você digita o nome usando o método DbUtils da biblioteca rs2xml
+     * Método para pesquisar usuários no banco de dados. Filtra a tabela
+     * enquanto o usuário digita o nome, utilizando a biblioteca rs2xml para
+     * atualizar a tabela com os resultados da pesquisa.
+     *
+     * @throws Exception se ocorrer algum erro durante a execução do comando
+     * SQL.
+     * @see DbUtils#resultSetToTableModel
      *
      * @author Feliipee013
      * @version 2.0
-     
      */
     private void pesquisarUsuarios() {
         String sql = "select iduser as ID, nome as " + bundle.getString("name") + ", login as LOGIN, senha as " + bundle.getString("password") + ", setor as " + bundle.getString("sector") + ", fone as " + bundle.getString("phone") + " from tbusuarios where nome like ?";
@@ -192,12 +205,14 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     }
 
     /**
-     * Método para setar os campos de textos do formulario com o conteudo da
-     * tabela ao clicar em uma linha da tabela
+     * Método para preencher os campos de texto do formulário com o conteúdo da
+     * linha selecionada na tabela. Ao clicar em uma linha, as informações do
+     * usuário são exibidas nos campos correspondentes.
+     *
+     * @see javax.swing.JTable#getSelectedRow()
      *
      * @author Feliipee013
      * @version 2.0
-     
      */
     public void setarCampos() {
         int setar = tblUsuarios.getSelectedRow();
@@ -212,12 +227,15 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     }
 
     /**
-     * Método responsavela por preencher a tabela dos usuários quando alguma
-     * ação ocorre
+     * Método responsável por preencher a tabela de usuários. Atualiza a tabela
+     * com todos os usuários cadastrados no banco de dados.
+     *
+     * @throws Exception se ocorrer algum erro durante a execução do comando
+     * SQL.
+     * @see DbUtils#resultSetToTableModel
      *
      * @author Feliipee013
      * @version 2.0
-     
      */
     private void preencherTabelaUsuarios() {
         String sql = "select iduser as ID, nome as " + bundle.getString("name") + ", login as LOGIN,senha as " + bundle.getString("password") + ",setor as " + bundle.getString("sector") + ", fone as " + bundle.getString("phone") + " from tbusuarios";
@@ -230,13 +248,14 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-    
+
     /**
-     * Método responsavel por limpar todos os campos do formulario após os botões de adicionar, alterar ou remover serem acionados
-     * 
+     * Método responsável por limpar todos os campos do formulário. Esse método
+     * é acionado após a execução de ações como adicionar, alterar ou remover.
+     *
      * @author Feliipee013
      * @version 2.0
-     */
+     */
     private void limpar() {
         txtUsuId.setText(null);
         txtUsuNome.setText(null);

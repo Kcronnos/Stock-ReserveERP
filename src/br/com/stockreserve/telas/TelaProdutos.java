@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
 package br.com.stockreserve.telas;
+
 import br.com.stockreserve.dal.Criptografia;
 import java.sql.*;
 import br.com.stockreserve.dal.ModuloConexao;
@@ -19,10 +20,12 @@ import java.util.ResourceBundle;
  * @author Felipe
  */
 public class TelaProdutos extends javax.swing.JInternalFrame {
+
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
     ResourceBundle bundle;
+
     /**
      * Creates new form TelaProdutos
      */
@@ -32,26 +35,29 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             locale = Locale.of("en", "US");
         } else {
             locale = Locale.of("pt", "BR");
-        }   
+        }
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-               tblProdutos.clearSelection();
-               limpar();
-               btnAdicionar.setEnabled(true);
-               btnAlterar.setEnabled(false);
-               btnRemover.setEnabled(false);
+                tblProdutos.clearSelection();
+                limpar();
+                btnAdicionar.setEnabled(true);
+                btnAlterar.setEnabled(false);
+                btnRemover.setEnabled(false);
             }
         });
         initComponents();
         setTitle(bundle.getString("prod_title"));
         conexao = ModuloConexao.conector();
     }
-    
+
     /**
-     * Método para adicionar produtos no banco de dados. O método pegará as
-     * informações dos campos de textos, extrairá as string deles e essas string
-     * serão passadas como parametros do comando mysql
+     * Adiciona um novo produto ao banco de dados com os dados dos campos de
+     * texto. O método valida se todos os campos obrigatórios estão preenchidos
+     * antes de inserir. Após a inserção, a tabela de produtos é atualizada.
+     *
+     * @throws Exception caso ocorra algum erro na operação com o banco de
+     * dados.
      *
      * @author Feliipee013
      * @version 2.0
@@ -62,15 +68,15 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtProduId.getText());
             pst.setString(2, txtProduNome.getText());
-            pst.setString(3, txtProduPreco.getText());          
+            pst.setString(3, txtProduPreco.getText());
             pst.setString(4, txtProduQuanti.getText());
             pst.setString(5, txtProduLimi.getText());
-            
+
             //Checa pra ver se a data é nula ou não
-            if(dcVencimento.getDate() == null) {
-                pst.setString(6,null);
+            if (dcVencimento.getDate() == null) {
+                pst.setString(6, null);
             } else {
-                pst.setString(6,((JTextField)dcVencimento.getDateEditor().getUiComponent()).getText());
+                pst.setString(6, ((JTextField) dcVencimento.getDateEditor().getUiComponent()).getText());
             }
 
             //Validação dos campos obrigatórios
@@ -89,33 +95,35 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
-        
+
         //Atualizando a tabela de produtos após a adição de um novo produto
         preencherTabelaProduto();
     }
-    
+
     /**
-     * Método para alterar informações do produto no banco de dados. O método
-     * pegará as informações dos campos de textos, extrairá as strings deles e
-     * essas strings serão passdas como parametros do comando mysql
+     * Atualiza as informações de um produto existente no banco de dados. O
+     * método valida se todos os campos obrigatórios estão preenchidos antes de
+     * atualizar. Após a atualização, a tabela de produtos é atualizada.
+     *
+     * @throws Exception caso ocorra algum erro na operação com o banco de
+     * dados.
      *
      * @author Feliipee013
      * @version 2.0
-     
      */
     private void alterarProduto() {
         String sql = "update tbprodutos set nomeproduto =?, preco=?, quantidade=?, limite_minimo=?, vencimento=? where idproduto=?";
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtProduNome.getText());
-            pst.setString(2, txtProduPreco.getText().replace(",","."));
+            pst.setString(2, txtProduPreco.getText().replace(",", "."));
             pst.setString(3, txtProduQuanti.getText());
             pst.setString(4, txtProduLimi.getText());
             //Checa pra ver se a data é nula ou não
-            if(dcVencimento.getDate() == null) {
-                pst.setString(5,null);
+            if (dcVencimento.getDate() == null) {
+                pst.setString(5, null);
             } else {
-                pst.setString(5,((JTextField)dcVencimento.getDateEditor().getUiComponent()).getText());
+                pst.setString(5, ((JTextField) dcVencimento.getDateEditor().getUiComponent()).getText());
             }
             pst.setString(6, txtProduId.getText());
 
@@ -133,19 +141,21 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
-        
+
         //Atualizando a tabela de produtos após a alteração de dados de um produto
         preencherTabelaProduto();
     }
-    
+
     /**
-     * Método para remover produtos do banco de dados. O método pegará as
-     * informações dos campos de textos, extrairá as strings deles e essas
-     * strings serão passdas como parametros do comando mysql
+     * Remove um produto do banco de dados com base no ID. Solicita confirmação
+     * do usuário antes de proceder com a exclusão. Após a remoção, a tabela de
+     * produtos é atualizada.
+     *
+     * @throws Exception caso ocorra algum erro na operação com o banco de
+     * dados.
      *
      * @author Feliipee013
      * @version 2.0
-     
      */
     private void removerProduto() {
         int confirma = JOptionPane.showConfirmDialog(null, bundle.getString("confirm_remove_product"), bundle.getString("attention"), JOptionPane.YES_NO_OPTION);
@@ -163,25 +173,28 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 JOptionPane.showMessageDialog(null, e);
             }
         }
-        
+
         //Atualizando a tabela de produtos após a remoção de um produto
         preencherTabelaProduto();
     }
-    
+
     /**
-     * Método para pesquisar os produtos no banco de dados e filtrar a tabela
-     * enquanto você digita o nome usando o método DbUtils da biblioteca rs2xml
+     * Pesquisa produtos no banco de dados e filtra a tabela de exibição com
+     * base no nome. Usa o método DbUtils para preencher a tabela de produtos
+     * enquanto o usuário digita.
+     *
+     * @throws Exception caso ocorra algum erro na operação com o banco de
+     * dados.
      *
      * @author Feliipee013
      * @version 2.0
-     
      */
     private void pesquisarProdutos() {
         String sql;
         if (LanguageSelection.selectedLanguage) {
-            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco / 5.78 as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos where nomeproduto like ?";
+            sql = "select idproduto as ID, nomeproduto as " + bundle.getString("name") + ", preco / 5.78 as " + bundle.getString("price") + ",quantidade as " + bundle.getString("amount") + ", limite_minimo as " + bundle.getString("min_limit") + ", vencimento as " + bundle.getString("expiry") + " from tbprodutos where nomeproduto like ?";
         } else {
-            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos where nomeproduto like ?";
+            sql = "select idproduto as ID, nomeproduto as " + bundle.getString("name") + ", preco as " + bundle.getString("price") + ",quantidade as " + bundle.getString("amount") + ", limite_minimo as " + bundle.getString("min_limit") + ", vencimento as " + bundle.getString("expiry") + " from tbprodutos where nomeproduto like ?";
         }
 
         try {
@@ -196,14 +209,14 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-    
+
     /**
-     * Método para setar os campos de textos do formulario com o conteudo da
-     * tabela ao clicar em uma linha da tabela
+     * Preenche os campos do formulário com os dados do produto selecionado na
+     * tabela. Esse método facilita a edição ou remoção do produto ao exibir os
+     * dados no formulário.
      *
      * @author Feliipee013
      * @version 2.0
-     
      */
     public void setarCampos() {
         int setar = tblProdutos.getSelectedRow();
@@ -215,43 +228,47 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         //a linha abaixo era pra preencher oss campo de vencimento
         //só preenche dps q vc seleciona alguma data por algum motivo que não sei ainda
         //dcVencimento.setDateFormatString(tblProdutos.getModel().getValueAt(setar, 5).toString());
-        
+
         btnAdicionar.setEnabled(false);
         btnAlterar.setEnabled(true);
         btnRemover.setEnabled(true);
     }
-    
+
     /**
-     * Método responsavela por preencher a tabela dos produtos quando alguma
-     * ação ocorre
+     * Atualiza a tabela de produtos na interface com todos os produtos do banco
+     * de dados. Usa o método DbUtils para atualizar a exibição da tabela.
+     *
+     * @throws Exception caso ocorra algum erro na operação com o banco de
+     * dados.
      *
      * @author Feliipee013
      * @version 2.0
-     
      */
     private void preencherTabelaProduto() {
         String sql;
         if (LanguageSelection.selectedLanguage) {
-            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco / 5.78 as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos";
+            sql = "select idproduto as ID, nomeproduto as " + bundle.getString("name") + ", preco / 5.78 as " + bundle.getString("price") + ",quantidade as " + bundle.getString("amount") + ", limite_minimo as " + bundle.getString("min_limit") + ", vencimento as " + bundle.getString("expiry") + " from tbprodutos";
         } else {
-            sql = "select idproduto as ID, nomeproduto as "+ bundle.getString("name")+", preco as "+bundle.getString("price")+",quantidade as "+bundle.getString("amount")+", limite_minimo as "+bundle.getString("min_limit")+", vencimento as "+bundle.getString("expiry")+" from tbprodutos";
+            sql = "select idproduto as ID, nomeproduto as " + bundle.getString("name") + ", preco as " + bundle.getString("price") + ",quantidade as " + bundle.getString("amount") + ", limite_minimo as " + bundle.getString("min_limit") + ", vencimento as " + bundle.getString("expiry") + " from tbprodutos";
         }
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
             tblProdutos.setModel(DbUtils.resultSetToTableModel(rs));
-            
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-    
+
     /**
-     * Método responsavel por limpar todos os campos do formulario após os botões de adicionar, alterar ou remover serem acionados
-     * 
+     * Limpa todos os campos do formulário de produtos após operações de
+     * adicionar, alterar ou remover. Esse método é usado para garantir que os
+     * campos não mantenham dados antigos após uma operação.
+     *
      * @author Feliipee013
      * @version 2.0
-     */
+     */
     private void limpar() {
         txtProduId.setText(null);
         txtProduNome.setText(null);
