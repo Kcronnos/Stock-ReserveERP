@@ -1,6 +1,25 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * The MIT License
+ *
+ * Copyright 2024 Stock&Reserve.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package br.com.stockreserve.telas;
 
@@ -46,8 +65,6 @@ public class TelaLogin extends javax.swing.JFrame {
      * banco. Caso as credenciais estejam incorretas, exibe uma mensagem de
      * erro.
      *
-     * @throws Exception se ocorrer algum erro durante a execução da consulta ao
-     * banco de dados.
      *
      * @author Feliipee013
      * @version 2.0
@@ -156,14 +173,14 @@ public class TelaLogin extends javax.swing.JFrame {
         lblStatus = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle(bundle.getString("login"));
+        setTitle("Login");
         setMinimumSize(new java.awt.Dimension(500, 400));
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(67, 106, 137));
         jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        btnLogin.setText(bundle.getString("login"));
+        btnLogin.setText("ENTRAR");
         btnLogin.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnLoginActionPerformed(evt);
@@ -171,9 +188,9 @@ public class TelaLogin extends javax.swing.JFrame {
         });
 
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText(bundle.getString("password"));
+        jLabel2.setText("SENHA");
 
-        jLabel1.setText(bundle.getString("user"));
+        jLabel1.setText("USUARIO");
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 25)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -182,7 +199,7 @@ public class TelaLogin extends javax.swing.JFrame {
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/logo_stockreserve_64x64.png"))); // NOI18N
 
-        jLabel5.setText(bundle.getString("welcome"));
+        jLabel5.setText("Bem-Vindo");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -320,15 +337,36 @@ public class TelaLogin extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    /**
+    * botão que executa o login com o usuario e senha capturados
+    */
     private javax.swing.JButton btnLogin;
+    /**
+    * exibe o texto usuario
+    */
     private javax.swing.JLabel jLabel1;
+    /**
+    * exibe o texto Senha
+    */
     private javax.swing.JLabel jLabel2;
+    /**
+    * exibe o texto StoSale
+    */
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    /**
+    * exibe o texto Bem-Vindo
+    */
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel lblStatus;
+    /**
+    * essa variavel captura o usuario de login
+    */
     private javax.swing.JTextField txtLogin;
+    /**
+    * essa variavel captura a senha de login
+    */
     private javax.swing.JPasswordField txtSenha;
     // End of variables declaration//GEN-END:variables
 }

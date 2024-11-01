@@ -1,6 +1,25 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
+ * The MIT License
+ *
+ * Copyright 2024 Stock&Reserve.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package br.com.stockreserve.telas;
 
@@ -305,7 +324,7 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
 
         jLabel1.setFont(new java.awt.Font("MingLiU_HKSCS-ExtB", 0, 25)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText(bundle.getString("invoices"));
+        jLabel1.setText("NOTAS FISCAIS");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 0, 220, 110));
 
         tblNotasFiscais.setModel(new javax.swing.table.DefaultTableModel(
@@ -316,11 +335,7 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
                 {null, null, null, null, null}
             },
             new String [] {
-                bundle.getString("ID_invoices"), 
-                bundle.getString("seller"), 
-                bundle.getString("client"), 
-                bundle.getString("value"), 
-                bundle.getString("dt")
+                "ID NOTA", "VENDEDOR", "CLIENTE", "VALOR", "DATA/HORA"
             }
         ));
         jScrollPane1.setViewportView(tblNotasFiscais);
@@ -336,10 +351,10 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText(bundle.getString("search_invoices"));
+        jLabel2.setText("BUSCAR NOTAS");
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 520, 370, -1));
 
-        btnVerDetalhes.setText(bundle.getString("see_details"));
+        btnVerDetalhes.setText("VER DETALHES");
         btnVerDetalhes.setEnabled(false);
         btnVerDetalhes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -380,11 +395,29 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    /**
+    * botão que faz a ação de exibir detalhes da notas fiscais
+    */
     private javax.swing.JButton btnVerDetalhes;
+    /**
+    * exibe o texto notas fiscais
+    */
     private javax.swing.JLabel jLabel1;
+    /**
+    * exibe texto buscar notas
+    */
     private javax.swing.JLabel jLabel2;
+    /**
+    * scrollpane da tabela de notas fiscais
+    */
     private javax.swing.JScrollPane jScrollPane1;
+    /**
+    * tabela que exibe notas fiscais
+    */
     private javax.swing.JTable tblNotasFiscais;
+    /**
+    * recebe texto para buscar e filtrar notas fiscais
+    */
     private javax.swing.JTextField txtBuscadorDeNotas;
     // End of variables declaration//GEN-END:variables
 }

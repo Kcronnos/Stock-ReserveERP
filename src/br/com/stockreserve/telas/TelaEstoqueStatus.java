@@ -1,6 +1,25 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
+ * The MIT License
+ *
+ * Copyright 2024 Stock&Reserve.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 package br.com.stockreserve.telas;
 
@@ -67,8 +86,6 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
      * personalizados para colorir as colunas `STATUS` e `VENCIMENTO` conforme a
      * condição de cada produto.
      *
-     * @throws SQLException caso ocorra algum erro durante a consulta ao banco
-     * de dados.
      *
      * @author Feliipee013
      * @version 2.0
@@ -239,7 +256,7 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
 
         setClosable(true);
         setIconifiable(true);
-        setTitle(bundle.getString("stock_status"));
+        setTitle("Status do estoque");
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
             }
@@ -269,7 +286,7 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "ID", bundle.getString("name"), bundle.getString("price"), bundle.getString("amount"), bundle.getString("min_limit"), bundle.getString("expiry"), "STATUS"
+                "ID", "NOME", "PREÇO", "QUANTIDADE", "LIMITE_MÍNIMO", "VENCIMENTO", "STATUS"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -327,7 +344,13 @@ public class TelaEstoqueStatus extends javax.swing.JInternalFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    /**
+    * scrollpane da tabela estoque
+    */
     private javax.swing.JScrollPane jScrollPane1;
+    /**
+    * tabela que exibe status importante do estoque
+    */
     private javax.swing.JTable tblEstoStatus;
     // End of variables declaration//GEN-END:variables
 }
