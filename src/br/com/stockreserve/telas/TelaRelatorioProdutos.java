@@ -33,6 +33,11 @@ import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 /**
+ * TelaRelatorioProdutos é uma classe que representa uma interface gráfica
+ * interna para relatar e gerenciar produtos em um sistema de estoque.
+ * Esta classe estende JInternalFrame e permite realizar operações
+ * como alteração de preços, geração de gráficos de validade de produtos,
+ * pesquisa e análise de concorrência.
  *
  * @author Felipe
  */
@@ -44,7 +49,10 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
     ResourceBundle bundle;
 
     /**
-     * Creates new form TelaRelatorios
+     * Construtor da classe. Inicializa a interface gráfica e estabelece
+     * a conexão com o banco de dados. Configura o título da tela
+     * com base no idioma selecionado e gera um gráfico de barras
+     * com dados de validade dos produtos.
      */
     public TelaRelatorioProdutos() {
         Locale locale;

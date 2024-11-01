@@ -14,8 +14,13 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
+ * A classe TelaPrincipal é responsável por exibir a interface principal da aplicação.
+ * Ela estende a classe JFrame e contém componentes de interface gráfica do usuário,
+ * como menus e painéis. Também gerencia a configuração do idioma e a exibição de dados
+ * do usuário e da data atual.
  *
- * @author @version 2.0
+ * @author Feliipee013
+ * @version 2.0
  */
 public class TelaPrincipal extends javax.swing.JFrame {
 
@@ -23,7 +28,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private ResourceBundle bundle;
 
     /**
-     * Creates new form TelaPrincipal
+     * Construtor que inicializa a TelaPrincipal.
+     * Dependendo da configuração do idioma selecionado, define o local e carrega
+     * as strings de recursos correspondentes.
      */
     public TelaPrincipal() {
         Locale locale;
@@ -372,7 +379,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
-     * @param args the command line arguments
+     * Método principal que inicializa e exibe a tela principal da aplicação.
+     *
+     * @param args Os argumentos da linha de comando.
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

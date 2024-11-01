@@ -8,8 +8,17 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
+ * A classe Criptografia fornece métodos para criptografar senhas utilizando
+ * algoritmos de hash seguros. Esta classe é essencial para proteger informações
+ * sensíveis, como senhas de usuários, garantindo que essas informações não
+ * sejam armazenadas em texto simples.
+ *
+ * Atualmente, a classe suporta a criptografia de senhas usando o algoritmo
+ * SHA-256, que é amplamente considerado seguro e é uma escolha popular para
+ * armazenamento de senhas.
  *
  * @author leog4
+ * @version 2.0
  */
 public class Criptografia {
 
@@ -20,9 +29,6 @@ public class Criptografia {
      * @return Uma representação hexadecimal da senha criptografada.
      * @throws RuntimeException Se ocorrer um erro ao obter a instância do
      * algoritmo de hash.
-     * 
-     * @author leog4
-     * @version 2.0
      */
     public static String criptografar(String senha) {
         try {

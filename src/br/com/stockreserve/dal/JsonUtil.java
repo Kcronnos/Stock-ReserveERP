@@ -13,8 +13,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A classe JsonUtil fornece métodos utilitários para conversão entre listas de
+ * produtos e suas representações em formato JSON.
+ *
+ * Esta classe permite a serialização de uma lista de objetos Produto em uma
+ * string JSON, bem como a desserialização de uma string JSON em uma lista de
+ * objetos Produto. É útil para operações que envolvem troca de dados em
+ * aplicações que utilizam JSON como formato de dados, como APIs e
+ * armazenamento em bancos de dados.
  *
  * @author leog4
+ * @version 2.0
  */
 public class JsonUtil {
 
@@ -23,9 +32,6 @@ public class JsonUtil {
      *
      * @param produtos A lista de produtos a ser convertida.
      * @return Uma String contendo a representação JSON dos produtos.
-     *
-     * @author leog4
-     * @version 2.0
      */
     public static String produtosParaJson(List<Produto> produtos) {
         JSONArray jsonArray = new JSONArray();
@@ -52,9 +58,6 @@ public class JsonUtil {
      * @param jsonString A String JSON que representa uma lista de produtos.
      * @return Uma lista de produtos obtida a partir da String JSON.
      * @throws ParseException Se ocorrer um erro ao analisar a String JSON.
-     * 
-     * @author leog4
-     * @version 2.0
      */
     public static List<Produto> jsonParaProdutos(String jsonString) throws ParseException {
         List<Produto> produtos = new ArrayList<>();
