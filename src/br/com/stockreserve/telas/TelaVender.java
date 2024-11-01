@@ -51,6 +51,12 @@ public class TelaVender extends javax.swing.JInternalFrame {
             locale = Locale.of("pt", "BR");
         }   
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+               tblProdutos.clearSelection();
+               tblCarrinho.clearSelection();
+            }
+        });
         initComponents();
         conexao = ModuloConexao.conector();
     }
@@ -369,13 +375,19 @@ public class TelaVender extends javax.swing.JInternalFrame {
     // Método para habilitar ou desabilitar o botão btRemover
     private void verificarSelecaoCarrinho() {
         int linhaSelecionada = tblCarrinho.getSelectedRow();
-        btnRemover.setEnabled(linhaSelecionada != -1); // Habilita o botão se houver uma linha selecionada
+        btnRemover.setEnabled(linhaSelecionada != -1);// Habilita o botão se houver uma linha selecionada
+        if(linhaSelecionada != -1){
+            tblProdutos.clearSelection();
+        }
     }
 
     //Método para setar o id ao clicar tabela
     public void setarCampos() {
         int setar = tblProdutos.getSelectedRow();
         txtProduId.setText(tblProdutos.getModel().getValueAt(setar, 0).toString());
+        if(setar != -1){
+            tblCarrinho.clearSelection();
+        }
     }
 
     // Método para preencher a tabela do carrinho

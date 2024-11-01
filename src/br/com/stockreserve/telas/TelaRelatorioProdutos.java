@@ -16,6 +16,8 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import java.sql.*;
 import br.com.stockreserve.dal.ModuloConexao;
 import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +56,11 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
         setTitle(bundle.getString("Prod_Rep"));
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+               tblProdutos.clearSelection();
+            }
+        });
         conexao = ModuloConexao.conector();
         graficoBarra();
     }
@@ -534,6 +541,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblAnaliseConcorrencia.setEnabled(false);
         jScrollPane2.setViewportView(tblAnaliseConcorrencia);
 
         getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 330, 560, 270));

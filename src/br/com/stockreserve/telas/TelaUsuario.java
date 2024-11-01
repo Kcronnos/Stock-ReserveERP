@@ -6,6 +6,8 @@ package br.com.stockreserve.telas;
 
 import br.com.stockreserve.dal.Criptografia;
 import br.com.stockreserve.dal.ModuloConexao;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.*;
 import javax.swing.JOptionPane;
 import net.proteanit.sql.DbUtils;
@@ -35,7 +37,15 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             locale = Locale.of("pt", "BR");
         }
         bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
-
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+               tblUsuarios.clearSelection();
+               btnAdicionar.setEnabled(true);
+               btnAlterar.setEnabled(false);
+               btnRemover.setEnabled(false);
+               limpar();
+            }
+        });
         initComponents();
         conexao = ModuloConexao.conector();
     }
