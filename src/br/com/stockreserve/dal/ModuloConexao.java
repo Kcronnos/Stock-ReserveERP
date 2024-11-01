@@ -6,7 +6,14 @@ import java.sql.*;
  * @author Felipe
  */
 public class ModuloConexao {
-    //Método responsavel por estabeler conexão com o banco
+    
+    /**
+     * Método responsavel por estabeler conexão com o banco de dados
+     * 
+     * @return retorna a conexão caso for bem sucedido ou nulo caso contrário
+     * @author Feliipee013
+     * @version 2.0
+     */
     public static Connection conector () { 
         Connection conexao = null;
         
