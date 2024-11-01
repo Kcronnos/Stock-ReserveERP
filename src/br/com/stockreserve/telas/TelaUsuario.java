@@ -138,7 +138,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
     
     //Método para pesquisar os usuários no banco de dados e adicionar a tabela enquanto você digita o nome
     private void pesquisarUsuarios() {
-        String sql = "select iduser as ID, nome as "+bundle.getString("anme")+", login as LOGIN, senha as "+bundle.getString("password")+", setor as "+bundle.getString("sector")+", fone as "+bundle.getString("phone")+" from tbusuarios where nome like ?";
+        String sql = "select iduser as ID, nome as "+bundle.getString("name")+", login as LOGIN, senha as "+bundle.getString("password")+", setor as "+bundle.getString("sector")+", fone as "+bundle.getString("phone")+" from tbusuarios where nome like ?";
 
         try {
             pst = conexao.prepareStatement(sql);
