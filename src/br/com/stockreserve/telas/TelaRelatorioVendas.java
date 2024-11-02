@@ -470,9 +470,9 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
                     if (radioBtnDia.isSelected()) {
                         periodo = rs.getString(bundle.getString("day")); // Dia do mês
                     } else if (radioBtnMes.isSelected()) {
-                        periodo = String.valueOf(rs.getInt(bundle.getString("month"))); // Mês do ano
+                        periodo = rs.getString(bundle.getString("month")); // Mês do ano
                     } else {
-                        periodo = rs.getString(bundle.getString("yer")); // Ano
+                        periodo = rs.getString(bundle.getString("year")); // Ano
                     }
 
                     double totalVendas = rs.getDouble("total_vendas");
@@ -644,15 +644,15 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         }
 
         int anoAtual = Calendar.getInstance().get(Calendar.YEAR);
-        for (int ano = 1970; ano <= anoAtual; ano++) {
+        for (int ano = anoAtual; ano >= 1970; ano--) {
             comonBoxAno1.addItem(String.valueOf(ano));
         }
 
-        for (int ano = 1970; ano <= anoAtual; ano++) {
+        for (int ano = anoAtual; ano >= 1970; ano--) {
             comonBoxAno2.addItem(String.valueOf(ano));
         }
 
-        for (int ano = 1970; ano <= anoAtual; ano++) {
+        for (int ano = anoAtual; ano >= 1970; ano--) {
             comonBoxAno3.addItem(String.valueOf(ano));
         }
     }
