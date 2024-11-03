@@ -55,25 +55,27 @@ public class LanguageSelection extends JFrame {
     public LanguageSelection() {
         // Define o idioma inicial com base no valor de selectedLanguage
         updateLocale();
-
+    
         // Configurações do JFrame
         setTitle(bundle.getString("lang_title"));
         setSize(300, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-
+    
         // Define o ícone do aplicativo
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br.com.stockreserve.icones/logo_stockreserve_64x64.png"))); // Ajuste o caminho conforme necessário
-
+    
         // Painel principal com layout centralizado
         JPanel panel = new JPanel();
+        panel.setBackground(new java.awt.Color(67, 106, 137)); // Fundo azul para o painel
+        getContentPane().setBackground(new java.awt.Color(67, 106, 137)); // Fundo azul para o JFrame
         panel.setLayout(new GridBagLayout());
-
+    
         // Restrições para centralizar os botões
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5); // Margens entre botões
         gbc.fill = GridBagConstraints.HORIZONTAL;
-
+    
         // Botão "English"
         JButton btnEnglish = new JButton("English");
         btnEnglish.addActionListener(e -> {
@@ -84,7 +86,7 @@ public class LanguageSelection extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(btnEnglish, gbc);
-
+    
         // Botão "Português"
         JButton btnPortugues = new JButton("Português");
         btnPortugues.addActionListener(e -> {
@@ -94,7 +96,7 @@ public class LanguageSelection extends JFrame {
         });
         gbc.gridx = 1;
         panel.add(btnPortugues, gbc);
-
+    
         // Botão "OK"
         JButton btnOk = new JButton("OK");
         btnOk.addActionListener(e -> {
@@ -105,7 +107,7 @@ public class LanguageSelection extends JFrame {
         gbc.gridy = 1;
         gbc.gridwidth = 2; // Ocupa duas colunas
         panel.add(btnOk, gbc);
-
+    
         // Adiciona o painel ao JFrame
         add(panel);
     }

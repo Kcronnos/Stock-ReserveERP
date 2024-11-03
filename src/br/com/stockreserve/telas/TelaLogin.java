@@ -258,7 +258,6 @@ public class TelaLogin extends javax.swing.JFrame {
         setSize(new java.awt.Dimension(516, 423));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-    }
 
     /**
      * Método que trata a ação do botão de login. Chama o método logar() quando
