@@ -419,6 +419,71 @@ public class TelaVender extends javax.swing.JInternalFrame {
     }
 
     /**
+     * Limpa todos os itens do carrinho, atualizando o estoque dos produtos no
+     * banco de dados e removendo os itens da interface de carrinho.
+     *
+     * Este método exibe uma confirmação ao usuário. Se confirmado, ele itera
+     * sobre todos os itens no carrinho, adiciona a quantidade de cada item de
+     * volta ao estoque no banco de dados e remove os itens do carrinho.
+     *
+     * <p>
+     * Ao final da operação, as tabelas de produtos e carrinho são atualizadas.
+     * Caso ocorra um erro durante a atualização do banco de dados, a operação é
+     * revertida.</p>
+     *
+     * @throws SQLException caso ocorra um erro de SQL durante a atualização do
+     * banco de dados
+     */
+    private void limparCarrinho() {
+        int resposta = JOptionPane.showConfirmDialog(null, bundle.getString("remove_from_cart"), bundle.getString("Confirmation"), JOptionPane.YES_NO_OPTION);
+
+        if (resposta == JOptionPane.YES_OPTION) {
+            String sql = "UPDATE tbprodutos SET quantidade = quantidade + ? WHERE idproduto = ?";
+
+            try {
+                // Inicia uma transação, se o seu banco de dados suportar
+                conexao.setAutoCommit(false);
+
+                for (int linhaSelecionada = 0; linhaSelecionada < tblCarrinho.getRowCount(); linhaSelecionada++) {
+                    // Atualizando a quantidade no banco de dados
+                    int quantidadeCarrinho = Integer.parseInt(tblCarrinho.getValueAt(linhaSelecionada, 3).toString()); // Coluna 3: quantidade
+                    int idNoCarrinho = Integer.parseInt(tblCarrinho.getValueAt(linhaSelecionada, 0).toString()); // Coluna 0: ID do produto
+
+                    // Preparando e executando a atualização
+                    pst = conexao.prepareStatement(sql);
+                    pst.setInt(1, quantidadeCarrinho); // Adiciona a quantidade de volta ao estoque
+                    pst.setInt(2, idNoCarrinho); // Seleciona o produto pelo ID
+                    pst.executeUpdate();
+
+                    // Obtendo título e removendo do carrinho
+                    Titulo titulo = buscarTituloAberto();
+                    removerProdutoDoCarrinho(titulo, idNoCarrinho, quantidadeCarrinho);
+                }
+
+                // Confirma todas as operações no banco de dados
+                conexao.commit();
+                conexao.setAutoCommit(true);
+
+                // Atualiza as tabelas e mostra a mensagem de sucesso após o loop
+                preencherTabelaCarrinho();
+                preencherTabelaProduto();
+                preencherTabelaTotal();
+                JOptionPane.showMessageDialog(null, bundle.getString("product_removed_success"));
+
+            } catch (Exception e) {
+                try {
+                    conexao.rollback(); // Reverte a transação em caso de erro
+                } catch (Exception rollbackEx) {
+                    JOptionPane.showMessageDialog(null, bundle.getString("rollback_error") + rollbackEx.getMessage());
+                }
+                JOptionPane.showMessageDialog(null, bundle.getString("error_removing") + e.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, bundle.getString("select_to_remove"));
+        }
+    }
+
+    /**
      * Processa o pagamento de um título, gerando uma nota fiscal e removendo o
      * título do banco de dados.
      *
@@ -932,6 +997,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
     private void btnLimparActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimparActionPerformed
         // TODO add your handling code here:
+        limparCarrinho();
     }//GEN-LAST:event_btnLimparActionPerformed
 
     private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
