@@ -136,9 +136,16 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
      * vendedor ou cliente.
      */
     private void pesquisarNota() {
-        String sql = "SELECT idnotafiscal AS ID_NOTA, nomevendedor AS VENDEDOR, nomecliente AS CLIENTE, valor AS VALOR, datacompra AS `DATA/HORA` "
-                + "FROM tbnotasfiscais "
-                + "WHERE idnotafiscal LIKE ? OR nomevendedor LIKE ? OR nomecliente LIKE ?";
+        String sql;
+        if (LanguageSelection.selectedLanguage) {
+            sql = "SELECT idnotafiscal AS "+bundle.getString("ID_invoices")+", nomevendedor AS "+bundle.getString("seller")+", nomecliente AS "+bundle.getString("client")+", valor / 5.78 AS "+bundle.getString("value")+", datacompra AS `"+bundle.getString("dt")+"` "
+            + "FROM tbnotasfiscais "
+            + "WHERE idnotafiscal LIKE ? OR nomevendedor LIKE ? OR nomecliente LIKE ?";
+        } else {
+            sql = "SELECT idnotafiscal AS "+bundle.getString("ID_invoices")+", nomevendedor AS "+bundle.getString("seller")+", nomecliente AS "+bundle.getString("client")+", valor AS "+bundle.getString("value")+", datacompra AS `"+bundle.getString("dt")+"` "
+            + "FROM tbnotasfiscais "
+            + "WHERE idnotafiscal LIKE ? OR nomevendedor LIKE ? OR nomecliente LIKE ?";
+        }
         try {
             pst = conexao.prepareStatement(sql);
             String searchTerm = txtBuscadorDeNotas.getText() + "%"; // Adiciona o curinga para LIKE
@@ -324,7 +331,7 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
 
         jLabel1.setFont(new java.awt.Font("MingLiU_HKSCS-ExtB", 0, 25)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("NOTAS FISCAIS");
+        jLabel1.setText(bundle.getString("invoices"));
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 0, 220, 110));
 
         tblNotasFiscais.setModel(new javax.swing.table.DefaultTableModel(
@@ -351,10 +358,10 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("BUSCAR NOTAS");
+        jLabel2.setText(bundle.getString("search_invoices"));
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 520, 370, -1));
 
-        btnVerDetalhes.setText("VER DETALHES");
+        btnVerDetalhes.setText(bundle.getString("see_details"));
         btnVerDetalhes.setEnabled(false);
         btnVerDetalhes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

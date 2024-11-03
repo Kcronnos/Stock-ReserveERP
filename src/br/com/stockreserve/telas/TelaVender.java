@@ -565,7 +565,12 @@ public class TelaVender extends javax.swing.JInternalFrame {
      * biblioteca rs2xml.jar.
      */
     private void preencherTabelaProduto() {
-        String sql = "select idproduto as ID,nomeproduto as NOME, preco / 5.78 as PREÇO , quantidade as QUANT from tbprodutos";
+        String sql;
+        if (LanguageSelection.selectedLanguage) {
+            sql = "select idproduto as ID,nomeproduto as NOME, preco / 5.78 as " + bundle.getString("price") + " , quantidade as " + bundle.getString("amount") + " from tbprodutos";
+        } else {
+            sql = "select idproduto as ID,nomeproduto as NOME, preco as " + bundle.getString("price") + " , quantidade as " + bundle.getString("amount") + " from tbprodutos";
+        }
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -585,7 +590,13 @@ public class TelaVender extends javax.swing.JInternalFrame {
      * usando a biblioteca rs2xml.jar.
      */
     private void pesquisarProduto() {
-        String sql = "select idproduto as ID,nomeproduto as NOME, preco / 5.78 as PREÇO , quantidade as QUANT from tbprodutos where nomeproduto like ?";
+        String sql;
+        if (LanguageSelection.selectedLanguage) {
+            sql = "select idproduto as ID,nomeproduto as NOME, preco / 5.78 as " + bundle.getString("price") + " , quantidade as " + bundle.getString("amount") + " from tbprodutos where nomeproduto like ?";
+        } else {
+            sql = "select idproduto as ID,nomeproduto as NOME, preco as " + bundle.getString("price") + " , quantidade as " + bundle.getString("amount") + " from tbprodutos where nomeproduto like ?";
+        }
+        
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtProduPesquisar.getText() + "%");

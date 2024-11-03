@@ -805,7 +805,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("Relatório de Vendas");
+        setTitle(bundle.getString("sales_Rep")); // NOI18N
         setPreferredSize(new java.awt.Dimension(1002, 336));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -853,7 +853,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         });
         getContentPane().add(txtVendPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 0, 220, -1));
 
-        jLabel1.setText("Buscar");
+        jLabel1.setText(bundle.getString("search"));
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 0, 40, -1));
 
         dcPesquisarData.setDateFormatString("yyyy-MM-dd");
@@ -867,7 +867,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         panelGraficoBarra.setLayout(new java.awt.BorderLayout());
         getContentPane().add(panelGraficoBarra, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 420, 300));
 
-        btnVerMais.setText("VER DETALHES");
+        btnVerMais.setText(bundle.getString("see_details")); // NOI18N
         btnVerMais.setEnabled(false);
         btnVerMais.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -877,7 +877,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         getContentPane().add(btnVerMais, new org.netbeans.lib.awtextra.AbsoluteConstraints(710, 0, 130, -1));
 
         grupoBotoesData.add(radioBtnAno);
-        radioBtnAno.setText("ANO");
+        radioBtnAno.setText(bundle.getString("year"));
         radioBtnAno.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioBtnAnoActionPerformed(evt);
@@ -886,7 +886,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         getContentPane().add(radioBtnAno, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 510, -1, -1));
 
         grupoBotoesData.add(radioBtnMes);
-        radioBtnMes.setText("MÊS");
+        radioBtnMes.setText(bundle.getString("month"));
         radioBtnMes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioBtnMesActionPerformed(evt);
@@ -895,7 +895,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         getContentPane().add(radioBtnMes, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 430, -1, -1));
 
         grupoBotoesData.add(radioBtnDia);
-        radioBtnDia.setText("DIA");
+        radioBtnDia.setText(bundle.getString("day"));
         radioBtnDia.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 radioBtnDiaActionPerformed(evt);
@@ -903,7 +903,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         });
         getContentPane().add(radioBtnDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 50, -1));
 
-        jLabel2.setText("FILTRAR E COMPARAR POR:");
+        jLabel2.setText(bundle.getString("filter_compare")); // NOI18N
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 310, -1, -1));
 
         comonBoxMes1.setEnabled(false);

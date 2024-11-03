@@ -484,7 +484,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         model.addColumn(bundle.getString("name"));
         model.addColumn(bundle.getString("current_price"));
         model.addColumn(bundle.getString("average_price"));
-        model.addColumn(bundle.getString("new_price"));
+        model.addColumn(bundle.getString("new_price_suggested"));
         tblAnaliseConcorrencia.setModel(model);
 
         // Obtém as médias de preço da concorrência e as sugestões de novo preço
@@ -601,17 +601,17 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         });
         getContentPane().add(txtProduPesquisar, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 0, 230, -1));
 
-        jLabel2.setText("Buscar");
+        jLabel2.setText(bundle.getString("search"));
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 0, 40, -1));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("Alterar o Preço:");
+        jLabel1.setText(bundle.getString("change_price"));
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, -1, -1));
 
         jLabel3.setText("ID");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 50, -1));
 
-        jLabel4.setText("Novo Preço");
+        jLabel4.setText(bundle.getString("new_price"));
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 390, -1, -1));
 
         txtIdProdu.setEnabled(false);
@@ -619,7 +619,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         getContentPane().add(txtNovoPreco, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 390, 110, -1));
 
         btnAlterarPreco.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_editar.png"))); // NOI18N
-        btnAlterarPreco.setToolTipText("Alterar Preço");
+        btnAlterarPreco.setToolTipText(bundle.getString("change_price"));
         btnAlterarPreco.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterarPreco.setPreferredSize(new java.awt.Dimension(50, 50));
         btnAlterarPreco.addActionListener(new java.awt.event.ActionListener() {
