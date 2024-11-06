@@ -43,10 +43,13 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,7 +73,9 @@ import weka.classifiers.functions.LinearRegression;
 import weka.core.FastVector;
 import weka.core.Instance;
 import java.util.Locale;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 /**
  * Classe responsável pela interface gráfica de relatório de vendas, onde são
@@ -110,6 +115,30 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
             }
         });
         conexao = ModuloConexao.conector();
+        choserMes.addPropertyChangeListener("month", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                try {
+                    atualizarTabelaProdutoMaisVendido();
+                } catch (SQLException ex) {
+                    Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ParseException ex) {
+                    Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        choserAno.addPropertyChangeListener("month", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+                try {
+                    atualizarTabelaProdutoMaisVendido();
+                } catch (SQLException ex) {
+                    Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (ParseException ex) {
+                    Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
         graficoBarra();
     }
 
@@ -771,6 +800,62 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
                     bundle.getString("error"), JOptionPane.ERROR_MESSAGE);
         }
     }
+    
+    private void atualizarTabelaProdutoMaisVendido() throws SQLException, ParseException{
+    
+        String sql = "SELECT produtos FROM tbnotasfiscais WHERE MONTH(datacompra) = ? AND YEAR(datacompra) = ?";
+        
+        int mes = choserMes.getMonth() + 1;  // Ajuste para 1-12
+        int ano = choserAno.getYear();
+        
+        PreparedStatement pst = conexao.prepareStatement(sql);
+        pst.setInt(1, mes);
+        pst.setInt(2, ano);
+        
+        ResultSet rs = pst.executeQuery();
+        
+        // Processar o JSON para obter a lista de produtos
+        List<Produto> todosProdutos = new ArrayList<>();
+        
+        while (rs.next()) {
+            String jsonProdutos = rs.getString("produtos");
+            List<Produto> produtos = JsonUtil.jsonParaProdutos(jsonProdutos);
+            todosProdutos.addAll(produtos);
+        }
+        
+        // Agrupar e somar a quantidade dos produtos por ID
+        Map<Integer, Produto> produtosAgrupados = todosProdutos.stream()
+            .collect(Collectors.toMap(
+                Produto::getId,
+                p -> p,
+                (p1, p2) -> {
+                    p1.setQuantidade(p1.getQuantidade() + p2.getQuantidade());
+                    return p1;
+                }
+            ));
+        
+        // Encontrar o produto com a maior quantidade
+        Produto produtoComMaiorQuantidade = produtosAgrupados.values().stream()
+            .max(Comparator.comparingInt(Produto::getQuantidade))
+            .orElse(null);
+
+        // Exibir o produto com a maior quantidade
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("PRODUTO MAIS VENDIDO NO PERIODO");
+        model.addColumn("QUANTIDADE");
+
+        // Define o modelo da tabela
+        tblProdutoMaisVendido.setModel(model);
+
+        if (produtoComMaiorQuantidade != null) {
+            // Obtenha os dados do produto com maior quantidade
+            String nomeProduto = produtoComMaiorQuantidade.getNome();
+            int quantidadeProduto = produtoComMaiorQuantidade.getQuantidade();
+
+            // Adicione os dados à tabela
+            model.addRow(new Object[]{nomeProduto, quantidadeProduto});
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -801,11 +886,16 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         tblTotal = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
         tblPrevisoes = new javax.swing.JTable();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tblProdutoMaisVendido = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
+        choserMes = new com.toedter.calendar.JMonthChooser();
+        choserAno = new com.toedter.calendar.JYearChooser();
 
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle(bundle.getString("sales_Rep")); // NOI18N
+        setTitle("Relatório de Vendas");
         setPreferredSize(new java.awt.Dimension(1002, 336));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -867,7 +957,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         panelGraficoBarra.setLayout(new java.awt.BorderLayout());
         getContentPane().add(panelGraficoBarra, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 420, 300));
 
-        btnVerMais.setText(bundle.getString("see_details")); // NOI18N
+        btnVerMais.setText(bundle.getString("see_details"));
         btnVerMais.setEnabled(false);
         btnVerMais.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -903,7 +993,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         });
         getContentPane().add(radioBtnDia, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 50, -1));
 
-        jLabel2.setText(bundle.getString("filter_compare")); // NOI18N
+        jLabel2.setText(bundle.getString("filter_compare"));
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 310, -1, -1));
 
         comonBoxMes1.setEnabled(false);
@@ -947,7 +1037,31 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         tblPrevisoes.setEnabled(false);
         jScrollPane3.setViewportView(tblPrevisoes);
 
-        getContentPane().add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 377, 550, 220));
+        getContentPane().add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 377, 550, 60));
+
+        tblProdutoMaisVendido.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
+            },
+            new String [] {
+                "PRODUTO MAIS VENDIDO NO PERIODO", "QUANTIDADE"
+            }
+        ));
+        tblProdutoMaisVendido.setEnabled(false);
+        jScrollPane4.setViewportView(tblProdutoMaisVendido);
+
+        getContentPane().add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 500, 550, 100));
+
+        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel3.setText("ESCOLHA UM PERIODO");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 440, 550, -1));
+
+        choserMes.setMonth(0);
+        getContentPane().add(choserMes, new org.netbeans.lib.awtextra.AbsoluteConstraints(542, 470, 120, -1));
+        getContentPane().add(choserAno, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 470, -1, -1));
 
         setBounds(0, 0, 1000, 634);
     }// </editor-fold>//GEN-END:initComponents
@@ -966,6 +1080,13 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
         preencherTabelaNotasFiscais();
         carregarTabelaPrevisoes();
+        try {
+            atualizarTabelaProdutoMaisVendido();
+        } catch (SQLException ex) {
+            Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(TelaRelatorioVendas.class.getName()).log(Level.SEVERE, null, ex);
+        }
         //chamando o método para ativar o botão de ver detalhes
         tblVendedores.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent event) {
@@ -1031,6 +1152,8 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnVerMais;
+    private com.toedter.calendar.JYearChooser choserAno;
+    private com.toedter.calendar.JMonthChooser choserMes;
     private javax.swing.JComboBox<String> comonBoxAno1;
     private javax.swing.JComboBox<String> comonBoxAno2;
     private javax.swing.JComboBox<String> comonBoxAno3;
@@ -1039,14 +1162,17 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
     private javax.swing.ButtonGroup grupoBotoesData;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JPanel panelGraficoBarra;
     private javax.swing.JRadioButton radioBtnAno;
     private javax.swing.JRadioButton radioBtnDia;
     private javax.swing.JRadioButton radioBtnMes;
     private javax.swing.JTable tblPrevisoes;
+    private javax.swing.JTable tblProdutoMaisVendido;
     private javax.swing.JTable tblTotal;
     private javax.swing.JTable tblVendedores;
     private javax.swing.JTextField txtVendPesquisar;
