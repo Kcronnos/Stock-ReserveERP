@@ -1023,6 +1023,11 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 320, 130, 50));
 
+        tblPrevisoes = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int ColIndex){
+                return false;
+            }
+        };
         tblPrevisoes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
@@ -1039,6 +1044,11 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
 
         getContentPane().add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 377, 550, 60));
 
+        tblProdutoMaisVendido = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int ColIndex){
+                return false;
+            }
+        };
         tblProdutoMaisVendido.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},

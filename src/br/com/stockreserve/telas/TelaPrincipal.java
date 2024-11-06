@@ -177,8 +177,8 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         menGer.add(MenGerRelVen);
 
-        telaRelatorioSalarios.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
-        telaRelatorioSalarios.setText("Relatório Salarios");
+        telaRelatorioSalarios.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        telaRelatorioSalarios.setText("Relatório de Usuários");
         telaRelatorioSalarios.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 telaRelatorioSalariosActionPerformed(evt);
@@ -390,7 +390,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void telaRelatorioSalariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telaRelatorioSalariosActionPerformed
         // TODO add your handling code here:
-        TelaRelatorioSalarios Salarios = new TelaRelatorioSalarios();
+        TelaRelatorioUsuarios Salarios = new TelaRelatorioUsuarios();
         Salarios.setVisible(true);
         desktop.add(Salarios);
     }//GEN-LAST:event_telaRelatorioSalariosActionPerformed

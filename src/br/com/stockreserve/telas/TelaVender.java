@@ -543,7 +543,6 @@ public class TelaVender extends javax.swing.JInternalFrame {
 
                 // Calcular comissão (2% do total de vendas)
                 double comissao = total * 0.02;
-                
 
                 // Verificar se já existe um salário registrado para o vendedor no mês atual
                 try (PreparedStatement pstSalarioExistente = conexao.prepareStatement(sqlSalarioExistente)) {
@@ -626,6 +625,70 @@ public class TelaVender extends javax.swing.JInternalFrame {
         btnRemover.setEnabled(linhaSelecionada != -1);// Habilita o botão se houver uma linha selecionada
         if (linhaSelecionada != -1) {
             tblProdutos.clearSelection();
+        }
+    }
+
+    private void avaliacaoCliente(String nomeVendedor) {
+
+        // Avaliação do cliente após o pagamento
+        String avaliacao = null;
+        int avaliacaoInt = 0;
+        int respostaAvaliacao = JOptionPane.showConfirmDialog(
+                null,
+                "Deseja fazer uma avaliação?",
+                "Avaliação do cliente",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        //Criando um loop para que só acceite avaliações válidas
+        boolean avaliacaoValida = false;
+        while (!avaliacaoValida) {
+
+            if (respostaAvaliacao == JOptionPane.YES_OPTION) {
+                avaliacao = JOptionPane.showInputDialog(
+                        null, "Dê sua nota de 1 a 5:",
+                        JOptionPane.QUESTION_MESSAGE
+                );
+            }
+
+            if (avaliacao != null) {
+                try {
+                    avaliacaoInt = Integer.parseInt(avaliacao);
+
+                    if (avaliacaoInt >= 1 && avaliacaoInt <= 5) {
+                        avaliacaoValida = true;//quebra do loop
+                        
+                        //pegando o id do vendedor
+                        String idUserVendedor = buscarIdUserVendedor(nomeVendedor);
+
+                        if (idUserVendedor != null) {
+                            String sql = "INSERT INTO tbusuarios_avaliacoes (iduser, avaliacao) VALUES (?, ?)";
+
+                            try (PreparedStatement pst = conexao.prepareStatement(sql)) {
+                                pst.setString(1, idUserVendedor);
+                                pst.setInt(2, avaliacaoInt);
+
+                                int adicionado = pst.executeUpdate();
+                                if (adicionado > 0) {
+                                    JOptionPane.showMessageDialog(null, "Avaliação registrada com sucesso!");
+                                } else {
+                                    JOptionPane.showMessageDialog(null, "Erro ao registrar a avaliação.");
+                                }
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(null, "Vendedor não encontrado.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Avaliação inválida. Insira um valor entre 1 e 5.");
+                    }
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "Por favor, insira um número válido.");
+                } catch (SQLException e) {
+                    JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Avaliação não realizada.");
+            }
         }
     }
 
@@ -1032,6 +1095,10 @@ public class TelaVender extends javax.swing.JInternalFrame {
                 Logger.getLogger(TelaVender.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
+        String nomeVendedor = TelaPrincipal.lblUsuario.getText();
+        avaliacaoCliente(nomeVendedor);
+
     }//GEN-LAST:event_btnPagarActionPerformed
 
     private void btnAdicionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarActionPerformed

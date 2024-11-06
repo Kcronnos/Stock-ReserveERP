@@ -121,9 +121,9 @@
             <MenuItem class="javax.swing.JMenuItem" name="telaRelatorioSalarios">
               <Properties>
                 <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
-                  <KeyStroke key="Shift+Alt+S"/>
+                  <KeyStroke key="Shift+Alt+U"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Relat&#xf3;rio Salarios"/>
+                <Property name="text" type="java.lang.String" value="Relat&#xf3;rio de Usu&#xe1;rios"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="telaRelatorioSalariosActionPerformed"/>
