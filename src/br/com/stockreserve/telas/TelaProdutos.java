@@ -102,7 +102,12 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
      * @version 2.0
      */
     private void adicionarProdutos() {
-        String sql = "insert into tbprodutos(idproduto, nomeproduto,preco,quantidade,limite_minimo,vencimento) values(?,?,?,?,?,?)";
+        String sql;
+        if(LanguageSelection.selectedLanguage){
+            sql = "insert into tbprodutos(idproduto, nomeproduto,preco,quantidade,limite_minimo,vencimento) values(?,?,? * 5.78,?,?,?)";
+        } else {
+            sql = "insert into tbprodutos(idproduto, nomeproduto,preco,quantidade,limite_minimo,vencimento) values(?,?,?,?,?,?)";
+        }
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtProduId.getText());
