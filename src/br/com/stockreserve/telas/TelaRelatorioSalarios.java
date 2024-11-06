@@ -23,17 +23,92 @@
  */
 package br.com.stockreserve.telas;
 
+import javax.swing.JOptionPane;
+import net.proteanit.sql.DbUtils;
+import br.com.stockreserve.dal.ModuloConexao;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 /**
  *
  * @author leog4
  */
 public class TelaRelatorioSalarios extends javax.swing.JInternalFrame {
 
+    Connection conexao = null;
+    PreparedStatement pst = null;
+    ResultSet rs = null;
+
     /**
      * Creates new form TelaRelatorioSalarios
      */
     public TelaRelatorioSalarios() {
         initComponents();
+        conexao = ModuloConexao.conector();
+        preencherTabelaRelatorioSalarios();
+    }
+
+    private void preencherTabelaRelatorioSalarios() {
+        String sql = "SELECT iduser AS ID, nome AS VENDEDOR, salario AS SALARIO_BASE, comissao AS COMISSÃO, total AS TOTAL, datacomissao AS DATA "
+                + "FROM tblsalarios";
+
+        try {
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+
+            DefaultTableModel model = new DefaultTableModel(new Object[][]{}, new String[]{
+                "ID", "VENDEDOR", "SALARIO_BASE", "COMISSÃO", "TOTAL", "DATA"
+            });
+
+            int rowCount = 0;
+            while (rs.next()) {
+                rowCount++;
+                model.addRow(new Object[]{
+                    rs.getInt("ID"),
+                    rs.getString("VENDEDOR"),
+                    rs.getDouble("SALARIO_BASE"),
+                    rs.getDouble("COMISSÃO"),
+                    rs.getDouble("TOTAL"),
+                    rs.getDate("DATA")
+                });
+            }
+            tblSalarios.setModel(model);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void pesquisarSalarios() {
+        String sql;
+
+        sql = "SELECT iduser AS ID, nome AS VENDEDOR, salario AS SALARIO_BASE, comissao AS COMISSÃO, total AS TOTAL, datacomissao AS DATA "
+           + "FROM tblsalarios "
+           + "WHERE (iduser = ? OR nome LIKE ?)";
+
+        try {
+            pst = conexao.prepareStatement(sql);
+
+            // Obtendo o termo de busca dos campos de texto
+            String searchTerm = txtBuscarSalarios.getText() + "%";
+            pst.setString(1, searchTerm);
+            pst.setString(2, searchTerm);
+
+            // Executando a consulta
+            rs = pst.executeQuery();
+
+            // A linha abaixo usa a biblioteca rs2xml.jar para preencher a tabela
+            tblSalarios.setModel(DbUtils.resultSetToTableModel(rs));
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
     }
 
     /**
@@ -46,44 +121,111 @@ public class TelaRelatorioSalarios extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblSalarios = new javax.swing.JTable();
+        txtBuscarSalarios = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
+            public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosed(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameClosing(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeactivated(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameDeiconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameIconified(javax.swing.event.InternalFrameEvent evt) {
+            }
+            public void internalFrameOpened(javax.swing.event.InternalFrameEvent evt) {
+                formInternalFrameOpened(evt);
+            }
+        });
+
+        tblSalarios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "VENDEDOR", "SALARIO BASE", "COMISSÃO", "TOTAL", "DATA"
+                "ID", "VENDEDOR", "SALARIO BASE", "COMISSÃO", "TOTAL", "DATA"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblSalarios);
+
+        txtBuscarSalarios.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtBuscarSalariosKeyReleased(evt);
+            }
+        });
+
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("BUSCAR");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 25)); // NOI18N
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("RELATÓRIO SALÁRIOS");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(37, 37, 37)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 897, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(54, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 395, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addGap(232, 232, 232)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(txtBuscarSalarios, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(46, 46, 46)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 897, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(45, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(162, Short.MAX_VALUE)
+                .addGap(23, 23, 23)
+                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 67, Short.MAX_VALUE)
+                .addGap(36, 36, 36)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtBuscarSalarios, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 408, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(25, 25, 25))
+                .addGap(28, 28, 28))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void formInternalFrameOpened(javax.swing.event.InternalFrameEvent evt) {//GEN-FIRST:event_formInternalFrameOpened
+        // TODO add your handling code here:
+        preencherTabelaRelatorioSalarios();
+    }//GEN-LAST:event_formInternalFrameOpened
+
+    private void txtBuscarSalariosKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtBuscarSalariosKeyReleased
+        // TODO add your handling code here:
+        pesquisarSalarios();
+    }//GEN-LAST:event_txtBuscarSalariosKeyReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tblSalarios;
+    private javax.swing.JTextField txtBuscarSalarios;
     // End of variables declaration//GEN-END:variables
 }

@@ -68,6 +68,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menGerUsu = new javax.swing.JMenuItem();
         menGerRelPro = new javax.swing.JMenuItem();
         MenGerRelVen = new javax.swing.JMenuItem();
+        telaRelatorioSalarios = new javax.swing.JMenuItem();
         menAju = new javax.swing.JMenu();
         menAjuSob = new javax.swing.JMenuItem();
         menAjuSup = new javax.swing.JMenuItem();
@@ -95,16 +96,16 @@ public class TelaPrincipal extends javax.swing.JFrame {
         );
 
         lblUsuario.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblUsuario.setText(bundle.getString("user"));
+        lblUsuario.setText("Usuário");
 
         lblData.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblData.setText(bundle.getString("date"));
+        lblData.setText("Data");
 
-        menVen.setText(bundle.getString("sales"));
+        menVen.setText("Vendas");
         menVen.setEnabled(false);
 
         menVenVender.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menVenVender.setText(bundle.getString("sell"));
+        menVenVender.setText("Vender");
         menVenVender.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menVenVenderActionPerformed(evt);
@@ -113,7 +114,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menVen.add(menVenVender);
 
         jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        jMenuItem1.setText(bundle.getString("invoices"));
+        jMenuItem1.setText("Notas Fiscais");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jMenuItem1ActionPerformed(evt);
@@ -123,11 +124,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(menVen);
 
-        menEsto.setText(bundle.getString("stock"));
+        menEsto.setText("Estoque");
         menEsto.setEnabled(false);
 
         menEstPro.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menEstPro.setText(bundle.getString("prod_stock"));
+        menEstPro.setText("Estoque de Produtos");
         menEstPro.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menEstProActionPerformed(evt);
@@ -136,7 +137,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menEsto.add(menEstPro);
 
         menEstStatus.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menEstStatus.setText(bundle.getString("stock_status"));
+        menEstStatus.setText("Status do Estoque");
         menEstStatus.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menEstStatusActionPerformed(evt);
@@ -146,11 +147,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(menEsto);
 
-        menGer.setText(bundle.getString("management"));
+        menGer.setText("Gerência");
         menGer.setEnabled(false);
 
         menGerUsu.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menGerUsu.setText(bundle.getString("users"));
+        menGerUsu.setText("Usuários");
         menGerUsu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menGerUsuActionPerformed(evt);
@@ -159,7 +160,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menGer.add(menGerUsu);
 
         menGerRelPro.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
-        menGerRelPro.setText(bundle.getString("Prod_Rep"));
+        menGerRelPro.setText("Relatório de Produtos");
         menGerRelPro.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menGerRelProActionPerformed(evt);
@@ -168,7 +169,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menGer.add(menGerRelPro);
 
         MenGerRelVen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
-        MenGerRelVen.setText(bundle.getString("sales_Rep"));
+        MenGerRelVen.setText("Relatorio de Vendas");
         MenGerRelVen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 MenGerRelVenActionPerformed(evt);
@@ -176,12 +177,21 @@ public class TelaPrincipal extends javax.swing.JFrame {
         });
         menGer.add(MenGerRelVen);
 
+        telaRelatorioSalarios.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
+        telaRelatorioSalarios.setText("Relatório Salarios");
+        telaRelatorioSalarios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                telaRelatorioSalariosActionPerformed(evt);
+            }
+        });
+        menGer.add(telaRelatorioSalarios);
+
         jMenuBar1.add(menGer);
 
-        menAju.setText(bundle.getString("help"));
+        menAju.setText("Ajuda");
 
         menAjuSob.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_A, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menAjuSob.setText(bundle.getString("about"));
+        menAjuSob.setText("Sobre");
         menAjuSob.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menAjuSobActionPerformed(evt);
@@ -190,7 +200,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menAju.add(menAjuSob);
 
         menAjuSup.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.ALT_DOWN_MASK | java.awt.event.InputEvent.SHIFT_DOWN_MASK));
-        menAjuSup.setText(bundle.getString("support"));
+        menAjuSup.setText("Suporte");
         menAjuSup.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menAjuSupActionPerformed(evt);
@@ -200,10 +210,10 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
         jMenuBar1.add(menAju);
 
-        menOpc.setText(bundle.getString("options"));
+        menOpc.setText("Opções");
 
         menOpcSai.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.ALT_DOWN_MASK));
-        menOpcSai.setText(bundle.getString("exit"));
+        menOpcSai.setText("Sair");
         menOpcSai.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menOpcSaiActionPerformed(evt);
@@ -378,6 +388,13 @@ public class TelaPrincipal extends javax.swing.JFrame {
         desktop.add(notas);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void telaRelatorioSalariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telaRelatorioSalariosActionPerformed
+        // TODO add your handling code here:
+        TelaRelatorioSalarios Salarios = new TelaRelatorioSalarios();
+        Salarios.setVisible(true);
+        desktop.add(Salarios);
+    }//GEN-LAST:event_telaRelatorioSalariosActionPerformed
+
     /**
      * Método principal que inicializa e exibe a tela principal da aplicação.
      *
@@ -436,5 +453,6 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem menOpcSai;
     public static javax.swing.JMenu menVen;
     private javax.swing.JMenuItem menVenVender;
+    private javax.swing.JMenuItem telaRelatorioSalarios;
     // End of variables declaration//GEN-END:variables
 }

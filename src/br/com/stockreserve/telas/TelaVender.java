@@ -35,6 +35,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -495,9 +496,12 @@ public class TelaVender extends javax.swing.JInternalFrame {
      * processar JSON
      */
     private void fazerPagamento(String nomeCliente) throws SQLException, ParseException, org.json.simple.parser.ParseException {
-
         String sql = "insert into tbnotasfiscais(idnotafiscal,nomevendedor,nomecliente,valor,datacompra,produtos) values(?,?,?,?,?,?)";
         String sql2 = "DELETE FROM titulos WHERE idtitulo = ?";
+        String sqlSalarioExistente = "SELECT * FROM tblsalarios WHERE iduser = ? AND MONTH(datacomissao) = MONTH(CURRENT_DATE) AND YEAR(datacomissao) = YEAR(CURRENT_DATE)";
+        String sqlInsertSalario = "INSERT INTO tblsalarios(iduser, nome, salario, comissao, total, datacomissao) VALUES(?, ?, ?, ?, ?, ?)";
+        String sqlUpdateSalario = "UPDATE tblsalarios SET comissao = ?, total = ? WHERE iduser = ? AND MONTH(datacomissao) = MONTH(CURRENT_DATE) AND YEAR(datacomissao) = YEAR(CURRENT_DATE)";
+
         try {
             Titulo titulo = buscarTituloAberto();
             double total = 0.0;
@@ -533,11 +537,84 @@ public class TelaVender extends javax.swing.JInternalFrame {
                 preencherTabelaProduto();
                 preencherTabelaTotal();
 
+                // Agora, calcular e atualizar/inserir o salário e comissão
+                String idUserVendedor = buscarIdUserVendedor(nomeVendedor);  // Método que retorna o id do vendedor
+                double salarioVendedor = buscarSalarioVendedor(idUserVendedor);  // Método que retorna o salário base do vendedor
+
+                // Calcular comissão (2% do total de vendas)
+                double comissao = total * 0.02;
+                
+
+                // Verificar se já existe um salário registrado para o vendedor no mês atual
+                try (PreparedStatement pstSalarioExistente = conexao.prepareStatement(sqlSalarioExistente)) {
+                    pstSalarioExistente.setString(1, idUserVendedor);
+                    ResultSet rs = pstSalarioExistente.executeQuery();
+
+                    if (rs.next()) {
+                        double comissaoExistente = rs.getDouble("comissao");
+                        double novaComissao = comissaoExistente + comissao;
+                        double totalSalario = salarioVendedor + novaComissao;
+                        // Já existe um registro para esse vendedor no mês atual, atualizar comissão e total
+                        try (PreparedStatement pstUpdateSalario = conexao.prepareStatement(sqlUpdateSalario)) {
+                            pstUpdateSalario.setDouble(1, novaComissao);
+                            pstUpdateSalario.setDouble(2, totalSalario);
+                            pstUpdateSalario.setString(3, idUserVendedor);
+                            pstUpdateSalario.executeUpdate();
+                        }
+                    } else {
+                        double totalSalario = salarioVendedor + comissao;
+                        // Não existe, inserir um novo registro de salário
+                        try (PreparedStatement pstInsertSalario = conexao.prepareStatement(sqlInsertSalario)) {
+                            pstInsertSalario.setString(1, idUserVendedor);
+                            pstInsertSalario.setString(2, nomeVendedor);
+                            pstInsertSalario.setDouble(3, salarioVendedor);
+                            pstInsertSalario.setDouble(4, comissao);
+                            pstInsertSalario.setDouble(5, totalSalario);
+                            pstInsertSalario.setDate(6, java.sql.Date.valueOf(LocalDate.now()));  // Data da comissão
+                            pstInsertSalario.executeUpdate();
+                        }
+                    }
+                }
+
                 JOptionPane.showMessageDialog(null, bundle.getString("payment_successfully"));
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, bundle.getString("error_payment") + e.getMessage());
         }
+    }
+
+    private String buscarIdUserVendedor(String nomeVendedor) throws SQLException {
+        String idUserVendedor = null;
+        String sql = "SELECT iduser FROM tbusuarios WHERE nome = ?";
+
+        try (PreparedStatement pst = conexao.prepareStatement(sql)) {
+            pst.setString(1, nomeVendedor);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    idUserVendedor = rs.getString("iduser");
+                }
+            }
+        }
+
+        return idUserVendedor;
+    }
+
+    private double buscarSalarioVendedor(String idUserVendedor) throws SQLException {
+        double salario = 0.0;
+        String sql = "SELECT salario FROM tbusuarios WHERE iduser = ?";
+
+        try (PreparedStatement pst = conexao.prepareStatement(sql)) {
+            pst.setString(1, idUserVendedor);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    salario = rs.getDouble("salario");
+                }
+            }
+        }
+
+        return salario;
     }
 
     /**
@@ -662,7 +739,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
         } else {
             sql = "select idproduto as ID,nomeproduto as NOME, preco as " + bundle.getString("price") + " , quantidade as " + bundle.getString("amount") + " from tbprodutos where nomeproduto like ?";
         }
-        
+
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtProduPesquisar.getText() + "%");
