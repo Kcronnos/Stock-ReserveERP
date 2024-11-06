@@ -37,7 +37,7 @@ import javax.swing.table.TableModel;
  *
  * @author leog4
  */
-public class TelaRelatorioSalarios extends javax.swing.JInternalFrame {
+public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
 
     Connection conexao = null;
     PreparedStatement pst = null;
@@ -46,37 +46,42 @@ public class TelaRelatorioSalarios extends javax.swing.JInternalFrame {
     /**
      * Creates new form TelaRelatorioSalarios
      */
-    public TelaRelatorioSalarios() {
+    public TelaRelatorioUsuarios() {
         initComponents();
         conexao = ModuloConexao.conector();
         preencherTabelaRelatorioSalarios();
     }
 
     private void preencherTabelaRelatorioSalarios() {
-        String sql = "SELECT iduser AS ID, nome AS VENDEDOR, salario AS SALARIO_BASE, comissao AS COMISSÃO, total AS TOTAL, datacomissao AS DATA "
-                + "FROM tblsalarios";
+        // SQL que inclui uma subconsulta para calcular a média de avaliações para cada vendedor
+        String sql = "SELECT s.iduser AS ID, u.nome AS VENDEDOR, s.salario AS SALARIO_BASE, "
+                + "s.comissao AS COMISSÃO, s.total AS TOTAL, s.datacomissao AS DATA, "
+                + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS MEDIA_AVALIACAO "
+                + "FROM tblsalarios s "
+                + "JOIN tbusuarios u ON s.iduser = u.iduser";
 
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
 
+            // Configura o modelo da tabela incluindo a coluna de média de avaliações
             DefaultTableModel model = new DefaultTableModel(new Object[][]{}, new String[]{
-                "ID", "VENDEDOR", "SALARIO_BASE", "COMISSÃO", "TOTAL", "DATA"
+                "ID", "VENDEDOR", "SALARIO_BASE", "COMISSÃO", "TOTAL", "DATA", "MEDIA_AVALIACAO"
             });
 
-            int rowCount = 0;
             while (rs.next()) {
-                rowCount++;
                 model.addRow(new Object[]{
                     rs.getInt("ID"),
                     rs.getString("VENDEDOR"),
                     rs.getDouble("SALARIO_BASE"),
                     rs.getDouble("COMISSÃO"),
                     rs.getDouble("TOTAL"),
-                    rs.getDate("DATA")
+                    rs.getDate("DATA"),
+                    rs.getDouble("MEDIA_AVALIACAO") // Adiciona a média de avaliações
                 });
             }
-            tblSalarios.setModel(model);
+
+            tblSalarios.setModel(model); // Define o modelo na JTable
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
@@ -87,9 +92,12 @@ public class TelaRelatorioSalarios extends javax.swing.JInternalFrame {
     private void pesquisarSalarios() {
         String sql;
 
-        sql = "SELECT iduser AS ID, nome AS VENDEDOR, salario AS SALARIO_BASE, comissao AS COMISSÃO, total AS TOTAL, datacomissao AS DATA "
-           + "FROM tblsalarios "
-           + "WHERE (iduser = ? OR nome LIKE ?)";
+        sql = "SELECT s.iduser AS ID, u.nome AS VENDEDOR, s.salario AS SALARIO_BASE, "
+               + "s.comissao AS COMISSÃO, s.total AS TOTAL, s.datacomissao AS DATA, "
+               + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS MEDIA_AVALIACAO "
+               + "FROM tblsalarios s "
+               + "JOIN tbusuarios u ON s.iduser = u.iduser "
+               + "WHERE (s.iduser = ? OR u.nome LIKE ?)";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -104,7 +112,7 @@ public class TelaRelatorioSalarios extends javax.swing.JInternalFrame {
 
             // A linha abaixo usa a biblioteca rs2xml.jar para preencher a tabela
             tblSalarios.setModel(DbUtils.resultSetToTableModel(rs));
-            
+
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, e.getMessage());
@@ -147,15 +155,20 @@ public class TelaRelatorioSalarios extends javax.swing.JInternalFrame {
             }
         });
 
+        tblSalarios = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int ColIndex){
+                return false;
+            }
+        };
         tblSalarios.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "VENDEDOR", "SALARIO BASE", "COMISSÃO", "TOTAL", "DATA"
+                "ID", "VENDEDOR", "SALARIO BASE", "COMISSÃO", "TOTAL", "DATA", "AVALIAÇÃO"
             }
         ));
         jScrollPane1.setViewportView(tblSalarios);
@@ -171,7 +184,7 @@ public class TelaRelatorioSalarios extends javax.swing.JInternalFrame {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 25)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("RELATÓRIO SALÁRIOS");
+        jLabel2.setText("RELATÓRIO USUÁRIOS");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

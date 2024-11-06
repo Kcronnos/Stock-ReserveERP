@@ -358,7 +358,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle(bundle.getString("prod_title"));
+        setTitle("Cadastro/Alteração/Remoção de Produtos");
         setPreferredSize(new java.awt.Dimension(1000, 631));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -397,12 +397,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null}
             },
             new String [] {
-                bundle.getString("prod_id"),
-                bundle.getString("prod_name"),
-                bundle.getString("prod_price"),
-                bundle.getString("amount"),
-                bundle.getString("min_limit"),
-                bundle.getString("expiry")
+                "ID", "Nome", "Preço", "Quantidade", "Limite Mínimo", "Vencimento"
             }
         ));
         tblProdutos.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -418,7 +413,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel1.setText(bundle.getString("prod_id"));
+        jLabel1.setText("ID Produto");
 
         txtProduPreco.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -432,20 +427,20 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel2.setText("*"+bundle.getString("prod_name"));
+        jLabel2.setText("*Nome Produto");
 
-        jLabel3.setText("*"+bundle.getString("amount"));
+        jLabel3.setText("*Quantidade");
 
-        jLabel4.setText("*"+bundle.getString("prod_price"));
+        jLabel4.setText("*Preço Produto");
 
-        jLabel5.setText("*"+bundle.getString("min_limit"));
+        jLabel5.setText("*Limite Mínimo");
 
-        jLabel12.setText(bundle.getString("mandatoryf"));
+        jLabel12.setText("*Campos Obrigatórios");
 
-        jLabel6.setText(bundle.getString("expiry"));
+        jLabel6.setText("Vencimento");
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_adicionar.png"))); // NOI18N
-        btnAdicionar.setToolTipText(bundle.getString("prod_add"));
+        btnAdicionar.setToolTipText("Adicionar Produto");
         btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAdicionar.setPreferredSize(new java.awt.Dimension(80, 80));
         btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
@@ -455,7 +450,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         });
 
         btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_editar.png"))); // NOI18N
-        btnAlterar.setToolTipText(bundle.getString("change_data"));
+        btnAlterar.setToolTipText("Alterar Dados");
         btnAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterar.setEnabled(false);
         btnAlterar.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -466,7 +461,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         });
 
         btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_remover.png"))); // NOI18N
-        btnRemover.setToolTipText(bundle.getString("prod_remove"));
+        btnRemover.setToolTipText("Remover Produto");
         btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRemover.setEnabled(false);
         btnRemover.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -511,14 +506,13 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(18, 18, 18)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(txtProduLimi, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addGroup(layout.createSequentialGroup()
-                                                .addGap(6, 6, 6)
                                                 .addComponent(txtProduQuanti, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                .addComponent(jLabel6)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(dcVencimento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                                .addGap(18, 18, 18)
+                                                .addComponent(jLabel6))
+                                            .addComponent(txtProduLimi, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(dcVencimento, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGap(165, 165, 165)
                                         .addComponent(btnRemover, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
