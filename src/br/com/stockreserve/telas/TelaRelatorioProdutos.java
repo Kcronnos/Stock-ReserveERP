@@ -234,12 +234,12 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
                     .setCellRenderer(new TelaRelatorioProdutos.StatusCellRenderer());
 
             // Aplica o renderizador colorido à coluna `VENCIMENTO`
-            int vencimentoColIndex = tblProdutos.getColumnModel().getColumnIndex("VENCIMENTO");
+            int vencimentoColIndex = tblProdutos.getColumnModel().getColumnIndex(vencimento);
             tblProdutos.getColumnModel().getColumn(vencimentoColIndex)
                     .setCellRenderer(new TelaRelatorioProdutos.VencimentoCellRenderer());
 
         } catch (Exception e) {
-            String n = "penis";
+            JOptionPane.showMessageDialog(null, e);
         }
     }
 
@@ -288,12 +288,12 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
                     .setCellRenderer(new TelaRelatorioProdutos.StatusCellRenderer());
 
             // Configura o renderizador de cores para a coluna `VENCIMENTO`
-            int vencimentoColIndex = tblProdutos.getColumnModel().getColumnIndex("VENCIMENTO");
+            int vencimentoColIndex = tblProdutos.getColumnModel().getColumnIndex(vencimento);
             tblProdutos.getColumnModel().getColumn(vencimentoColIndex)
                     .setCellRenderer(new TelaRelatorioProdutos.VencimentoCellRenderer());
 
         } catch (Exception e) {
-            String n = "penis";
+            JOptionPane.showMessageDialog(null, e);
         }
     }
 
