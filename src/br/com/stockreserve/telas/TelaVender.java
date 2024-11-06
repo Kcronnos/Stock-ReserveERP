@@ -79,6 +79,7 @@ public class TelaVender extends javax.swing.JInternalFrame {
             public void mouseClicked(MouseEvent e) {
                 tblProdutos.clearSelection(); // Limpa a seleção da tabela de produtos
                 tblCarrinho.clearSelection(); // Limpa a seleção da tabela do carrinho
+                txtProduId.setText(null);
             }
         });
         initComponents(); // Inicializa os componentes da interface
