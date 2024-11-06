@@ -468,11 +468,11 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
                 while (rs.next()) {
                     String periodo; // Armazena o período (dia, mês ou ano)
                     if (radioBtnDia.isSelected()) {
-                        periodo = rs.getString(bundle.getString("day")); // Dia do mês
+                        periodo = rs.getString("DIA"); // Dia do mês
                     } else if (radioBtnMes.isSelected()) {
-                        periodo = rs.getString(bundle.getString("month")); // Mês do ano
+                        periodo = rs.getString("MES"); // Mês do ano
                     } else {
-                        periodo = rs.getString(bundle.getString("year")); // Ano
+                        periodo = rs.getString("ANO"); // Ano
                     }
 
                     double totalVendas = rs.getDouble("total_vendas");

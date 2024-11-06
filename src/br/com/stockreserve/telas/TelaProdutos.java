@@ -28,11 +28,16 @@ import java.sql.*;
 import br.com.stockreserve.dal.ModuloConexao;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import net.proteanit.sql.DbUtils;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 /**
  * Classe responsável pela interface de gerenciamento de produtos do sistema.
@@ -80,6 +85,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
                 btnAdicionar.setEnabled(true);
                 btnAlterar.setEnabled(false);
                 btnRemover.setEnabled(false);
+                txtProduId.setEnabled(true);
             }
         });
         initComponents();
@@ -240,13 +246,21 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
      * @author Feliipee013
      * @version 2.0
      */
-    public void setarCampos() {
+    public void setarCampos() throws ParseException {
         int setar = tblProdutos.getSelectedRow();
         txtProduId.setText(tblProdutos.getModel().getValueAt(setar, 0).toString());
         txtProduNome.setText(tblProdutos.getModel().getValueAt(setar, 1).toString());
         txtProduPreco.setText(tblProdutos.getModel().getValueAt(setar, 2).toString());
         txtProduQuanti.setText(tblProdutos.getModel().getValueAt(setar, 3).toString());
         txtProduLimi.setText(tblProdutos.getModel().getValueAt(setar, 4).toString());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Object dataObj = tblProdutos.getModel().getValueAt(setar, 5);
+         if (dataObj == null || dataObj.toString().trim().isEmpty()) {
+            // Limpa a data exibida no JDateChooser
+            dcVencimento.setDate(null);
+        } else {
+        dcVencimento.setDate(dateFormat.parse(tblProdutos.getModel().getValueAt(setar, 5).toString()));
+         }
         //a linha abaixo era pra preencher oss campo de vencimento
         //só preenche dps q vc seleciona alguma data por algum motivo que não sei ainda
         //dcVencimento.setDateFormatString(tblProdutos.getModel().getValueAt(setar, 5).toString());
@@ -254,6 +268,8 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         btnAdicionar.setEnabled(false);
         btnAlterar.setEnabled(true);
         btnRemover.setEnabled(true);
+        txtProduId.setEnabled(false);
+        
     }
 
     /**
@@ -566,8 +582,12 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
      * @param evt Evento gerado pelo clique do mouse.
      */
     private void tblProdutosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblProdutosMouseClicked
-        //Chamando o setar campos para preencher os campos do formulário
-        setarCampos();
+        try {
+            //Chamando o setar campos para preencher os campos do formulário
+            setarCampos();
+        } catch (ParseException ex) {
+            Logger.getLogger(TelaProdutos.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_tblProdutosMouseClicked
 
     private void txtUsuIdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUsuIdActionPerformed

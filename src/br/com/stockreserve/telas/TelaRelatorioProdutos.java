@@ -67,6 +67,7 @@ public class TelaRelatorioProdutos extends javax.swing.JInternalFrame {
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 tblProdutos.clearSelection();
+                limpar();
             }
         });
         conexao = ModuloConexao.conector();
