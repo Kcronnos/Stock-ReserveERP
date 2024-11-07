@@ -32,6 +32,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  *
@@ -42,11 +44,19 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
+    ResourceBundle bundle;
 
     /**
      * Creates new form TelaRelatorioSalarios
      */
     public TelaRelatorioUsuarios() {
+        Locale locale;
+        if (LanguageSelection.selectedLanguage) {
+            locale = Locale.of("en", "US");
+        } else {
+            locale = Locale.of("pt", "BR");
+        }
+        bundle = ResourceBundle.getBundle("br.com.stockreserve.erp", locale);
         initComponents();
         conexao = ModuloConexao.conector();
         preencherTabelaRelatorioSalarios();
@@ -54,11 +64,21 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
 
     private void preencherTabelaRelatorioSalarios() {
         // SQL que inclui uma subconsulta para calcular a média de avaliações para cada vendedor
-        String sql = "SELECT s.iduser AS ID, u.nome AS VENDEDOR, s.salario AS SALARIO_BASE, "
-                + "s.comissao AS COMISSÃO, s.total AS TOTAL, s.datacomissao AS DATA, "
-                + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS MEDIA_AVALIACAO "
+        String sql;
+        if (LanguageSelection.selectedLanguage) {
+            sql = "SELECT s.iduser AS ID, u.nome AS "+bundle.getString("seller")+", s.salario / 5.78 AS "+bundle.getString("base_salary")+", "
+                + "s.comissao / 5.78 AS "+bundle.getString("commission")+", s.total /5.78 AS TOTAL, s.datacomissao AS "+bundle.getString("date")+", "
+                + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS AVARAGE_RATING " //por algum motivo, se eu coloco o bundle.getString("avarage_rating") ele dá erro, então deixei em inglês mesmo
                 + "FROM tblsalarios s "
                 + "JOIN tbusuarios u ON s.iduser = u.iduser";
+        } else {
+            sql = "SELECT s.iduser AS ID, u.nome AS "+bundle.getString("seller")+", s.salario AS "+bundle.getString("base_salary")+", "
+                + "s.comissao AS "+bundle.getString("commission")+", s.total AS TOTAL, s.datacomissao AS "+bundle.getString("date")+", "
+                + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS "+bundle.getString("avarage_rating")+" "
+                + "FROM tblsalarios s "
+                + "JOIN tbusuarios u ON s.iduser = u.iduser";
+        }
+        
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -66,38 +86,46 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
 
             // Configura o modelo da tabela incluindo a coluna de média de avaliações
             DefaultTableModel model = new DefaultTableModel(new Object[][]{}, new String[]{
-                "ID", "VENDEDOR", "SALARIO_BASE", "COMISSÃO", "TOTAL", "DATA", "MEDIA_AVALIACAO"
+                "ID", bundle.getString("seller"), bundle.getString("base_salary"), bundle.getString("commission"), "TOTAL", bundle.getString("date"), bundle.getString("avarage_rating")
             });
 
             while (rs.next()) {
                 model.addRow(new Object[]{
                     rs.getInt("ID"),
-                    rs.getString("VENDEDOR"),
-                    rs.getDouble("SALARIO_BASE"),
-                    rs.getDouble("COMISSÃO"),
+                    rs.getString(bundle.getString("seller")),
+                    rs.getDouble(bundle.getString("base_salary")),
+                    rs.getDouble(bundle.getString("commission")),
                     rs.getDouble("TOTAL"),
-                    rs.getDate("DATA"),
-                    rs.getDouble("MEDIA_AVALIACAO") // Adiciona a média de avaliações
+                    rs.getDate(bundle.getString("date")),
+                    rs.getDouble(bundle.getString("avarage_rating")) // Adiciona a média de avaliações
                 });
             }
 
             tblSalarios.setModel(model); // Define o modelo na JTable
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Erro: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, bundle.getString("error")+": " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     private void pesquisarSalarios() {
         String sql;
-
-        sql = "SELECT s.iduser AS ID, u.nome AS VENDEDOR, s.salario AS SALARIO_BASE, "
-               + "s.comissao AS COMISSÃO, s.total AS TOTAL, s.datacomissao AS DATA, "
-               + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS MEDIA_AVALIACAO "
+        if (LanguageSelection.selectedLanguage) {
+            sql = "SELECT s.iduser AS ID, u.nome AS "+bundle.getString("seller")+", s.salario / 5.78 AS "+bundle.getString("base_salary")+", "
+                + "s.comissao / 5.78 AS "+bundle.getString("commission")+", s.total /5.78 AS TOTAL, s.datacomissao AS "+bundle.getString("date")+", "
+                + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS AVARAGE_RATING " ///por algum motivo, se eu coloco o bundle.getString("avarage_rating") ele dá erro, então deixei em inglês mesmo
+                + "FROM tblsalarios s "
+                + "JOIN tbusuarios u ON s.iduser = u.iduser "
+                + "WHERE (s.iduser = ? OR u.nome LIKE ?)";
+        } else {
+        sql = "SELECT s.iduser AS ID, u.nome AS "+bundle.getString("seller")+", s.salario AS "+bundle.getString("base_salary")+", "
+               + "s.comissao AS "+bundle.getString("commission")+", s.total AS TOTAL, s.datacomissao AS "+bundle.getString("date")+", "
+               + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS "+bundle.getString("avarage_rating")+" "
                + "FROM tblsalarios s "
                + "JOIN tbusuarios u ON s.iduser = u.iduser "
                + "WHERE (s.iduser = ? OR u.nome LIKE ?)";
+        }
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -168,7 +196,7 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "VENDEDOR", "SALARIO BASE", "COMISSÃO", "TOTAL", "DATA", "AVALIAÇÃO"
+                "ID", bundle.getString("seller"), bundle.getString("base_salary"), bundle.getString("commission"), "TOTAL", bundle.getString("date"), bundle.getString("rating")
             }
         ));
         jScrollPane1.setViewportView(tblSalarios);
@@ -180,11 +208,11 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
         });
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("BUSCAR");
+        jLabel1.setText(bundle.getString("search")); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 25)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText("RELATÓRIO USUÁRIOS");
+        jLabel2.setText(bundle.getString("users_Rep")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

@@ -413,7 +413,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel1.setText("ID Produto");
+        jLabel1.setText(bundle.getString("prod_id"));
 
         txtProduPreco.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -427,20 +427,20 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel2.setText("*Nome Produto");
+        jLabel2.setText("*" + bundle.getString("prod_name"));
 
-        jLabel3.setText("*Quantidade");
+        jLabel3.setText("*" + bundle.getString("amount"));
 
-        jLabel4.setText("*Preço Produto");
+        jLabel4.setText("*" + bundle.getString("prod_price"));
 
-        jLabel5.setText("*Limite Mínimo");
+        jLabel5.setText("*" + bundle.getString("min_limit"));
 
-        jLabel12.setText("*Campos Obrigatórios");
+        jLabel12.setText(bundle.getString("mandatoryf"));
 
-        jLabel6.setText("Vencimento");
+        jLabel6.setText(bundle.getString("expiry"));
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_adicionar.png"))); // NOI18N
-        btnAdicionar.setToolTipText("Adicionar Produto");
+        btnAdicionar.setToolTipText(bundle.getString("prod_add"));
         btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAdicionar.setPreferredSize(new java.awt.Dimension(80, 80));
         btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
@@ -450,7 +450,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         });
 
         btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_editar.png"))); // NOI18N
-        btnAlterar.setToolTipText("Alterar Dados");
+        btnAlterar.setToolTipText(bundle.getString("change_data"));
         btnAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterar.setEnabled(false);
         btnAlterar.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -461,7 +461,7 @@ public class TelaProdutos extends javax.swing.JInternalFrame {
         });
 
         btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/produto_remover.png"))); // NOI18N
-        btnRemover.setToolTipText("Remover Produto");
+        btnRemover.setToolTipText(bundle.getString("prod_remove"));
         btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRemover.setEnabled(false);
         btnRemover.setPreferredSize(new java.awt.Dimension(80, 80));

@@ -185,8 +185,14 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
      * @version 2.0
      */
     private void pesquisarUsuarios() {
-        String sql = "select iduser as ID, nome as " + bundle.getString("name") + ", login as LOGIN, senha as " + bundle.getString("password") + ", setor as " + bundle.getString("sector") + ",salario as Salario" + ", fone as " + bundle.getString("phone") + " from tbusuarios where nome like ?";
+        String sql;
+        if (LanguageSelection.selectedLanguage) {
+            sql = "select iduser as ID, nome as " + bundle.getString("name") + ", login as LOGIN, senha as " + bundle.getString("password") + ", setor as " + bundle.getString("sector") + ",salario / 5.78 as "+ bundle.getString("salary") + ", fone as " + bundle.getString("phone") + " from tbusuarios where nome like ?";
 
+        } else {
+            sql = "select iduser as ID, nome as " + bundle.getString("name") + ", login as LOGIN, senha as " + bundle.getString("password") + ", setor as " + bundle.getString("sector") + ",salario as "+ bundle.getString("salary") + ", fone as " + bundle.getString("phone") + " from tbusuarios where nome like ?";
+        }
+        
         try {
             pst = conexao.prepareStatement(sql);
             //passando o conteúdo da caixa de pesquisa para o ?
@@ -232,7 +238,14 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
      * @version 2.0
      */
     private void preencherTabelaUsuarios() {
-        String sql = "select iduser as ID, nome as " + bundle.getString("name") + ", login as LOGIN,senha as " + bundle.getString("password") + ",setor as " + bundle.getString("sector") + ",salario as Salário " + ", fone as " + bundle.getString("phone") + " from tbusuarios";
+        String sql;
+        if (LanguageSelection.selectedLanguage) {
+            sql = "select iduser as ID, nome as " + bundle.getString("name") + ", login as LOGIN,senha as " + bundle.getString("password") + ",setor as " + bundle.getString("sector") + ",salario / 5.78 as " + bundle.getString("salary") + ", fone as " + bundle.getString("phone") + " from tbusuarios";
+        }
+        else {
+            sql = "select iduser as ID, nome as " + bundle.getString("name") + ", login as LOGIN,senha as " + bundle.getString("password") + ",setor as " + bundle.getString("sector") + ",salario as " + bundle.getString("salary") + ", fone as " + bundle.getString("phone") + " from tbusuarios";
+        }
+
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -295,7 +308,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("Cadastro/Alteração/Remoção de Usuários");
+        setTitle(bundle.getString("user_title"));
         setName(""); // NOI18N
         setPreferredSize(new java.awt.Dimension(1000, 631));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
@@ -329,7 +342,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Nome", "Login", "Senha", "Setor", "Salário", "Telefone"
+                "ID", bundle.getString("name"), "Login", bundle.getString("password"), bundle.getString("sector"), bundle.getString("salary"), bundle.getString("phone")
             }
         ));
         tblUsuarios.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -339,9 +352,9 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         });
         jScrollPane1.setViewportView(tblUsuarios);
 
-        jLabel12.setText("*Campos Obrigatórios");
+        jLabel12.setText(bundle.getString("mandatoryf"));
 
-        jLabel1.setText("ID Usuário");
+        jLabel1.setText(bundle.getString("user_id"));
 
         txtUsuId.setEnabled(false);
         txtUsuId.addActionListener(new java.awt.event.ActionListener() {
@@ -350,13 +363,13 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel2.setText("*Nome");
+        jLabel2.setText("*" + bundle.getString("name"));
 
         jLabel3.setText("*Login");
 
-        jLabel4.setText("*Telefone");
+        jLabel4.setText("*" + bundle.getString("phone"));
 
-        jLabel5.setText("*Senha");
+        jLabel5.setText("*" + bundle.getString("password"));
 
         txtUsuPesquisar.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -364,12 +377,12 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
             }
         });
 
-        cboUsuSetor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", "Estoque", "Gerência", "Vendas" }));
+        cboUsuSetor.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { " ", bundle.getString("stock"), bundle.getString("management"), bundle.getString("sales") }));
 
-        jLabel6.setText("*Setor");
+        jLabel6.setText("*" + bundle.getString("sector"));
 
         btnAdicionar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/user_add.png"))); // NOI18N
-        btnAdicionar.setToolTipText("Adicionar Usuário");
+        btnAdicionar.setToolTipText(bundle.getString("add_user"));
         btnAdicionar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAdicionar.setPreferredSize(new java.awt.Dimension(80, 80));
         btnAdicionar.addActionListener(new java.awt.event.ActionListener() {
@@ -379,7 +392,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         });
 
         btnAlterar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/user_editar.png"))); // NOI18N
-        btnAlterar.setToolTipText("Alterar Dados");
+        btnAlterar.setToolTipText(bundle.getString("change_data"));
         btnAlterar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnAlterar.setEnabled(false);
         btnAlterar.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -390,7 +403,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         });
 
         btnRemover.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br.com.stockreserve.icones/user_remover.png"))); // NOI18N
-        btnRemover.setToolTipText("Remover Usuário");
+        btnRemover.setToolTipText(bundle.getString("remove_user"));
         btnRemover.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnRemover.setEnabled(false);
         btnRemover.setPreferredSize(new java.awt.Dimension(80, 80));
@@ -401,9 +414,9 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
         });
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel7.setText("BUSCAR");
+        jLabel7.setText(bundle.getString("search"));
 
-        jLabel8.setText("*Salário R$");
+        jLabel8.setText(bundle.getString("salary_monetary"));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -413,7 +426,7 @@ public class TelaUsuario extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(txtUsuSalario, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(txtUsuSalario, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(30, 30, 30)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

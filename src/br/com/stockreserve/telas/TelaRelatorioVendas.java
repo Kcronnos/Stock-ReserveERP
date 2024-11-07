@@ -841,8 +841,8 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
 
         // Exibir o produto com a maior quantidade
         DefaultTableModel model = new DefaultTableModel();
-        model.addColumn("PRODUTO MAIS VENDIDO NO PERIODO");
-        model.addColumn("QUANTIDADE");
+        model.addColumn(bundle.getString("most_solded"));
+        model.addColumn(bundle.getString("amount"));
 
         // Define o modelo da tabela
         tblProdutoMaisVendido.setModel(model);
@@ -895,7 +895,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
-        setTitle("Relatório de Vendas");
+        setTitle(bundle.getString("sales_report"));
         setPreferredSize(new java.awt.Dimension(1002, 336));
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
@@ -1057,7 +1057,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
                 {null, null}
             },
             new String [] {
-                "PRODUTO MAIS VENDIDO NO PERIODO", "QUANTIDADE"
+                bundle.getString("most_solded"), bundle.getString("amount")
             }
         ));
         tblProdutoMaisVendido.setEnabled(false);
@@ -1066,7 +1066,7 @@ public class TelaRelatorioVendas extends javax.swing.JInternalFrame {
         getContentPane().add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 500, 550, 100));
 
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("ESCOLHA UM PERIODO");
+        jLabel3.setText(bundle.getString("choose_period"));
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 440, 550, -1));
 
         choserMes.setMonth(0);

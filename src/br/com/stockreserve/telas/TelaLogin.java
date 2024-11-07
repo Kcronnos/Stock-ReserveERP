@@ -304,7 +304,6 @@ public class TelaLogin extends javax.swing.JFrame {
                 new TelaLogin().setVisible(true);
             }
         });
-        java.awt.EventQueue.invokeLater(() -> new TelaLogin().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
