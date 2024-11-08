@@ -68,13 +68,13 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
         if (LanguageSelection.selectedLanguage) {
             sql = "SELECT s.iduser AS ID, u.nome AS "+bundle.getString("seller")+", s.salario / 5.78 AS "+bundle.getString("base_salary")+", "
                 + "s.comissao / 5.78 AS "+bundle.getString("commission")+", s.total /5.78 AS TOTAL, s.datacomissao AS "+bundle.getString("date")+", "
-                + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS AVARAGE_RATING " //por algum motivo, se eu coloco o bundle.getString("avarage_rating") ele dá erro, então deixei em inglês mesmo
+                + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS AVERAGE_RATING " //por algum motivo, se eu coloco o bundle.getString("average_rating") ele dá erro, então deixei em inglês mesmo
                 + "FROM tblsalarios s "
                 + "JOIN tbusuarios u ON s.iduser = u.iduser";
         } else {
             sql = "SELECT s.iduser AS ID, u.nome AS "+bundle.getString("seller")+", s.salario AS "+bundle.getString("base_salary")+", "
                 + "s.comissao AS "+bundle.getString("commission")+", s.total AS TOTAL, s.datacomissao AS "+bundle.getString("date")+", "
-                + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS "+bundle.getString("avarage_rating")+" "
+                + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS "+bundle.getString("average_rating")+" "
                 + "FROM tblsalarios s "
                 + "JOIN tbusuarios u ON s.iduser = u.iduser";
         }
@@ -86,7 +86,7 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
 
             // Configura o modelo da tabela incluindo a coluna de média de avaliações
             DefaultTableModel model = new DefaultTableModel(new Object[][]{}, new String[]{
-                "ID", bundle.getString("seller"), bundle.getString("base_salary"), bundle.getString("commission"), "TOTAL", bundle.getString("date"), bundle.getString("avarage_rating")
+                "ID", bundle.getString("seller"), bundle.getString("base_salary"), bundle.getString("commission"), "TOTAL", bundle.getString("date"), bundle.getString("average_rating")
             });
 
             while (rs.next()) {
@@ -97,7 +97,7 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
                     rs.getDouble(bundle.getString("commission")),
                     rs.getDouble("TOTAL"),
                     rs.getDate(bundle.getString("date")),
-                    rs.getDouble(bundle.getString("avarage_rating")) // Adiciona a média de avaliações
+                    rs.getDouble(bundle.getString("average_rating")) // Adiciona a média de avaliações
                 });
             }
 
@@ -114,14 +114,14 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
         if (LanguageSelection.selectedLanguage) {
             sql = "SELECT s.iduser AS ID, u.nome AS "+bundle.getString("seller")+", s.salario / 5.78 AS "+bundle.getString("base_salary")+", "
                 + "s.comissao / 5.78 AS "+bundle.getString("commission")+", s.total /5.78 AS TOTAL, s.datacomissao AS "+bundle.getString("date")+", "
-                + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS AVARAGE_RATING " ///por algum motivo, se eu coloco o bundle.getString("avarage_rating") ele dá erro, então deixei em inglês mesmo
+                + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS AVeRAGE_RATING " ///por algum motivo, se eu coloco o bundle.getString("average_rating") ele dá erro, então deixei em inglês mesmo
                 + "FROM tblsalarios s "
                 + "JOIN tbusuarios u ON s.iduser = u.iduser "
                 + "WHERE (s.iduser = ? OR u.nome LIKE ?)";
         } else {
         sql = "SELECT s.iduser AS ID, u.nome AS "+bundle.getString("seller")+", s.salario AS "+bundle.getString("base_salary")+", "
                + "s.comissao AS "+bundle.getString("commission")+", s.total AS TOTAL, s.datacomissao AS "+bundle.getString("date")+", "
-               + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS "+bundle.getString("avarage_rating")+" "
+               + "(SELECT AVG(avaliacao) FROM tbusuarios_avaliacoes WHERE iduser = s.iduser) AS "+bundle.getString("average_rating")+" "
                + "FROM tblsalarios s "
                + "JOIN tbusuarios u ON s.iduser = u.iduser "
                + "WHERE (s.iduser = ? OR u.nome LIKE ?)";
@@ -165,6 +165,7 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
         setClosable(true);
         setIconifiable(true);
         setMaximizable(true);
+        setTitle("Relatório de Usuários");
         addInternalFrameListener(new javax.swing.event.InternalFrameListener() {
             public void internalFrameActivated(javax.swing.event.InternalFrameEvent evt) {
             }
@@ -196,7 +197,7 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
                 {null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", bundle.getString("seller"), bundle.getString("base_salary"), bundle.getString("commission"), "TOTAL", bundle.getString("date"), bundle.getString("rating")
+                "ID", "VENDEDOR", "SALARIO BASE", "COMISSÃO", "TOTAL", "DATA", "AVALIAÇÃO"
             }
         ));
         jScrollPane1.setViewportView(tblSalarios);
@@ -208,11 +209,11 @@ public class TelaRelatorioUsuarios extends javax.swing.JInternalFrame {
         });
 
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText(bundle.getString("search")); // NOI18N
+        jLabel1.setText("BUSCAR");
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 25)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText(bundle.getString("users_Rep")); // NOI18N
+        jLabel2.setText("RELATÓRIO USUÁRIOS");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

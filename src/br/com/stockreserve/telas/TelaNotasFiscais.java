@@ -331,9 +331,14 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
 
         jLabel1.setFont(new java.awt.Font("MingLiU_HKSCS-ExtB", 0, 25)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText(bundle.getString("invoices"));
+        jLabel1.setText("NOTAS FISCAIS");
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 0, 220, 110));
 
+        tblNotasFiscais = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int ColIndex){
+                return false;
+            }
+        };
         tblNotasFiscais.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -358,10 +363,10 @@ public class TelaNotasFiscais extends javax.swing.JInternalFrame {
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel2.setText(bundle.getString("search_invoices"));
+        jLabel2.setText("BUSCAR NOTAS");
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 520, 370, -1));
 
-        btnVerDetalhes.setText(bundle.getString("see_details"));
+        btnVerDetalhes.setText("VER DETALHES");
         btnVerDetalhes.setEnabled(false);
         btnVerDetalhes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
