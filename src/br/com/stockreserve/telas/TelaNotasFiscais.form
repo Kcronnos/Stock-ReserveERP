@@ -112,6 +112,7 @@
           </Properties>
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_DeclarationPre" type="java.lang.String" value="/**&#xa; * tabela que exibe notas fiscais&#xa; */"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="tblNotasFiscais = new javax.swing.JTable(){&#xa;    public boolean isCellEditable(int rowIndex, int ColIndex){&#xa;        return false;&#xa;    } &#xa;};"/>
           </AuxValues>
         </Component>
       </SubComponents>
